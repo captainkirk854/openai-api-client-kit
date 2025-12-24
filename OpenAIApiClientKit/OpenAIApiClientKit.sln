@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36811.4 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenAIApiClient", "OpenAIApiClient\OpenAIApiClient.csproj", "{CE8316C9-714B-4779-8B08-591D070344C5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenAIApiClient.Tests", "OpenAIApiClient.Tests\OpenAIApiClient.Tests.csproj", "{1458D715-879A-4953-ABAE-298636390796}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CE8316C9-714B-4779-8B08-591D070344C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE8316C9-714B-4779-8B08-591D070344C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE8316C9-714B-4779-8B08-591D070344C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE8316C9-714B-4779-8B08-591D070344C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1458D715-879A-4953-ABAE-298636390796}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1458D715-879A-4953-ABAE-298636390796}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1458D715-879A-4953-ABAE-298636390796}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1458D715-879A-4953-ABAE-298636390796}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7681F0AE-3845-4811-9D74-D1255686F27D}
+	EndGlobalSection
+EndGlobal
