@@ -18,8 +18,8 @@ namespace OpenAIApiClient.Helpers
         /// <param name="model">The OpenAI model to be used for the request.</param>
         /// <param name="userPrompt">The user input prompt to include in the chat message sequence. Cannot be null.</param>
         /// <param name="stream">A value indicating whether the response should be streamed. Set to <see langword="true"/> to enable streaming; otherwise, <see langword="false"/>.</param>
-        /// <param name="temperature">Valid values range from 0 - 2.0.</param>
-        /// <param name="maxTokens"></param>
+        /// <param name="temperature">The sampling temperature to use, between 0 and 2.0. Higher the value more creative the response Default is 0.1.</param>
+        /// <param name="maxTokens">The maximum number of tokens to generate in the response. Default is 1000.</param>
         /// <returns>ChatCompletionRequest.</returns>
         public static ChatCompletionRequest BuildChatCompletionRequestObject(OpenAIModels model, string userPrompt, bool stream, double temperature = 0.1, int maxTokens = 1000)
         {

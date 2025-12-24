@@ -4,349 +4,255 @@
 
 namespace OpenAIApiClient
 {
-    using System.Net;
-    using System.Net.Http;
-    using System.Net.Http.Json;
+    using System.Net.Http.Headers;
     using System.Text;
     using System.Text.Json;
-    using OpenAIApiClient.Exceptions;
-    using OpenAIApiClient.Helpers;
     using OpenAIApiClient.Models.Chat.Request;
     using OpenAIApiClient.Models.Chat.Response.Completion;
     using OpenAIApiClient.Models.Chat.Response.Streaming;
 
+    /// <summary>
+    /// A unified OpenAI Chat Client supporting both streaming and non-streaming
+    /// chat completions, with retry and cancellation support.
+    /// </summary>
     public class OpenAIChatClient
     {
-        private const string DefaultBaseUrl = "https://api.openai.com/v1/";
+        // ---------------------------------------------------------------------
+        // String constants (centralised for maintainability)
+        // ---------------------------------------------------------------------
+        private const string BaseApiUrl = "https://api.openai.com/v1/";
+        private const string AuthScheme = "Bearer";
+        private const string MediaTypeJson = "application/json";
         private const string ChatCompletionsEndpoint = "chat/completions";
-        private readonly OpenAIModels model;
-        private readonly string apiKey;
-        private readonly string baseUrl;
-        private readonly int maxRetries;
-        private readonly TimeSpan baseDelay;
+        private const string ServerSentEventDataPrefix = "data:";
+        private const string ServerSentEventDoneMarker = "[DONE]";
+
+        // ---------------------------------------------------------------------
+        // Retry configuration
+        // ---------------------------------------------------------------------
+        private const int MaxRetries = 3;
+        private static readonly TimeSpan BaseDelay = TimeSpan.FromMilliseconds(300);
+
         private readonly HttpClient httpClient;
-        private readonly JsonSerializerOptions jsonOptions = new()
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            WriteIndented = true,
-        };
+        private readonly JsonSerializerOptions jsonOptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OpenAIChatClient"/> class.
         /// </summary>
-        /// <remarks>This constructor configures the client with default HTTP headers and retry logic. The
-        /// client is ready to send requests immediately after instantiation.</remarks>
-        /// <param name="apiKey">The API key used to authenticate requests to the OpenAI API. Cannot be null.</param>
-        /// <param name="model">The OpenAI model to use for chat completions.</param>
-        /// <param name="baseUrl">The base URL for the OpenAI API endpoint. If not specified, the default base URL is used.</param>
-        /// <param name="maxRetries">The maximum number of times to retry failed requests due to transient errors. Must be zero or greater.</param>
-        /// <param name="baseDelayMs">The base delay, in milliseconds, between retry attempts. Used to calculate exponential backoff for retries.</param>
-        /// <exception cref="ArgumentNullException">Thrown if apiKey is null.</exception>
-        public OpenAIChatClient(string apiKey, OpenAIModels model, string baseUrl = DefaultBaseUrl, int maxRetries = 3, int baseDelayMs = 500)
+        /// <param name="apiKey">The OpenAI API key for authentication.</param>
+        /// <param name="httpClient">An optional HttpClient instance for making requests.</param>
+        public OpenAIChatClient(string apiKey, HttpClient? httpClient = null)
         {
-            this.apiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
-            this.model = model;
-            this.baseUrl = baseUrl;
-            this.maxRetries = maxRetries;
-            this.baseDelay = TimeSpan.FromMilliseconds(baseDelayMs);
+            // Use provided HttpClient or create a new one
+            this.httpClient = httpClient ?? new HttpClient();
 
-            // Initialize HttpClient with default headers ..
-            this.httpClient = new HttpClient
+            // Configure base API endpoint and authentication
+            this.httpClient.BaseAddress = new Uri(BaseApiUrl);
+            this.httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme: AuthScheme, parameter: apiKey);
+
+            // Configure JSON serializer options
+            this.jsonOptions = new JsonSerializerOptions
             {
-                BaseAddress = new Uri(this.baseUrl),
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = false,
             };
-            this.httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {this.apiKey}");
         }
 
         /// <summary>
-        /// Sends a user prompt to the OpenAI chat completion API asynchronously and returns the assistant's response.
+        /// Sends a non-streaming chat completion request with retry and cancellation support.
         /// </summary>
-        /// <param name="prompt">The user input or question to send to the assistant. Cannot be null or empty.</param>
-        /// <returns>A task that represents the asynchronous operation. The task result contains the assistant's response as a string. Returns an empty string if the response content is missing.</returns>
-        /// <exception cref="RateLimitException">Thrown if the OpenAI API rate limit is exceeded.</exception>
-        public async Task<string> CreateChatCompletionAsync(string prompt)
+        /// <param name="request">The chat completion request payload.</param>
+        /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
+        /// <returns>The chat completion response.</returns>
+        public async Task<ChatCompletionResponse?> CreateChatCompletionAsync(ChatCompletionRequest request, CancellationToken cancellationToken = default)
         {
-            // Build the request payload ..
-            ChatCompletionRequest payload = OpenAIPayloadHelper.BuildChatCompletionRequestObject(model: this.model, userPrompt: prompt, stream: false);
+            request.Stream = false;
 
-            return await this.ExecuteWithRetry(async () =>
-            {
-                HttpResponseMessage? response = await this.httpClient.PostAsJsonAsync(requestUri: ChatCompletionsEndpoint, value: payload);
-                if (response.StatusCode == HttpStatusCode.TooManyRequests)
+            // Serialize request payload
+            string json = JsonSerializer.Serialize(value: request, options: this.jsonOptions);
+
+            // Prepare HTTP content
+            HttpContent httpContent = new StringContent(content: json, encoding: Encoding.UTF8, mediaType: MediaTypeJson);
+
+            // Execute with retry logic
+            return await ExecuteWithRetryAsync(
+                operation: async () =>
                 {
-                    throw new RateLimitException("Rate limit exceeded!", response);
-                }
-
-                response.EnsureSuccessStatusCode();
-
-                JsonElement json = await response.Content.ReadFromJsonAsync<JsonElement>();
-                return json.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString() ?? string.Empty;
-            });
-        }
-
-        /// <summary>
-        /// Sends a chat completion request (with optional tools) and returns the typed response.
-        /// </summary>
-        /// <param name="prompt">The user prompt to send to the chat completion model. This text will be included as the user's message in the conversation.</param>
-        /// <returns>A task that represents the asynchronous operation. The task result contains the <see cref="ChatCompletionResponse"/> from the API, or null if deserialization fails.</returns>
-        public async Task<ChatCompletionResponse?> CreateChatCompletionAsyncV2(string prompt)
-        {
-            // Build the request payload ..
-            ChatCompletionRequest request = OpenAIPayloadHelper.BuildChatCompletionRequestObject(model: this.model, userPrompt: prompt, stream: false);
-
-            return await this.ExecuteWithRetry(async () =>
-            {
-                HttpResponseMessage? response = await this.httpClient.PostAsJsonAsync(requestUri: ChatCompletionsEndpoint, value: request, options: this.jsonOptions);
-                if (response.StatusCode == HttpStatusCode.TooManyRequests)
-                {
-                    throw new RateLimitException("Rate limit exceeded!", response);
-                }
-
-                response.EnsureSuccessStatusCode();
-
-                string body = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<ChatCompletionResponse>(body, this.jsonOptions);
-            });
-        }
-
-        /// <summary>
-        /// Streams the response from a chat completion API as a sequence of text chunks, enabling real-time processing
-        /// of the generated content.
-        /// </summary>
-        /// <remarks>The method yields each chunk of the response as it is received, allowing callers to
-        /// process or display output incrementally. If a transient network error or rate limit is encountered, the
-        /// method automatically retries the request up to a configured maximum number of attempts before propagating
-        /// the exception. The returned sequence may be empty if the model does not generate any content.
-        /// </remarks>
-        /// <param name="prompt">The user prompt to send to the chat completion model. This text will be included as the user's message in the conversation.</param>
-        /// <returns>An asynchronous sequence of strings, each representing a chunk of the generated response text. The sequence completes when the full response has been streamed.</returns>
-        /// <exception cref="RateLimitException">Thrown if the API rate limit is exceeded and the maximum number of retry attempts has been reached.</exception>
-        public async IAsyncEnumerable<string> CallOpenAIStreamResponseAsync(string prompt)
-        {
-            // Build the request payload ..
-            ChatCompletionRequest payload = OpenAIPayloadHelper.BuildChatCompletionRequestObject(model: this.model, userPrompt: prompt, stream: true);
-
-            // Begin the retry loop ..
-            int attempt = 0;
-            TimeSpan delay = this.baseDelay;
-
-            while (true)
-            {
-                bool shouldRetry = false;
-                List<string> chunks = [];
-
-                try
-                {
-                    using var request = new HttpRequestMessage(method: HttpMethod.Post, requestUri: ChatCompletionsEndpoint)
-                    {
-                        Content = JsonContent.Create(payload),
-                    };
-
-                    using var response = await this.httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-                    if (response.StatusCode == HttpStatusCode.TooManyRequests)
-                    {
-                        throw new RateLimitException("Rate limit exceeded!", response);
-                    }
+                    HttpResponseMessage response = await this.httpClient.PostAsync(requestUri: ChatCompletionsEndpoint, content: httpContent, cancellationToken: cancellationToken);
 
                     response.EnsureSuccessStatusCode();
 
-                    using Stream stream = await response.Content.ReadAsStreamAsync();
-                    using StreamReader reader = new(stream);
+                    string body = await response.Content.ReadAsStringAsync(cancellationToken: cancellationToken);
 
-                    while (!reader.EndOfStream)
-                    {
-                        // Read line by line
-                        string? line = await reader.ReadLineAsync();
-                        if (string.IsNullOrWhiteSpace(line))
-                        {
-                            continue;
-                        }
+                    return JsonSerializer.Deserialize<ChatCompletionResponse>(json: body, options: this.jsonOptions);
+                },
+                cancellationToken: cancellationToken);
+        }
 
-                        if (!line.StartsWith("data:"))
-                        {
-                            continue;
-                        }
+        /// <summary>
+        /// Sends a streaming chat completion request with retry and cancellation support.
+        /// </summary>
+        /// <param name="request">The chat completion request payload.</param>
+        /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
+        /// <returns>An asynchronous stream of chat completion chunks.</returns>
+        public async IAsyncEnumerable<ChatCompletionChunk> CreateChatCompletionStreamAsync(ChatCompletionRequest request, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            request.Stream = true;
 
-                        // Extract the JSON payload ..
-                        string? data = line["data:".Length..].Trim();
-                        if (data == "[DONE]")
-                        {
-                            continue;
-                        }
+            // Serialize request payload
+            string json = JsonSerializer.Serialize(value: request, options: this.jsonOptions);
 
-                        JsonElement json = JsonSerializer.Deserialize<JsonElement>(data);
-                        JsonElement delta = json.GetProperty("choices")[0].GetProperty("delta");
+            // Prepare HTTP content
+            StringContent httpContent = new(content: json, encoding: Encoding.UTF8, mediaType: MediaTypeJson);
 
-                        // Extract the content chunk ..
-                        if (delta.TryGetProperty("content", out var contentProp))
-                        {
-                            string? chunk = contentProp.GetString();
-                            if (!string.IsNullOrEmpty(chunk))
-                            {
-                                chunks.Add(chunk);
-                            }
-                        }
-                    }
-                }
-                catch (RateLimitException ex) when (attempt < this.maxRetries)
-                {
-                    TimeSpan retryDelay = GetRetryDelay(ex.Response, delay);
-                    await Task.Delay(retryDelay);
-                    delay = TimeSpan.FromMilliseconds(Math.Min(delay.TotalMilliseconds * 2, 8000));
-                    attempt++;
-                    shouldRetry = true;
-                }
-                catch (HttpRequestException) when (attempt < this.maxRetries)
-                {
-                    await Task.Delay(Jitter(delay));
-                    shouldRetry = true;
-                }
-
-                // Yield any collected chunks outside the try/catch block
-                foreach (string? chunk in chunks)
-                {
-                    yield return chunk;
-                }
-
-                if (!shouldRetry)
-                {
-                    yield break;
-                }
+            // Wrap streaming in retry logic
+            await foreach (ChatCompletionChunk chunk in ExecuteStreamingWithRetryAsync(operation: () => this.SendStreamingRequestAsync(httpContent, cancellationToken), cancellationToken: cancellationToken))
+            {
+                yield return chunk;
             }
         }
 
         /// <summary>
-        /// Sends a streaming chat completion request and yields chunks as they arrive.
+        /// Executes an operation with retry logic for transient failures.
         /// </summary>
-        /// <param name="prompt">The user prompt to send to the chat completion model. This text will be included as the user's message in the conversation.</param>
-        /// <returns>An asynchronous sequence of <see cref="ChatCompletionChunk"/> objects representing the streamed response from the API.</returns>
-        public async IAsyncEnumerable<ChatCompletionChunk> CreateChatCompletionStreamAsyncV2(string prompt)
+        /// <param name="operation">The operation to execute.</param>
+        /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
+        /// <returns>The result of the operation.</returns>
+        private static async Task<T> ExecuteWithRetryAsync<T>(Func<Task<T>> operation, CancellationToken cancellationToken)
         {
-            // Build the request payload ..
-            ChatCompletionRequest request = OpenAIPayloadHelper.BuildChatCompletionRequestObject(model: this.model, userPrompt: prompt, stream: true);
+            for (int attempt = 1; attempt <= MaxRetries; attempt++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
 
-            string json = JsonSerializer.Serialize(request, this.jsonOptions);
-            StringContent httpContent = new(json, Encoding.UTF8, "application/json");
+                try
+                {
+                    return await operation();
+                }
+                catch (Exception ex) when (IsTransient(ex) && attempt < MaxRetries)
+                {
+                    // Exponential backoff delay
+                    TimeSpan delay = TimeSpan.FromMilliseconds(BaseDelay.TotalMilliseconds * Math.Pow(2, attempt - 1));
 
-            using HttpRequestMessage httpRequest = new(HttpMethod.Post, ChatCompletionsEndpoint)
+                    await Task.Delay(delay, cancellationToken);
+                }
+            }
+
+            throw new InvalidOperationException("Retry limit exceeded.");
+        }
+
+        /// <summary>
+        /// Executes a streaming operation with retry logic.
+        /// </summary>
+        /// <param name="operation">The streaming operation to execute.</param>
+        /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
+        /// <returns>An asynchronous stream of items from the operation.</returns>
+        private static async IAsyncEnumerable<T> ExecuteStreamingWithRetryAsync<T>(Func<IAsyncEnumerable<T>> operation, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            for (int attempt = 1; attempt <= MaxRetries; attempt++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                bool shouldRetry = false;
+                List<T> bufferedItems = [];
+
+                try
+                {
+                    // Forward streamed items
+                    await foreach (var item in operation().WithCancellation(cancellationToken))
+                    {
+                        bufferedItems.Add(item);
+                    }
+                }
+                catch (Exception ex) when (IsTransient(ex) && attempt < MaxRetries)
+                {
+                    // Exponential backoff delay
+                    TimeSpan delay = TimeSpan.FromMilliseconds(BaseDelay.TotalMilliseconds * Math.Pow(2, attempt - 1));
+
+                    await Task.Delay(delay, cancellationToken);
+                    shouldRetry = true;
+                }
+
+                if (!shouldRetry)
+                {
+                    foreach (var item in bufferedItems)
+                    {
+                        yield return item;
+                    }
+                    yield break;
+                }
+            }
+
+            throw new InvalidOperationException("Streaming retry limit exceeded.");
+        }
+
+        /// <summary>
+        /// Determines whether an exception is likely transient and safe to retry.
+        /// </summary>
+        /// <param name="ex">The exception to evaluate.</param>
+        /// <returns>True if the exception is transient; otherwise, false.</returns>
+        private static bool IsTransient(Exception ex)
+        {
+            return ex is HttpRequestException ||
+                   ex is TaskCanceledException ||
+                   ex is TimeoutException;
+        }
+
+        /// <summary>
+        /// Performs the actual streaming request and yields chunks as they arrive.
+        /// </summary>
+        /// <param name="httpContent">The HTTP content for the request.</param>
+        /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
+        /// <returns>An asynchronous stream of chat completion chunks.</returns>
+        private async IAsyncEnumerable<ChatCompletionChunk> SendStreamingRequestAsync(HttpContent httpContent, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            // Build HTTP request
+            using HttpRequestMessage httpRequest = new(method: HttpMethod.Post, requestUri: ChatCompletionsEndpoint)
             {
                 Content = httpContent,
             };
 
-            using HttpResponseMessage response = await this.httpClient.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead);
+            // Request headers-only completion to enable SSE streaming
+            using HttpResponseMessage response = await this.httpClient.SendAsync(request: httpRequest, completionOption: HttpCompletionOption.ResponseHeadersRead, cancellationToken: cancellationToken);
 
             response.EnsureSuccessStatusCode();
 
-            await using Stream stream = await response.Content.ReadAsStreamAsync();
-            using StreamReader reader = new(stream);
+            // Open the response stream
+            await using Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+            using StreamReader reader = new(stream: stream);
 
+            // Process Server-Sent Events (SSE) line-by-line
             while (!reader.EndOfStream)
             {
-                string? line = await reader.ReadLineAsync();
+                cancellationToken.ThrowIfCancellationRequested();
 
+                string? line = await reader.ReadLineAsync(cancellationToken);
+
+                // Skip empty lines
                 if (string.IsNullOrWhiteSpace(line))
                 {
                     continue;
                 }
 
-                if (!line.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
+                // Only process SSE "data:" lines
+                if (!line.StartsWith(value: ServerSentEventDataPrefix, comparisonType: StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }
 
-                string payload = line["data:".Length..].Trim();
+                // Extract JSON payload
+                string payload = line[ServerSentEventDataPrefix.Length..].Trim();
 
-                if (payload == "[DONE]")
+                // End-of-stream marker
+                if (payload == ServerSentEventDoneMarker)
                 {
                     yield break;
                 }
 
-                ChatCompletionChunk? chunk = JsonSerializer.Deserialize<ChatCompletionChunk>(payload, this.jsonOptions);
-
+                // Deserialize streamed chunk
+                var chunk = JsonSerializer.Deserialize<ChatCompletionChunk>(json: payload, options: this.jsonOptions);
                 if (chunk != null)
                 {
                     yield return chunk;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Determines the delay interval before retrying a request based on the 'Retry-After' header in the HTTP
-        /// response, or returns a fallback delay if the header is not present or invalid.
-        /// </summary>
-        /// <remarks>The method supports both integer and HTTP-date formats for the 'Retry-After' header,
-        /// as specified by RFC 7231. If the header is not present or cannot be parsed, the fallback delay may be
-        /// adjusted with jitter to help avoid synchronized retries.
-        /// </remarks>
-        /// <param name="response">The HTTP response message from which to extract the 'Retry-After' header value.</param>
-        /// <param name="fallback">The fallback delay to use if the 'Retry-After' header is missing or cannot be parsed.</param>
-        /// <returns>A <see cref="TimeSpan"/> representing the delay to wait before retrying the request. If the 'Retry-After' header is present and valid, the delay is based on its value; otherwise, the fallback delay is used.</returns>
-        private static TimeSpan GetRetryDelay(HttpResponseMessage response, TimeSpan fallback)
-        {
-            if (response.Headers.TryGetValues("Retry-After", out var values))
-            {
-                var retryAfter = values.FirstOrDefault();
-                if (int.TryParse(retryAfter, out var seconds))
-                {
-                    return TimeSpan.FromSeconds(seconds);
-                }
-
-                if (DateTimeOffset.TryParse(retryAfter, out var date))
-                {
-                    return date - DateTimeOffset.UtcNow;
-                }
-            }
-            return Jitter(fallback);
-        }
-
-        /// <summary>
-        /// Calculates a jittered delay based on the specified base delay, introducing randomness.
-        /// </summary>
-        /// <param name="baseDelay"></param>
-        /// <returns>A <see cref="TimeSpan"/> representing the jittered delay.</returns>
-        private static TimeSpan Jitter(TimeSpan baseDelay)
-        {
-            double rnd = (Random.Shared.NextDouble() * 0.4) + 0.8; // 0.8–1.2x
-            return TimeSpan.FromMilliseconds(baseDelay.TotalMilliseconds * rnd);
-        }
-
-        /// <summary>
-        /// Executes the specified asynchronous action with automatic retries in the event of rate limiting or transient
-        /// HTTP errors.
-        /// </summary>
-        /// <remarks>The method retries the action when a rate limit or transient HTTP error occurs, using
-        /// an exponential backoff strategy with jitter. The number of retry attempts and delay behavior are determined
-        /// by the configuration of the containing class. If the maximum number of retries is exceeded, the last
-        /// encountered exception is propagated to the caller.
-        /// </remarks>
-        /// <typeparam name="T">The type of the result returned by the asynchronous action.</typeparam>
-        /// <param name="action">A function that represents the asynchronous operation to execute. The function should return a task that yields a result of type <typeparamref name="T"/>.</param>
-        /// <returns>A task that represents the asynchronous operation. The task result contains the value returned by the action after successful execution.</returns>
-        private async Task<T> ExecuteWithRetry<T>(Func<Task<T>> action)
-        {
-            int attempt = 0;
-            TimeSpan delay = this.baseDelay;
-
-            while (true)
-            {
-                try
-                {
-                    return await action();
-                }
-                catch (RateLimitException ex) when (attempt < this.maxRetries)
-                {
-                    var retryDelay = GetRetryDelay(ex.Response, delay);
-                    await Task.Delay(retryDelay);
-                    delay = TimeSpan.FromMilliseconds(Math.Min(delay.TotalMilliseconds * 2, 8000));
-                    attempt++;
-                    continue;
-                }
-                catch (HttpRequestException) when (attempt < this.maxRetries)
-                {
-                    await Task.Delay(Jitter(delay));
-                    delay = TimeSpan.FromMilliseconds(Math.Min(delay.TotalMilliseconds * 2, 8000));
-                    attempt++;
-                    continue;
                 }
             }
         }
