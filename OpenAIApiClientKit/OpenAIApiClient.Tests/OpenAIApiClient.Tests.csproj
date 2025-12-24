@@ -22,6 +22,10 @@
   
   <ItemGroup>
     <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\OpenAIApiClient\OpenAIApiClient.csproj" />
   </ItemGroup>  
 
 </Project>
