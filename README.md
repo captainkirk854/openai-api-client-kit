@@ -1,5 +1,7 @@
-🚀 ChatGPT C# Client
+# 🚀 ChatGPT C# Client
+
 A lightweight, production‑ready C# wrapper for accessing OpenAI’s ChatGPT models — no Azure deployment required.
+
 Supports:
 - ✔️ Simple chat completions
 - ✔️ Streaming responses (token‑by‑token)
@@ -8,7 +10,8 @@ Supports:
 - ✔️ Smart handling of HTTP 429 Rate Limit + Retry-After header
 - ✔️ Clean, reusable API surface
 
-📘 Overview
+# 📘 Overview
+
 This project provides a robust, developer‑friendly C# client for interacting with OpenAI’s Chat Completion API.
 It’s designed for:
 - Backend services
@@ -17,24 +20,32 @@ It’s designed for:
 - High‑reliability integrations
 No Azure OpenAI deployment is required — this client talks directly to OpenAI’s public API.
 
-🔧 Features
-🧵 Streaming Support
+# 🔧 Features
+
+## 🧵 Streaming Support
+
 Consume responses as they are generated using IAsyncEnumerable<string>.
-🔁 Retry Logic
+
+## 🔁 Retry Logic
+
 Automatic retries on:
 - Network failures
 - Transient errors
 - HTTP 429 (rate limit)
-⏳ Rate‑Limit Handling
+
+## ⏳ Rate‑Limit Handling
 Honors the server’s Retry-After header when present.
-🧱 Minimal Dependencies
+
+## 🧱 Minimal Dependencies
+
 Only uses System.Net.Http and System.Text.Json.
 
-📦 Installation
-Add the required package:
-dotnet add package System.Net.Http.Json
+# 📦 Installation
 
-🔑 Getting an OpenAI API Key
+Add the required package:
+```dotnet add package System.Net.Http.Json```
+
+# 🔑 Getting an OpenAI API Key
 - Visit https://platform.openai.com
 - Log in or create an account
 - Go to API Keys
@@ -43,9 +54,9 @@ dotnet add package System.Net.Http.Json
 
 Set it as an environment variable:
 Windows (PowerShell):
-setx OPENAI_API_KEY "sk-yourkeyhere"
+```setx OPENAI_API_KEY "your-api-key"```
 
-🧠 ChatGptClient
+# 🧠 ChatGptClient
 Place the full wrapper class in:
 /src/ChatGptClient.cs
 
@@ -56,38 +67,66 @@ This class includes:
 - Rate‑limit handling
 - Retry-After support
 
-🖥️ Usage Example — Standard Response
+# 🖥️ Usage Examples
+
+## Common Setup
+```
 var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
-var client = new ChatGptClient(apiKey);
 
-string reply = await client.SendMessageAsync("Write a haiku about winter mornings.");
-Console.WriteLine(reply);
+ChatClient client = new(apiKey: apiKey);
 
-🖥️ Usage Example — Streaming Response
-var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
-var client = new ChatGptClient(apiKey);
+ChatCompletionRequest request = new ClientRequestBuilder().WithModel(input: OpenAIModels.GPT4o_Mini)
+                                                          .AddSystemMessage(input: "You are a helpful assistant that answers concisely.")
+                                                          .AddUserMessage(input: "Write a haiku about winter mornings.")
+                                                          .UsingMaxTokens(input: 1000)
+                                                          .EnableStreaming(input: isStreaming)
+                                                          .WithTemperature(input: temperature)
+                                                          .WithTopP(input: topP)
+                                                          .WithPresencePenalty(input: presencePenalty)
+                                                          .WithFrequencyPenalty(input: frequencyPenalty)
+                                                          .Build();
+```
 
-await foreach (var chunk in client.StreamMessageAsync("Write a haiku about winter mornings."))
+## Standard Response
+```
+ChatCompletionResponse? response = await client.CreateChatCompletionAsync(request: request, cancelToken: cancelTokenSource.Token);
+return response?.Choices[0].Message.Content;
+```
+
+## Streaming Response
+```
+string? response = string.Empty;
+
+// Stream the response chunk(s) ..
+await foreach (ChatCompletionChunk chunk in client.CreateChatCompletionStreamAsync(request: request, cancelToken: cancelTokenSource.Token))
 {
-    Console.Write(chunk);
+    // Extract delta content from chunk ..
+    ChatDelta chunkDelta = chunk.Choices[0].Delta;
+    response += chunkDelta.Content;
 }
-Console.WriteLine();
 
-🛡️ Error Handling
+return response;
+```
+
+# 🛡️ Error Handling
+
 The client automatically:
 - Retries on transient network errors
 - Detects HTTP 429
 - Reads and honors Retry-After
 - Falls back to exponential backoff with jitter
+
 You can configure retry behavior:
-var client = new ChatGptClient(apiKey, maxRetries: 5, baseDelayMs: 300);
+```ChatClient client = new(apiKey: apiKey, maxRetries: 5, baseDelayMs: 1000);```
 
-🧪 Testing Your Setup
+# 🧪 Testing Your Setup
 Run:
-dotnet run
+```dotnet run```
+or use the simple console app provided in the ```OpenAIApiClient.ConsoleApp``` project.
 
+*(Tip: Remember to set your OPENAI_API_KEY environment variable first (see above))*
 
 If everything is configured correctly, you’ll see ChatGPT’s response in your console.
 
-📄 License
+# 📄 License
 MIT License — free to use, modify, and distribute.

@@ -23,7 +23,7 @@ namespace OpenAIApiClient.ConsoleApp
             }
 
             // Create OpenAI Chat client instance ..
-            ChatClient client = new(apiKey: apiKey);
+            ChatClient client = new(apiKey: apiKey, maxRetries: 5, baseDelayMs: 1000);
 
             // Determine whether to use streaming or non-streaming mode ..
             Console.Write("Use streaming mode? (y/n) (n): ");

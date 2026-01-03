@@ -18,37 +18,42 @@ namespace OpenAIApiClient
     public class ChatClient
     {
         // ---------------------------------------------------------------------
-        // String constants (centralised for maintainability)
+        // String Constants (centralised for maintainability)
         // ---------------------------------------------------------------------
-        private const string BaseApiUrl = "https://api.openai.com/v1/";
-        private const string AuthScheme = "Bearer";
+        private const string BaseOpenAIApiUrl = "https://api.openai.com/v1/";
+        private const string AuthSchema = "Bearer";
         private const string MediaTypeJson = "application/json";
         private const string ChatCompletionsEndpoint = "chat/completions";
         private const string ServerSentEventDataPrefix = "data:";
         private const string ServerSentEventDoneMarker = "[DONE]";
 
         // ---------------------------------------------------------------------
-        // Retry configuration
+        // Client Fields
         // ---------------------------------------------------------------------
-        private const int MaxRetries = 3;
-        private static readonly TimeSpan BaseDelay = TimeSpan.FromMilliseconds(300);
-
         private readonly HttpClient httpClient;
         private readonly JsonSerializerOptions jsonOptions;
+        private readonly int maxRetries;
+        private readonly TimeSpan baseDelay;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChatClient"/> class.
         /// </summary>
         /// <param name="apiKey">The OpenAI API key for authentication.</param>
         /// <param name="httpClient">An optional HttpClient instance for making requests.</param>
-        public ChatClient(string apiKey, HttpClient? httpClient = null)
+        /// <param name="maxRetries">Maximum number of retries for transient failures.</param>
+        /// <param name="baseDelayMs">Delay in milliseconds for retry backoff.</param>
+        public ChatClient(string apiKey, HttpClient? httpClient = null, int maxRetries = 3, int baseDelayMs = 500)
         {
+            // Configure retry parameters ..
+            this.maxRetries = maxRetries;
+            this.baseDelay = TimeSpan.FromMilliseconds(baseDelayMs);
+
             // Use provided HttpClient or create a new one
             this.httpClient = httpClient ?? new HttpClient();
 
             // Configure base API endpoint and authentication
-            this.httpClient.BaseAddress = new Uri(BaseApiUrl);
-            this.httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme: AuthScheme, parameter: apiKey);
+            this.httpClient.BaseAddress = new Uri(BaseOpenAIApiUrl);
+            this.httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme: AuthSchema, parameter: apiKey);
 
             // Configure JSON serializer options
             this.jsonOptions = new JsonSerializerOptions
@@ -75,7 +80,7 @@ namespace OpenAIApiClient
             HttpContent httpContent = new StringContent(content: json, encoding: Encoding.UTF8, mediaType: MediaTypeJson);
 
             // Execute with retry logic
-            return await ExecuteWithRetryAsync(
+            return await this.ExecuteWithRetryAsync(
                 operation: async () =>
                 {
                     HttpResponseMessage response = await this.httpClient.PostAsync(requestUri: ChatCompletionsEndpoint, content: httpContent, cancellationToken: cancelToken);
@@ -105,10 +110,22 @@ namespace OpenAIApiClient
             StringContent httpContent = new(content: json, encoding: Encoding.UTF8, mediaType: MediaTypeJson);
 
             // Wrap streaming in retry logic
-            await foreach (ChatCompletionChunk chunk in ExecuteStreamingWithRetryAsync(operation: () => this.SendStreamingRequestAsync(httpContent, cancelToken), cancellationToken: cancelToken))
+            await foreach (ChatCompletionChunk chunk in this.ExecuteStreamingWithRetryAsync(operation: () => this.SendStreamingRequestAsync(httpContent, cancelToken), cancellationToken: cancelToken))
             {
                 yield return chunk;
             }
+        }
+
+        /// <summary>
+        /// Determines whether an exception is likely transient and safe to retry.
+        /// </summary>
+        /// <param name="ex">The exception to evaluate.</param>
+        /// <returns>True if the exception is transient; otherwise, false.</returns>
+        private static bool IsSafeToRetry(Exception ex)
+        {
+            return ex is HttpRequestException ||
+                   ex is TaskCanceledException ||
+                   ex is TimeoutException;
         }
 
         /// <summary>
@@ -117,9 +134,10 @@ namespace OpenAIApiClient
         /// <param name="operation">The operation to execute.</param>
         /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
         /// <returns>The result of the operation.</returns>
-        private static async Task<T> ExecuteWithRetryAsync<T>(Func<Task<T>> operation, CancellationToken cancellationToken)
+        private async Task<T> ExecuteWithRetryAsync<T>(Func<Task<T>> operation, CancellationToken cancellationToken)
         {
-            for (int attempt = 1; attempt <= MaxRetries; attempt++)
+            // Retry loop with exponential backoff ..
+            for (int attempt = 1; attempt <= this.maxRetries; attempt++)
             {
                 // Check for cancellation ..
                 cancellationToken.ThrowIfCancellationRequested();
@@ -128,10 +146,10 @@ namespace OpenAIApiClient
                 {
                     return await operation();
                 }
-                catch (Exception ex) when (IsTransient(ex) && attempt < MaxRetries)
+                catch (Exception ex) when (IsSafeToRetry(ex) && attempt < this.maxRetries)
                 {
                     // Define and apply exponential backoff delay ..
-                    TimeSpan delay = TimeSpan.FromMilliseconds(BaseDelay.TotalMilliseconds * Math.Pow(2, attempt - 1));
+                    TimeSpan delay = TimeSpan.FromMilliseconds(this.baseDelay.TotalMilliseconds * Math.Pow(2, attempt - 1));
                     await Task.Delay(delay, cancellationToken);
                 }
             }
@@ -145,9 +163,9 @@ namespace OpenAIApiClient
         /// <param name="operation">The streaming operation to execute.</param>
         /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
         /// <returns>An asynchronous stream of items from the operation.</returns>
-        private static async IAsyncEnumerable<T> ExecuteStreamingWithRetryAsync<T>(Func<IAsyncEnumerable<T>> operation, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken)
+        private async IAsyncEnumerable<T> ExecuteStreamingWithRetryAsync<T>(Func<IAsyncEnumerable<T>> operation, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            for (int attempt = 1; attempt <= MaxRetries; attempt++)
+            for (int attempt = 1; attempt <= this.maxRetries; attempt++)
             {
                 // Check for cancellation ..
                 cancellationToken.ThrowIfCancellationRequested();
@@ -163,10 +181,10 @@ namespace OpenAIApiClient
                         bufferedItems.Add(item);
                     }
                 }
-                catch (Exception ex) when (IsTransient(ex) && attempt < MaxRetries)
+                catch (Exception ex) when (IsSafeToRetry(ex) && attempt < this.maxRetries)
                 {
                     // Define and apply exponential backoff delay ..
-                    TimeSpan delay = TimeSpan.FromMilliseconds(BaseDelay.TotalMilliseconds * Math.Pow(2, attempt - 1));
+                    TimeSpan delay = TimeSpan.FromMilliseconds(this.baseDelay.TotalMilliseconds * Math.Pow(2, attempt - 1));
 
                     await Task.Delay(delay, cancellationToken);
                     shouldRetry = true;
@@ -183,18 +201,6 @@ namespace OpenAIApiClient
             }
 
             throw new InvalidOperationException("Streaming retry limit exceeded.");
-        }
-
-        /// <summary>
-        /// Determines whether an exception is likely transient and safe to retry.
-        /// </summary>
-        /// <param name="ex">The exception to evaluate.</param>
-        /// <returns>True if the exception is transient; otherwise, false.</returns>
-        private static bool IsTransient(Exception ex)
-        {
-            return ex is HttpRequestException ||
-                   ex is TaskCanceledException ||
-                   ex is TimeoutException;
         }
 
         /// <summary>
