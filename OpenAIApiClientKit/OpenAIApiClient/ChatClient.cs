@@ -7,6 +7,7 @@ namespace OpenAIApiClient
     using System.Net.Http.Headers;
     using System.Text;
     using System.Text.Json;
+    using OpenAIApiClient.Exceptions;
     using OpenAIApiClient.Models.Chat.Request;
     using OpenAIApiClient.Models.Chat.Response.Completion;
     using OpenAIApiClient.Models.Chat.Response.Streaming;
@@ -26,6 +27,7 @@ namespace OpenAIApiClient
         private const string ChatCompletionsEndpoint = "chat/completions";
         private const string ServerSentEventDataPrefix = "data:";
         private const string ServerSentEventDoneMarker = "[DONE]";
+        private const string RetryAfterResponseHeader = "Retry-After";
 
         // ---------------------------------------------------------------------
         // Client Fields
@@ -129,6 +131,42 @@ namespace OpenAIApiClient
         }
 
         /// <summary>
+        /// Gets the retry-after delay from the response headers or uses a fallback.
+        /// </summary>
+        /// <param name="response"></param>
+        /// <param name="fallback"></param>
+        /// <returns>Timespan.</returns>
+        private static TimeSpan GetRetryAfterDelay(HttpResponseMessage response, TimeSpan fallback)
+        {
+            // Check for "Retry-After" header ..
+            if (response.Headers.TryGetValues(RetryAfterResponseHeader, out var values))
+            {
+                string? retryAfter = values.FirstOrDefault();
+                if (int.TryParse(retryAfter, out var seconds))
+                {
+                    return TimeSpan.FromSeconds(seconds);
+                }
+
+                if (DateTimeOffset.TryParse(retryAfter, out var date))
+                {
+                    return date - DateTimeOffset.UtcNow;
+                }
+            }
+            return Jitter(fallback);
+        }
+
+        /// <summary>
+        /// Distributes jitter around a base delay to avoid clustering.
+        /// </summary>
+        /// <param name="baseDelay"></param>
+        /// <returns>Timespan.</returns>
+        private static TimeSpan Jitter(TimeSpan baseDelay)
+        {
+            double rnd = (Random.Shared.NextDouble() * 0.4) + 0.8; // 0.8–1.2x
+            return TimeSpan.FromMilliseconds(baseDelay.TotalMilliseconds * rnd);
+        }
+
+        /// <summary>
         /// Executes an operation with retry logic for transient failures.
         /// </summary>
         /// <param name="operation">The operation to execute.</param>
@@ -145,6 +183,11 @@ namespace OpenAIApiClient
                 try
                 {
                     return await operation();
+                }
+                catch (RateLimitException ex) when (attempt < this.maxRetries)
+                {
+                    TimeSpan retryDelay = GetRetryAfterDelay(response: ex.Response, fallback: this.baseDelay);
+                    await Task.Delay(retryDelay, cancellationToken);
                 }
                 catch (Exception ex) when (IsSafeToRetry(ex) && attempt < this.maxRetries)
                 {
@@ -181,11 +224,16 @@ namespace OpenAIApiClient
                         bufferedItems.Add(item);
                     }
                 }
+                catch (RateLimitException ex) when (attempt < this.maxRetries)
+                {
+                    TimeSpan retryDelay = GetRetryAfterDelay(response: ex.Response, fallback: this.baseDelay);
+                    await Task.Delay(retryDelay, cancellationToken);
+                    shouldRetry = true;
+                }
                 catch (Exception ex) when (IsSafeToRetry(ex) && attempt < this.maxRetries)
                 {
                     // Define and apply exponential backoff delay ..
                     TimeSpan delay = TimeSpan.FromMilliseconds(this.baseDelay.TotalMilliseconds * Math.Pow(2, attempt - 1));
-
                     await Task.Delay(delay, cancellationToken);
                     shouldRetry = true;
                 }
