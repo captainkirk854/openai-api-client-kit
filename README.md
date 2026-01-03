@@ -85,11 +85,13 @@ ChatCompletionRequest request = new ClientRequestBuilder().WithModel(input: Open
                                                           .WithPresencePenalty(input: presencePenalty)
                                                           .WithFrequencyPenalty(input: frequencyPenalty)
                                                           .Build();
+
+using CancellationTokenSource cts = new(TimeSpan.FromSeconds(30));
 ```
 
 ## Standard Response
 ```
-ChatCompletionResponse? response = await client.CreateChatCompletionAsync(request: request, cancelToken: cancelTokenSource.Token);
+ChatCompletionResponse? response = await client.CreateChatCompletionAsync(request: request, cancelToken: cts.Token);
 return response?.Choices[0].Message.Content;
 ```
 
@@ -98,7 +100,7 @@ return response?.Choices[0].Message.Content;
 string? response = string.Empty;
 
 // Stream the response chunk(s) ..
-await foreach (ChatCompletionChunk chunk in client.CreateChatCompletionStreamAsync(request: request, cancelToken: cancelTokenSource.Token))
+await foreach (ChatCompletionChunk chunk in client.CreateChatCompletionStreamAsync(request: request, cancelToken: cts.Token))
 {
     // Extract delta content from chunk ..
     ChatDelta chunkDelta = chunk.Choices[0].Delta;
