@@ -1,4 +1,4 @@
-﻿// <copyright file="OpenAIChatClient.cs" company="854 Things (tm)">
+﻿// <copyright file="ChatClient.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -15,7 +15,7 @@ namespace OpenAIApiClient
     /// A unified OpenAI Chat Client supporting both streaming and non-streaming
     /// chat completions, with retry and cancellation support.
     /// </summary>
-    public class OpenAIChatClient
+    public class ChatClient
     {
         // ---------------------------------------------------------------------
         // String constants (centralised for maintainability)
@@ -37,11 +37,11 @@ namespace OpenAIApiClient
         private readonly JsonSerializerOptions jsonOptions;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OpenAIChatClient"/> class.
+        /// Initializes a new instance of the <see cref="ChatClient"/> class.
         /// </summary>
         /// <param name="apiKey">The OpenAI API key for authentication.</param>
         /// <param name="httpClient">An optional HttpClient instance for making requests.</param>
-        public OpenAIChatClient(string apiKey, HttpClient? httpClient = null)
+        public ChatClient(string apiKey, HttpClient? httpClient = null)
         {
             // Use provided HttpClient or create a new one
             this.httpClient = httpClient ?? new HttpClient();
@@ -62,9 +62,9 @@ namespace OpenAIApiClient
         /// Sends a non-streaming chat completion request with retry and cancellation support.
         /// </summary>
         /// <param name="request">The chat completion request payload.</param>
-        /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
+        /// <param name="cancelToken">A cancellation token to cancel the operation.</param>
         /// <returns>The chat completion response.</returns>
-        public async Task<ChatCompletionResponse?> CreateChatCompletionAsync(ChatCompletionRequest request, CancellationToken cancellationToken = default)
+        public async Task<ChatCompletionResponse?> CreateChatCompletionAsync(ChatCompletionRequest request, CancellationToken cancelToken = default)
         {
             request.Stream = false;
 
@@ -78,24 +78,23 @@ namespace OpenAIApiClient
             return await ExecuteWithRetryAsync(
                 operation: async () =>
                 {
-                    HttpResponseMessage response = await this.httpClient.PostAsync(requestUri: ChatCompletionsEndpoint, content: httpContent, cancellationToken: cancellationToken);
-
+                    HttpResponseMessage response = await this.httpClient.PostAsync(requestUri: ChatCompletionsEndpoint, content: httpContent, cancellationToken: cancelToken);
                     response.EnsureSuccessStatusCode();
 
-                    string body = await response.Content.ReadAsStringAsync(cancellationToken: cancellationToken);
+                    string body = await response.Content.ReadAsStringAsync(cancellationToken: cancelToken);
 
                     return JsonSerializer.Deserialize<ChatCompletionResponse>(json: body, options: this.jsonOptions);
                 },
-                cancellationToken: cancellationToken);
+                cancellationToken: cancelToken);
         }
 
         /// <summary>
         /// Sends a streaming chat completion request with retry and cancellation support.
         /// </summary>
         /// <param name="request">The chat completion request payload.</param>
-        /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
+        /// <param name="cancelToken">A cancellation token to cancel the operation.</param>
         /// <returns>An asynchronous stream of chat completion chunks.</returns>
-        public async IAsyncEnumerable<ChatCompletionChunk> CreateChatCompletionStreamAsync(ChatCompletionRequest request, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<ChatCompletionChunk> CreateChatCompletionStreamAsync(ChatCompletionRequest request, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancelToken = default)
         {
             request.Stream = true;
 
@@ -106,7 +105,7 @@ namespace OpenAIApiClient
             StringContent httpContent = new(content: json, encoding: Encoding.UTF8, mediaType: MediaTypeJson);
 
             // Wrap streaming in retry logic
-            await foreach (ChatCompletionChunk chunk in ExecuteStreamingWithRetryAsync(operation: () => this.SendStreamingRequestAsync(httpContent, cancellationToken), cancellationToken: cancellationToken))
+            await foreach (ChatCompletionChunk chunk in ExecuteStreamingWithRetryAsync(operation: () => this.SendStreamingRequestAsync(httpContent, cancelToken), cancellationToken: cancelToken))
             {
                 yield return chunk;
             }
@@ -122,6 +121,7 @@ namespace OpenAIApiClient
         {
             for (int attempt = 1; attempt <= MaxRetries; attempt++)
             {
+                // Check for cancellation ..
                 cancellationToken.ThrowIfCancellationRequested();
 
                 try
@@ -130,9 +130,8 @@ namespace OpenAIApiClient
                 }
                 catch (Exception ex) when (IsTransient(ex) && attempt < MaxRetries)
                 {
-                    // Exponential backoff delay
+                    // Define and apply exponential backoff delay ..
                     TimeSpan delay = TimeSpan.FromMilliseconds(BaseDelay.TotalMilliseconds * Math.Pow(2, attempt - 1));
-
                     await Task.Delay(delay, cancellationToken);
                 }
             }
@@ -150,14 +149,15 @@ namespace OpenAIApiClient
         {
             for (int attempt = 1; attempt <= MaxRetries; attempt++)
             {
+                // Check for cancellation ..
                 cancellationToken.ThrowIfCancellationRequested();
 
                 bool shouldRetry = false;
                 List<T> bufferedItems = [];
 
+                // Buffer items from the streaming operation ..
                 try
                 {
-                    // Forward streamed items
                     await foreach (var item in operation().WithCancellation(cancellationToken))
                     {
                         bufferedItems.Add(item);
@@ -165,7 +165,7 @@ namespace OpenAIApiClient
                 }
                 catch (Exception ex) when (IsTransient(ex) && attempt < MaxRetries)
                 {
-                    // Exponential backoff delay
+                    // Define and apply exponential backoff delay ..
                     TimeSpan delay = TimeSpan.FromMilliseconds(BaseDelay.TotalMilliseconds * Math.Pow(2, attempt - 1));
 
                     await Task.Delay(delay, cancellationToken);
@@ -249,7 +249,7 @@ namespace OpenAIApiClient
                 }
 
                 // Deserialize streamed chunk
-                var chunk = JsonSerializer.Deserialize<ChatCompletionChunk>(json: payload, options: this.jsonOptions);
+                ChatCompletionChunk? chunk = JsonSerializer.Deserialize<ChatCompletionChunk>(json: payload, options: this.jsonOptions);
                 if (chunk != null)
                 {
                     yield return chunk;
