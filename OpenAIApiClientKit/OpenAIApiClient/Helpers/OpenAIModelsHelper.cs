@@ -1,4 +1,4 @@
-﻿// <copyright file="OpenAIModelHelper.cs" company="854 Things (tm)">
+﻿// <copyright file="OpenAIModelsHelper.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -6,8 +6,9 @@ namespace OpenAIApiClient.Helpers
 {
     using System;
     using System.Collections.Generic;
+    using OpenAIApiClient.Enums;
 
-    public static class OpenAIModelHelper
+    public static class OpenAIModelsHelper
     {
         /// <summary>
         /// Reverse dictionary: API string → Enum.
@@ -54,10 +55,10 @@ namespace OpenAIApiClient.Helpers
             };
 
         /// <summary>
-        /// Initializes static members of the <see cref="OpenAIModelHelper"/> class.
+        /// Initializes static members of the <see cref="OpenAIModelsHelper"/> class.
         /// Static constructor to initialize the reverse mapping dictionary.
         /// </summary>
-        static OpenAIModelHelper()
+        static OpenAIModelsHelper()
         {
             // Build ApiToEnumMap from EnumToApiMap ..
             foreach (var kvp in EnumToApiMap)

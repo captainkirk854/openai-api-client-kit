@@ -5,6 +5,7 @@
 namespace OpenAIApiClient.Helpers
 {
     using System.Collections.Generic;
+    using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Chat.Common;
     using OpenAIApiClient.Models.Chat.Request;
 
@@ -60,7 +61,7 @@ namespace OpenAIApiClient.Helpers
         /// <returns>The current instance of <see cref="ClientRequestBuilder"/> with the updated Model setting.</returns>
         public ClientRequestBuilder WithModel(OpenAIModels input)
         {
-            this.model = OpenAIModelHelper.ToApiString(input);
+            this.model = OpenAIModelsHelper.ToApiString(input);
             return this;
         }
 

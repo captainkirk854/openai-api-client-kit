@@ -6,7 +6,7 @@ namespace OpenAIApiClient.Tests.Helpers
 {
     using System;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using OpenAIApiClient.Helpers;
+    using OpenAIApiClient.Enums;
     using testClass = OpenAIApiClient.Helpers;
 
     [TestClass]
@@ -18,11 +18,11 @@ namespace OpenAIApiClient.Tests.Helpers
             foreach (OpenAIModels model in Enum.GetValues(typeof(OpenAIModels)))
             {
                 // Convert enum → API string
-                string apiString = testClass.OpenAIModelHelper.ToApiString(model);
+                string apiString = testClass.OpenAIModelsHelper.ToApiString(model);
                 Assert.IsFalse(string.IsNullOrWhiteSpace(apiString), $"API string for {model} should not be null or empty.");
 
                 // Convert API string → enum
-                OpenAIModels parsedModel = testClass.OpenAIModelHelper.FromApiString(apiString);
+                OpenAIModels parsedModel = testClass.OpenAIModelsHelper.FromApiString(apiString);
                 Assert.AreEqual(model, parsedModel, $"Round-trip conversion failed for {model}.");
             }
         }
@@ -31,7 +31,7 @@ namespace OpenAIApiClient.Tests.Helpers
         public void InvalidApiString_ShouldThrow()
         {
             // Act + Assert
-            Assert.ThrowsExactly<ArgumentException>(() => { testClass.OpenAIModelHelper.FromApiString("non-existent-model"); });
+            Assert.ThrowsExactly<ArgumentException>(() => { testClass.OpenAIModelsHelper.FromApiString("non-existent-model"); });
         }
 
         [TestMethod]
@@ -41,17 +41,17 @@ namespace OpenAIApiClient.Tests.Helpers
             OpenAIModels invalidModel = (OpenAIModels)(-1);
 
             // Act + Assert
-            Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => { testClass.OpenAIModelHelper.ToApiString(invalidModel); });
+            Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => { testClass.OpenAIModelsHelper.ToApiString(invalidModel); });
         }
 
         [TestMethod]
         public void ListAllModels_ShouldContainAllMappings()
         {
-            IEnumerable<string> allModels = testClass.OpenAIModelHelper.ListAllModels();
+            IEnumerable<string> allModels = testClass.OpenAIModelsHelper.ListAllModels();
 
             foreach (OpenAIModels model in Enum.GetValues(typeof(OpenAIModels)))
             {
-                string apiString = testClass.OpenAIModelHelper.ToApiString(model);
+                string apiString = testClass.OpenAIModelsHelper.ToApiString(model);
                 CollectionAssert.Contains((System.Collections.ICollection)allModels, apiString, $"ListAllModels should contain {apiString}");
             }
         }
@@ -59,7 +59,7 @@ namespace OpenAIApiClient.Tests.Helpers
         [TestMethod]
         public void LatestRecommendedModels_ShouldContainAllCategories()
         {
-            var models = testClass.OpenAIModelHelper.LatestRecommendedModels();
+            var models = testClass.OpenAIModelsHelper.LatestRecommendedModels();
 
             // Expected categories
             List<string> expectedCategories =
@@ -80,7 +80,7 @@ namespace OpenAIApiClient.Tests.Helpers
         [TestMethod]
         public void LatestRecommendedModels_ShouldReturnCorrectEnumValues()
         {
-            var models = testClass.OpenAIModelHelper.LatestRecommendedModels();
+            var models = testClass.OpenAIModelsHelper.LatestRecommendedModels();
 
             Assert.AreEqual(OpenAIModels.GPT5_2_Pro, models["Chat"], "Chat category should map to GPT5_2_Pro.");
             Assert.AreEqual(OpenAIModels.TextEmbedding_3_Large, models["Embeddings"], "Embeddings category should map to TextEmbedding_3_Large.");
@@ -92,7 +92,7 @@ namespace OpenAIApiClient.Tests.Helpers
         [TestMethod]
         public void LatestRecommendedModels_ShouldNotBeEmpty()
         {
-            Dictionary<string, OpenAIModels> models = testClass.OpenAIModelHelper.LatestRecommendedModels();
+            Dictionary<string, OpenAIModels> models = testClass.OpenAIModelsHelper.LatestRecommendedModels();
             Assert.IsNotEmpty(models, "LatestRecommendedModels should not return an empty dictionary.");
         }
     }

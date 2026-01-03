@@ -5,7 +5,7 @@
 namespace OpenAIApiClient.Models.Chat.Common
 {
     using System.Text.Json.Serialization;
-    using OpenAIApiClient.Helpers;
+    using OpenAIApiClient.Enums;
 
     public class ChatMessage
     {

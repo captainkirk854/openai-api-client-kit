@@ -4,6 +4,7 @@
 
 namespace OpenAIApiClient.ConsoleApp
 {
+    using OpenAIApiClient.Enums;
     using OpenAIApiClient.Helpers;
     using OpenAIApiClient.Models.Chat.Request;
     using OpenAIApiClient.Models.Chat.Response.Completion;
