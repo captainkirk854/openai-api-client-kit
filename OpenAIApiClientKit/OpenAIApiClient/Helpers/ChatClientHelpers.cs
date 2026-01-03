@@ -21,8 +21,8 @@ namespace OpenAIApiClient.Helpers
         /// in the chat completion response, or null if the response or message content is unavailable.</returns>
         public static async Task<string?> GetChatCompletionNonStreamingMessageContentAsync(ChatClient client, ChatCompletionRequest request, CancellationTokenSource cancelTokenSource)
         {
-            ChatCompletionResponse? reply = await client.CreateChatCompletionAsync(request: request, cancelToken: cancelTokenSource.Token);
-            return reply?.Choices[0].Message.Content;
+            ChatCompletionResponse? response = await client.CreateChatCompletionAsync(request: request, cancelToken: cancelTokenSource.Token);
+            return response?.Choices[0].Message.Content;
         }
 
         /// <summary>
@@ -37,21 +37,23 @@ namespace OpenAIApiClient.Helpers
         /// <param name="cancelTokenSource">A cancellation token source that can be used to cancel the streaming operation.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains the aggregated message content
         /// as a string, or null if no content was received.</returns>
-        public static async Task<string?> GetChatCompletionStreamingMessageContentAsync(ChatClient client, ChatCompletionRequest request, CancellationTokenSource cancelTokenSource)
+        public static async Task<(string?, int)> GetChatCompletionStreamingMessageContentAsync(ChatClient client, ChatCompletionRequest request, CancellationTokenSource cancelTokenSource)
         {
             // Initialise variables ..
-            string? replyStreamed = string.Empty;
+            string? response = string.Empty;
+            int chunkCount = 0;
 
             // Stream the response chunk(s) ..
             await foreach (ChatCompletionChunk chunk in client.CreateChatCompletionStreamAsync(request: request, cancelToken: cancelTokenSource.Token))
             {
                 // Extract delta content from chunk ..
                 ChatDelta chunkDelta = chunk.Choices[0].Delta;
-                replyStreamed += chunkDelta.Content;
+                response += chunkDelta.Content;
+                chunkCount++;
             }
 
-            // Return the aggregated streamed reply ..
-            return replyStreamed;
+            // Return the aggregated streamed response ..
+            return (response, chunkCount);
         }
     }
 }

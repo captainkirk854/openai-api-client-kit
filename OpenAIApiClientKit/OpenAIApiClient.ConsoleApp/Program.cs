@@ -96,7 +96,7 @@ namespace OpenAIApiClient.ConsoleApp
             if (!isDeterminismEnabled)
             {
                 temperature = 2.0;
-                topP = 1.0;
+                topP = 0.99; // using 1.0 can lead to corrupted output in some cases ..
                 presencePenalty = 2.0;
                 frequencyPenalty = 2.0;
             }
@@ -113,23 +113,20 @@ namespace OpenAIApiClient.ConsoleApp
                                                                       .WithFrequencyPenalty(input: frequencyPenalty)
                                                                       .Build();
 
-            // Display the prompt ..
-            Console.WriteLine($"User prompt: {userPrompt}");
-
             // If not streaming ..
             if (!isStreaming)
             {
-                // Perform Non-streaming call ..
-                Console.Write("Non-Streaming ");
+                // Perform Non-streaming Call ..
+                Console.WriteLine("Waiting for Non-Streaming Response ..");
                 try
                 {
                     string? content = await ChatClientHelpers.GetChatCompletionNonStreamingMessageContentAsync(client: client, request: request, cancelTokenSource: cts);
-                    Console.WriteLine("Response:");
+                    Console.WriteLine();
                     Console.WriteLine(content);
                 }
                 catch (OperationCanceledException)
                 {
-                    Console.WriteLine("The request was cancelled.");
+                    Console.WriteLine("Non-Streaming Request was cancelled.");
                 }
                 catch (Exception ex)
                 {
@@ -138,18 +135,20 @@ namespace OpenAIApiClient.ConsoleApp
             }
             else
             {
-                // Perform Streaming call ..
-                Console.Write("Streaming ");
+                // Perform Streaming Call ..
+                Console.WriteLine("Waiting for Streaming Response ..");
                 try
                 {
-                    // Stream the response chunk(s) ..
-                    string? content = await ChatClientHelpers.GetChatCompletionStreamingMessageContentAsync(client: client, request: request, cancelTokenSource: cts);
-                    Console.WriteLine("Response:");
+                    (string?, int) response = await ChatClientHelpers.GetChatCompletionStreamingMessageContentAsync(client: client, request: request, cancelTokenSource: cts);
+                    string content = response.Item1 ?? string.Empty;
+                    int chunkCount = response.Item2;
+                    Console.WriteLine();
                     Console.WriteLine(content);
+                    Console.WriteLine($"(Total Chunk(s) received: {chunkCount})");
                 }
                 catch (OperationCanceledException)
                 {
-                    Console.WriteLine("The streaming request was cancelled.");
+                    Console.WriteLine("Streaming request was cancelled.");
                 }
                 catch (Exception ex)
                 {
