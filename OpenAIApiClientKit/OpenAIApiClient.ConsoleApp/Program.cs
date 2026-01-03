@@ -23,77 +23,102 @@ namespace OpenAIApiClient.ConsoleApp
 
             // Read prompt from console ..
             Console.Write("Enter your prompt for OpenAI: ");
-            string promptInput = Console.ReadLine() ?? string.Empty;
-            if (string.IsNullOrWhiteSpace(promptInput))
+            string userPrompt = Console.ReadLine() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(userPrompt))
             {
                 Console.WriteLine("Prompt cannot be empty. Please try again.");
                 return;
             }
 
-            // Initialize OpenAI client ..
+            // Determine whether to use streaming or non-streaming mode ..
+            Console.Write("Use streaming mode? (y/n): ");
+            string streamingChoice = Console.ReadLine() ?? "n";
+            bool isStreaming = streamingChoice.Equals(value: "y", comparisonType: StringComparison.OrdinalIgnoreCase);
+
+            // Create OpenAI Chat client instance ..
             OpenAIChatClient client = new(apiKey: apiKey);
 
-            // Set a cancellation token with a timeout ..
+            // Initialise a cancellation token with a timeout ..
             using CancellationTokenSource cancellation = new(TimeSpan.FromSeconds(30));
 
-            // Build the request payload ..
-            ChatCompletionRequest request = OpenAIPayloadHelper.BuildChatCompletionRequestObject(model: OpenAIModels.GPT4o_Mini, userPrompt: promptInput, stream: false);
+            // Build request payload ..
+            ChatCompletionRequest request = new ClientRequestBuilder().WithModel(input: OpenAIModels.GPT4o_Mini)
+                                                                      .AddSystemMessage(input: "You are a helpful assistant that answers concisely.")
+                                                                      .AddUserMessage(input: userPrompt)
+                                                                      .EnableStreaming(input: isStreaming)
+                                                                      .WithTemperature(input: 1.0)
+                                                                      .WithMaxTokens(input: 100)
+                                                                      .WithTopP(input: 0.5)
+                                                                      .WithPresencePenalty(input: 2.0)
+                                                                      .WithFrequencyPenalty(input: 2.0)
+                                                                      .Build();
 
-            // Perform Non-streaming call ..
-            Console.WriteLine("\nOpenAI non-streaming response:");
-            try
-            {
-                ChatCompletionResponse? reply = await client.CreateChatCompletionAsync(request: request, cancellationToken: cancellation.Token);
-                Console.WriteLine(reply?.Choices[0].Message.Content);
-            }
-            catch (OperationCanceledException)
-            {
-                Console.WriteLine("The request was cancelled.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-            }
+            // Clear console for better readability ..
+            Console.Clear();
 
-            // Perform Streaming call
-            Console.WriteLine("\nOpenAI streaming reply:");
-            int chunkIndex = 0;
-            string replyStreamed = string.Empty;
+            // Display the prompt ..
+            Console.WriteLine($"User prompt: {userPrompt}");
 
-            // Build the request payload ..
-            request = OpenAIPayloadHelper.BuildChatCompletionRequestObject(model: OpenAIModels.GPT4o_Mini, userPrompt: promptInput, stream: true, temperature: 0.75);
-
-            // Perform Streaming call ..
-            try
+            // If not streaming ..
+            if (!isStreaming)
             {
-                // Stream the response chunks ..
-                await foreach (ChatCompletionChunk chunk in client.CreateChatCompletionStreamAsync(request: request, cancellationToken: cancellation.Token))
+                // Perform Non-streaming call ..
+                Console.WriteLine("\nOpenAI non-streaming response:");
+                try
                 {
-                    chunkIndex++;
-
-                    // Extract delta content from the chunk ..
-                    ChatDelta chunkDelta = chunk.Choices[0].Delta;
-                    if (!string.IsNullOrEmpty(chunkDelta.Content))
+                    ChatCompletionResponse? reply = await client.CreateChatCompletionAsync(request: request, cancellationToken: cancellation.Token);
+                    Console.WriteLine(reply?.Choices[0].Message.Content);
+                }
+                catch (OperationCanceledException)
+                {
+                    Console.WriteLine("The request was cancelled.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
+                }
+            }
+            else
+            {
+                // Perform Streaming call ..
+                Console.WriteLine("\nOpenAI streaming reply:");
+                int chunkIndex = 0;
+                string replyStreamed = string.Empty;
+                try
+                {
+                    // Stream the response chunk(s) ..
+                    await foreach (ChatCompletionChunk chunk in client.CreateChatCompletionStreamAsync(request: request, cancellationToken: cancellation.Token))
                     {
-                        Console.WriteLine($"Chunk index: [{chunkIndex}]; Chunk value: {chunkDelta.Content}");
+                        chunkIndex++;
+
+                        // Extract delta content from the chunk ..
+                        ChatDelta chunkDelta = chunk.Choices[0].Delta;
+                        if (!string.IsNullOrEmpty(chunkDelta.Content))
+                        {
+                            Console.WriteLine($"Chunk index: [{chunkIndex}]; Chunk value: {chunkDelta.Content}");
+                        }
+
+                        replyStreamed += chunkDelta.Content;
                     }
 
-                    replyStreamed += chunkDelta.Content;
+                    Console.WriteLine();
+                }
+                catch (OperationCanceledException)
+                {
+                    Console.WriteLine("The streaming request was cancelled.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
                 }
 
-                Console.WriteLine();
-            }
-            catch (OperationCanceledException)
-            {
-                Console.WriteLine("The streaming request was cancelled.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
+                Console.WriteLine("\nFull streamed reply:");
+                Console.WriteLine(replyStreamed);
             }
 
-            Console.WriteLine("\nFull streamed reply:");
-            Console.WriteLine(replyStreamed);
+            // Final newline for better console readability ..
+            Console.WriteLine();
+            Console.WriteLine("Press Enter to quit");
         }
     }
 }

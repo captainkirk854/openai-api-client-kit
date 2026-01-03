@@ -30,7 +30,7 @@ namespace OpenAIApiClient.Models.Chat.Response.Streaming
         }
 
         /// <summary>
-        /// Gets or sets theOptional list of tool calls streamed incrementally.
+        /// Gets or sets the optional list of tool calls streamed incrementally.
         /// </summary>
         [JsonPropertyName("tool_calls")]
         public List<ChatToolCall>? ToolCalls

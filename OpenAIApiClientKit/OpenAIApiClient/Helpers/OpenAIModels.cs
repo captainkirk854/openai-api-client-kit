@@ -20,7 +20,7 @@ namespace OpenAIApiClient.Helpers
         // GPT-4 Family
         GPT4_1,
         GPT4o,        // Multimodal model (text + vision)
-        GPT4o_Mini,
+        GPT4o_Mini,   // Optimized GPT-4 variant
         GPT4_Turbo,   // Optimized GPT-4 variant
 
         // GPT-3.5 Family

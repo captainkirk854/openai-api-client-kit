@@ -30,6 +30,36 @@ namespace OpenAIApiClient.Models.Chat.Request
         }
 
         /// <summary>
+        /// Gets or sets the Presence penalty parameter. Penalizes new tokens based on whether they appear in the text so far.
+        /// </summary>
+        [JsonPropertyName("presence_penalty")]
+        public double? PresencePenalty
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the Frequency penalty parameter. Penalizes new tokens based on their existing frequency in the text so far.
+        /// </summary>
+        [JsonPropertyName("frequency_penalty")]
+        public double? FrequencyPenalty
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the Tops sampling parameter. Controls diversity via nucleus sampling.
+        /// </summary>
+        [JsonPropertyName("top_p")]
+        public double? TopP
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Gets or sets the Controls randomness. Higher values produce more creative output.
         /// </summary>
         /// <remarks>
