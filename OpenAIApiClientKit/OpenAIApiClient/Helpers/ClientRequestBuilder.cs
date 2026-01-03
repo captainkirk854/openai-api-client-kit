@@ -144,6 +144,7 @@ namespace OpenAIApiClient.Helpers
         /// </summary>
         /// <remarks>
         /// The temperature parameter influences the variability of the model's output.
+        /// Must be a value between 0.0 and 2.0.
         /// Higher values produce more diverse and creative outputs; lower values result in more focused and deterministic responses.
         /// </remarks>
         /// <param name="input">A value between 0.0 and 2.0 that determines the sampling temperature.</param>
@@ -167,7 +168,7 @@ namespace OpenAIApiClient.Helpers
         /// </remarks>
         /// <param name="input">The maximum number of tokens to generate in the response. Default is 1000.</param>
         /// <returns>The current <see cref="ClientRequestBuilder"/> instance with the updated maximum token setting.</returns>
-        public ClientRequestBuilder WithMaxTokens(int input = 1000)
+        public ClientRequestBuilder UsingMaxTokens(int input = 1000)
         {
             // Ensure positive integer ..
             input = input < 1 ? 1 : Math.Abs(input); // Ensure at least 1 token ..
@@ -203,7 +204,7 @@ namespace OpenAIApiClient.Helpers
         /// The presence penalty influences the likelihood that the model will introduce new topics or deviate from prior context.
         /// Adjust this value to control the balance between repetition and novelty in generated responses.
         /// Higher values encourage the model to generate more novel content, while lower values may lead to more repetitive outputs.
-        /// Typical values range from -2.0 to 2.0.
+        /// Values range from -2.0 to 2.0.
         /// </remarks>
         /// <param name="input">The presence penalty to apply. Higher values encourage the model to generate more novel responses. </param>
         /// <returns>The current <see cref="ClientRequestBuilder"/> instance with the updated presence penalty.</returns>
@@ -223,7 +224,7 @@ namespace OpenAIApiClient.Helpers
         /// <remarks>
         /// Use frequency penalty to control repetition in generated responses.
         /// Setting a higher penalty encourages more diverse output by penalizing repeated tokens.
-        /// Typical values range from 0.0 (no penalty) to 2.0.
+        /// Values range from 0.0 (no penalty) to 2.0.
         /// </remarks>
         /// <param name="input">The frequency penalty to apply. Higher values decrease the likelihood of repeated tokens in the generated output.</param>
         /// <returns>The current <see cref="ClientRequestBuilder"/> instance with the specified frequency penalty
