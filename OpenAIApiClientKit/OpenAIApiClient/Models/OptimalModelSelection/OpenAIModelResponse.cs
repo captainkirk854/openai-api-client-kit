@@ -1,15 +1,15 @@
-﻿// <copyright file="ModelResponse.cs" company="854 Things (tm)">
+﻿// <copyright file="OpenAIModelResponse.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Models.OptimalSelection
+namespace OpenAIApiClient.Models.OptimalModelSelection
 {
-    public sealed class ModelResponse
+    public sealed class OpenAIModelResponse
     {
         /// <summary>
         /// Gets the model descriptor.
         /// </summary>
-        public ModelDescriptor Model
+        public OpenAIModelDescriptor Model
         {
             get;
             init;

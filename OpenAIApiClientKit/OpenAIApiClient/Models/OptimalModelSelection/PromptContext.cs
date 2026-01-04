@@ -2,7 +2,7 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Models.OptimalSelection
+namespace OpenAIApiClient.Models.OptimalModelSelection
 {
     using OpenAIApiClient.Enums;
 

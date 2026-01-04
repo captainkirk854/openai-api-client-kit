@@ -4,10 +4,10 @@
 
 namespace OpenAIApiClient.ConsoleApp
 {
+    using OpenAIApiClient.Demos;
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Helpers;
+    using OpenAIApiClient.Helpers.General;
     using OpenAIApiClient.Models.Chat.Request;
-    using OpenAIApiClient.Models.OptimalSelection;
 
     public class Program
     {
@@ -39,7 +39,7 @@ namespace OpenAIApiClient.ConsoleApp
                 Console.WriteLine("Running Simple Optimal Model Selection Demo ..");
                 Console.WriteLine();
                 Console.WriteLine($"Using Prompt: {prompt}");
-                await SimpleModelSelectionDemo.RunAsync(client: client, prompt: prompt, cts: cts);
+                await SimpleOpenAIModelSelectionDemo.RunAsync(client: client, prompt: prompt, cts: cts);
                 Console.WriteLine("Press Enter to continue..");
                 Console.ReadLine();
             }

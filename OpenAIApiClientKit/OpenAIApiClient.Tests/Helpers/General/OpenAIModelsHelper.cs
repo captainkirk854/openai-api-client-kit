@@ -1,16 +1,17 @@
-﻿// <copyright file="OpenAIModelHelper.cs" company="854 Things (tm)">
+﻿// <copyright file="OpenAIModelsHelper.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Tests.Helpers
+namespace OpenAIApiClient.Tests.Helpers.General
 {
     using System;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using OpenAIApiClient.Enums;
-    using testClass = OpenAIApiClient.Helpers;
+    using OpenAIApiClient.Helpers.General;
+    using testClass = OpenAIApiClient.Helpers.General;
 
     [TestClass]
-    public class OpenAIModelHelper
+    public class OpenAIModelsHelper
     {
         [TestMethod]
         public void EnumToApiString_And_Back_ShouldMatch()
@@ -18,7 +19,7 @@ namespace OpenAIApiClient.Tests.Helpers
             foreach (OpenAIModels model in Enum.GetValues(typeof(OpenAIModels)))
             {
                 // Convert enum → API string
-                string apiString = testClass.OpenAIModelsHelper.ToApiString(model);
+                string apiString = model.ToApiString();
                 Assert.IsFalse(string.IsNullOrWhiteSpace(apiString), $"API string for {model} should not be null or empty.");
 
                 // Convert API string → enum
@@ -41,7 +42,7 @@ namespace OpenAIApiClient.Tests.Helpers
             OpenAIModels invalidModel = (OpenAIModels)(-1);
 
             // Act + Assert
-            Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => { testClass.OpenAIModelsHelper.ToApiString(invalidModel); });
+            Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => { invalidModel.ToApiString(); });
         }
 
         [TestMethod]
@@ -51,7 +52,7 @@ namespace OpenAIApiClient.Tests.Helpers
 
             foreach (OpenAIModels model in Enum.GetValues(typeof(OpenAIModels)))
             {
-                string apiString = testClass.OpenAIModelsHelper.ToApiString(model);
+                string apiString = model.ToApiString();
                 CollectionAssert.Contains((System.Collections.ICollection)allModels, apiString, $"ListAllModels should contain {apiString}");
             }
         }
@@ -59,7 +60,7 @@ namespace OpenAIApiClient.Tests.Helpers
         [TestMethod]
         public void LatestRecommendedModels_ShouldContainAllCategories()
         {
-            var models = testClass.OpenAIModelsHelper.LatestRecommendedModels();
+            Dictionary<string, OpenAIModels> models = testClass.OpenAIModelsHelper.LatestRecommendedModels();
 
             // Expected categories
             List<string> expectedCategories =

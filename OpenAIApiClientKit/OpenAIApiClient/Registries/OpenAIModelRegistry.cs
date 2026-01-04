@@ -2,14 +2,15 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Models.OptimalSelection
+namespace OpenAIApiClient.Registries
 {
     using OpenAIApiClient.Enums;
+    using OpenAIApiClient.Models.OptimalModelSelection;
 
     public sealed class OpenAIModelRegistry
     {
         // Dictionary to hold model descriptors ..
-        private readonly Dictionary<OpenAIModels, ModelDescriptor> models;
+        private readonly Dictionary<OpenAIModels, OpenAIModelDescriptor> models;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OpenAIModelRegistry"/> class.
@@ -19,7 +20,7 @@ namespace OpenAIApiClient.Models.OptimalSelection
             // Initialize the model descriptors ..
             this.models = new()
             {
-                [OpenAIModels.GPT4_1] = new ModelDescriptor
+                [OpenAIModels.GPT4_1] = new OpenAIModelDescriptor
                 {
                     Name = OpenAIModels.GPT4_1,
                     Capabilities = new HashSet<ModelCapability>
@@ -27,7 +28,7 @@ namespace OpenAIApiClient.Models.OptimalSelection
                         ModelCapability.Reasoning,
                     },
                 },
-                [OpenAIModels.GPT4_1_Mini] = new ModelDescriptor
+                [OpenAIModels.GPT4_1_Mini] = new OpenAIModelDescriptor
                 {
                     Name = OpenAIModels.GPT4_1_Mini,
                     Capabilities = new HashSet<ModelCapability>
@@ -36,7 +37,7 @@ namespace OpenAIApiClient.Models.OptimalSelection
                         ModelCapability.LowCost,
                     },
                 },
-                [OpenAIModels.GPT4_1_Critic] = new ModelDescriptor
+                [OpenAIModels.GPT4_1_Critic] = new OpenAIModelDescriptor
                 {
                     Name = OpenAIModels.GPT4_1_Critic,
                     Capabilities = new HashSet<ModelCapability>
@@ -44,7 +45,7 @@ namespace OpenAIApiClient.Models.OptimalSelection
                         ModelCapability.Critic,
                     },
                 },
-                [OpenAIModels.GPT4o_Mini] = new ModelDescriptor
+                [OpenAIModels.GPT4o_Mini] = new OpenAIModelDescriptor
                 {
                     Name = OpenAIModels.GPT4o_Mini,
                     Capabilities = new HashSet<ModelCapability>
@@ -59,13 +60,13 @@ namespace OpenAIApiClient.Models.OptimalSelection
         /// <summary>
         /// Gets all registered model descriptors ..
         /// </summary>
-        public IEnumerable<ModelDescriptor> All => this.models.Values;
+        public IEnumerable<OpenAIModelDescriptor> All => this.models.Values;
 
         /// <summary>
         /// Gets the model descriptor for the specified model ..
         /// </summary>
         /// <param name="model"></param>
-        /// <returns><see cref="ModelDescriptor"/>.</returns>
-        public ModelDescriptor Get(OpenAIModels model) => this.models[model];
+        /// <returns><see cref="OpenAIModelDescriptor"/>.</returns>
+        public OpenAIModelDescriptor Get(OpenAIModels model) => this.models[model];
     }
 }

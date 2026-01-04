@@ -2,8 +2,11 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Models.OptimalSelection
+namespace OpenAIApiClient.Helpers.OptimalModelSelection
 {
+    using OpenAIApiClient.Models.OptimalModelSelection;
+    using OpenAIApiClient.Registries;
+
     /// <summary>
     /// A router that selects OpenAI models based on required capabilities.
     /// </summary>
@@ -16,10 +19,10 @@ namespace OpenAIApiClient.Models.OptimalSelection
         /// <param name="context"></param>
         /// <returns><see cref="IReadOnlyList{ModelDescriptor}"/>.</returns>
         /// <exception cref="InvalidOperationException">.</exception>
-        public IReadOnlyList<ModelDescriptor> Route(PromptContext context)
+        public IReadOnlyList<OpenAIModelDescriptor> Route(PromptContext context)
         {
             // Find model(s) that satisfy all required capabilities ..
-            List<ModelDescriptor> candidates = [.. registry.All.Where(m => context.RequiredCapabilities.All(rc => m.Capabilities.Contains(rc)))];
+            List<OpenAIModelDescriptor> candidates = [.. registry.All.Where(m => context.RequiredCapabilities.All(rc => m.Capabilities.Contains(rc)))];
             if (candidates.Count == 0)
             {
                 throw new InvalidOperationException("No model(s) satisfy all required capabilities.");

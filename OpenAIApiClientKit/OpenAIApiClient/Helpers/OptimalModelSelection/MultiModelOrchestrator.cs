@@ -2,8 +2,10 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Models.OptimalSelection
+namespace OpenAIApiClient.Helpers.OptimalModelSelection
 {
+    using OpenAIApiClient.Models.OptimalModelSelection;
+
     public sealed class MultiModelOrchestrator(OpenAIModelRouter router, OpenAIModelExecutor executor)
     {
         // <summary>
@@ -15,22 +17,22 @@ namespace OpenAIApiClient.Models.OptimalSelection
         /// <summary>
         /// Executes the orchestrator logic: routes the prompt to appropriate models, executes them, and aggregates the responses.
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="token"></param>
-        /// <returns><see cref="FinalResponse"/>.</returns>
-        public async Task<FinalResponse> ExecuteAsync(PromptContext context, CancellationToken token)
+        /// <param name="context">Prompt context.</param>
+        /// <param name="cancelToken">Cancellation token.</param>
+        /// <returns><see cref="OpenAICollatedResponse"/>.</returns>
+        public async Task<OpenAICollatedResponse> ExecuteAsync(PromptContext context, CancellationToken cancelToken)
         {
             // Route to appropriate models based on the prompt context ..
-            IReadOnlyList<ModelDescriptor> models = this.router.Route(context);
+            IReadOnlyList<OpenAIModelDescriptor> models = this.router.Route(context);
 
             // Execute all routed models in parallel ..
-            List<Task<ModelResponse>> tasks = [.. models.Select(m => this.executor.ExecuteAsync(m, context, token))];
+            List<Task<OpenAIModelResponse>> tasks = [.. models.Select(m => this.executor.ExecuteAsync(model: m, context: context, cancelToken: cancelToken))];
 
             // Await all model responses ..
-            ModelResponse[] responses = await Task.WhenAll(tasks);
+            OpenAIModelResponse[] responses = await Task.WhenAll(tasks);
 
             // Aggregate all model responses into a final response ..
-            return OpenAIResponseAggregator.Aggregate(responses);
+            return OpenAIModelResponseAggregator.Aggregate(responses: responses);
         }
     }
 }

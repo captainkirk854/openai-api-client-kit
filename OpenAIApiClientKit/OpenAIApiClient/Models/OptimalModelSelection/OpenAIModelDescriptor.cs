@@ -1,13 +1,13 @@
-﻿// <copyright file="ModelDescriptor.cs" company="854 Things (tm)">
+﻿// <copyright file="OpenAIModelDescriptor.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Models.OptimalSelection
+namespace OpenAIApiClient.Models.OptimalModelSelection
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Helpers;
+    using OpenAIApiClient.Helpers.General;
 
-    public sealed class ModelDescriptor
+    public sealed class OpenAIModelDescriptor
     {
         /// <summary>
         /// Gets the name of the model.

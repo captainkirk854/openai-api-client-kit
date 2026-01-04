@@ -2,14 +2,16 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Models.OptimalSelection
+namespace OpenAIApiClient.Helpers.OptimalModelSelection
 {
     using System;
     using System.Diagnostics;
     using System.Threading.Tasks;
-    using OpenAIApiClient.Helpers;
+    using OpenAIApiClient.Helpers.General;
     using OpenAIApiClient.Models.Chat.Request;
     using OpenAIApiClient.Models.Chat.Response.Completion;
+    using OpenAIApiClient.Models.OptimalModelSelection;
+    using OpenAIApiClient.Registries;
 
     /// <summary>
     /// Executes OpenAI models using the provided ChatClient.
@@ -24,7 +26,7 @@ namespace OpenAIApiClient.Models.OptimalSelection
         /// <param name="context">The prompt context.</param>
         /// <param name="cancelToken">Cancellation token.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains the model response.</returns>
-        public async Task<ModelResponse> ExecuteAsync(ModelDescriptor model, PromptContext context, CancellationToken cancelToken)
+        public async Task<OpenAIModelResponse> ExecuteAsync(OpenAIModelDescriptor model, PromptContext context, CancellationToken cancelToken)
         {
             ChatCompletionRequest request = new ClientRequestBuilder()
                                                 .WithModel(model.Name)
@@ -46,7 +48,7 @@ namespace OpenAIApiClient.Models.OptimalSelection
                 sw.Stop();
 
                 // Return successful response ..
-                return new ModelResponse
+                return new OpenAIModelResponse
                 {
                     Model = model,
                     RawOutput = response!.Choices[0].Message.Content!,
@@ -62,7 +64,7 @@ namespace OpenAIApiClient.Models.OptimalSelection
                 sw.Stop();
 
                 // Return failed response ..
-                return new ModelResponse
+                return new OpenAIModelResponse
                 {
                     Model = model,
                     RawOutput = string.Empty,

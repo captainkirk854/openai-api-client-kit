@@ -2,7 +2,7 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Helpers
+namespace OpenAIApiClient.Helpers.General
 {
     using System.Threading.Tasks;
     using OpenAIApiClient.Models.Chat.Request;

@@ -1,13 +1,13 @@
-﻿// <copyright file="FinalResponse.cs" company="854 Things (tm)">
+﻿// <copyright file="OpenAICollatedResponse.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Models.OptimalSelection
+namespace OpenAIApiClient.Models.OptimalModelSelection
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Helpers;
+    using OpenAIApiClient.Helpers.General;
 
-    public sealed class FinalResponse
+    public sealed class OpenAICollatedResponse
     {
         /// <summary>
         /// Gets the name of the model used to generate the final response.
@@ -30,7 +30,7 @@ namespace OpenAIApiClient.Models.OptimalSelection
         /// <summary>
         /// Gets the list of all model responses.
         /// </summary>
-        public IReadOnlyList<ModelResponse> SourceResponses
+        public IReadOnlyList<OpenAIModelResponse> SourceResponses
         {
             get;
             init;

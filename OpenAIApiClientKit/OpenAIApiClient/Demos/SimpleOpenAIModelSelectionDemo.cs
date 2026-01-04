@@ -1,12 +1,15 @@
-﻿// <copyright file="SimpleModelSelectionDemo.cs" company="854 Things (tm)">
+﻿// <copyright file="SimpleOpenAIModelSelectionDemo.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Models.OptimalSelection
+namespace OpenAIApiClient.Demos
 {
     using OpenAIApiClient.Enums;
+    using OpenAIApiClient.Helpers.OptimalModelSelection;
+    using OpenAIApiClient.Models.OptimalModelSelection;
+    using OpenAIApiClient.Registries;
 
-    public static class SimpleModelSelectionDemo
+    public static class SimpleOpenAIModelSelectionDemo
     {
         public static async Task RunAsync(ChatClient client, string prompt, CancellationTokenSource cts)
         {
@@ -31,11 +34,11 @@ namespace OpenAIApiClient.Models.OptimalSelection
                     ModelCapability.LowCost,
                     ModelCapability.FastInference,
                 },
-                DesiredOutputFormat = "text", // e.g., "text", "json", "markdown"
+                DesiredOutputFormat = "text", // e.g., "text", "json", "markdown", "csv", etc.
             };
 
             // Execute the multi-model pipeline
-            FinalResponse final = await orchestrator.ExecuteAsync(context: context, token: cts.Token);
+            OpenAICollatedResponse final = await orchestrator.ExecuteAsync(context: context, cancelToken: cts.Token);
 
             // Output the final aggregated answer
             Console.WriteLine("=== BEST RESPONSE ===");
@@ -45,7 +48,7 @@ namespace OpenAIApiClient.Models.OptimalSelection
 
             // Output all model responses for transparency
             Console.WriteLine("=== SOURCE RESPONSE(S) ===");
-            foreach (ModelResponse r in final.SourceResponses)
+            foreach (OpenAIModelResponse r in final.SourceResponses)
             {
                 Console.WriteLine($"Model: {r.Model.Name}");
                 Console.WriteLine($"Success: {r.IsSuccessful}");
