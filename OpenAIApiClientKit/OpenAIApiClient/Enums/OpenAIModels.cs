@@ -18,6 +18,8 @@ namespace OpenAIApiClient.Enums
         GPT5_Nano,
 
         // GPT-4 Family
+        GPT4_1_Mini,
+        GPT4_1_Critic,
         GPT4_1,
         GPT4o,        // Multimodal model (text + vision)
         GPT4o_Mini,   // Optimized GPT-4 variant

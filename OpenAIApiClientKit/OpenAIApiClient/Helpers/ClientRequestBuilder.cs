@@ -23,20 +23,21 @@ namespace OpenAIApiClient.Helpers
     /// <c>Build()</c> is called.
     /// Sample usage:
     ///     <see cref="ChatCompletionRequest"/> request = new <see cref="ClientRequestBuilder"/>().WithModel(input: OpenAIModels.GPT4o_Mini)
-    ///                                                                      .AddDeveloperMessage(input: "Always answer concisely.")
-    ///                                                                      .AddSystemMessage(input: "You are a helpful assistant that answers concisely.")
-    ///                                                                      .AddUserMessage(input: userPrompt)
-    ///                                                                      .EnableStreaming(input: isStreaming)
-    ///                                                                      .WithTemperature(input: 1.0)
-    ///                                                                      .WithMaxTokens(input: 100)
-    ///                                                                      .WithTopP(input: 0.5)
-    ///                                                                      .WithPresencePenalty(input: 2.0)
-    ///                                                                      .WithFrequencyPenalty(input: 2.0)
-    ///                                                                      .AddToolCall(id: "weather-1", name: "getWeather", args: new Dictionary string, object
-    ///                                                                       {
-    ///                                                                          { "city", "London" },
-    ///                                                                       })
-    ///                                                                      .Build();.
+    ///                                                                                           .AddDeveloperMessage(input: "Always answer concisely.")
+    ///                                                                                           .AddSystemMessage(input: "You are a helpful assistant that answers concisely.")
+    ///                                                                                           .AddUserMessage(input: userPrompt)
+    ///                                                                                           .EnableStreaming(input: isStreaming)
+    ///                                                                                           .WithTemperature(input: 1.0)
+    ///                                                                                           .WithMaxTokens(input: 100)
+    ///                                                                                           .WithTopP(input: 0.5)
+    ///                                                                                           .WithPresencePenalty(input: 2.0)
+    ///                                                                                           .WithFrequencyPenalty(input: 2.0)
+    ///                                                                                           .ForceJsonOutput(input: false)
+    ///                                                                                           .AddToolCall(id: "weather-1", name: "getWeather", args: new Dictionary string, object
+    ///                                                                                            {
+    ///                                                                                               { "city", "London" },
+    ///                                                                                            })
+    ///                                                                                           .Build();.
     /// </remarks>
     public class ClientRequestBuilder
     {
@@ -53,6 +54,7 @@ namespace OpenAIApiClient.Helpers
         private double? presencePenalty;
         private double? temperature;
         private double? topP;
+        private bool jsonModeEnabled;
 
         /// <summary>
         /// Define the OpenAI model to use.
@@ -61,7 +63,7 @@ namespace OpenAIApiClient.Helpers
         /// <returns>The current instance of <see cref="ClientRequestBuilder"/> with the updated Model setting.</returns>
         public ClientRequestBuilder WithModel(OpenAIModels input)
         {
-            this.model = OpenAIModelsHelper.ToApiString(input);
+            this.model = input.ToApiString();
             return this;
         }
 
@@ -239,6 +241,17 @@ namespace OpenAIApiClient.Helpers
             return this;
         }
 
+        /// <summary>
+        /// Force Output to be in JSON for the chat completion request.
+        /// </summary>
+        /// <param name="input">Set to <see langword="true"/> to force JSON output; otherwise, <see langword="false"/>.</param>
+        /// <returns>The current <see cref="ClientRequestBuilder"/> instance with JSON mode enabled.</returns>
+        public ClientRequestBuilder ForceJsonOutput(bool input)
+        {
+            this.jsonModeEnabled = input;
+            return this;
+        }
+
         // -----------------------------
         // Tool Calls
         // -----------------------------
@@ -286,6 +299,19 @@ namespace OpenAIApiClient.Helpers
                 // Standard messages ..
                 .. this.messages,
             ];
+
+            // If JSON mode is enabled, add system message to enforce JSON-only responses ..
+            if (this.jsonModeEnabled)
+            {
+                allMessages.Add(new ChatMessage
+                                {
+                                    RoleAsEnum = OpenAIRole.System,
+                                    Content =
+                                    "You MUST respond with a valid JSON object only. " +
+                                    "No explanations, no prose, no markdown. " +
+                                    "Return strictly valid JSON that matches the expected schema.",
+                                });
+            }
 
             // Tool Calls become Assistant Messages with tool_call content ..
             foreach (ToolCall tool in this.toolCalls)

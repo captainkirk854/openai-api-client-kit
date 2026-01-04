@@ -7,6 +7,7 @@ namespace OpenAIApiClient.ConsoleApp
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Helpers;
     using OpenAIApiClient.Models.Chat.Request;
+    using OpenAIApiClient.Models.OptimalSelection;
 
     public class Program
     {
@@ -25,50 +26,75 @@ namespace OpenAIApiClient.ConsoleApp
             // Create OpenAI Chat client instance ..
             ChatClient client = new(apiKey: apiKey, maxRetries: 5, baseDelayMs: 1000);
 
-            // Determine whether to use streaming or non-streaming mode ..
-            Console.Write("Use streaming mode? (y/n) (n): ");
-            string streamingChoice = Console.ReadLine() ?? "n";
-            bool isStreaming = streamingChoice.Equals(value: "y", comparisonType: StringComparison.OrdinalIgnoreCase);
+            // Initialise a cancellation token with a timeout ..
+            using CancellationTokenSource cts = new(TimeSpan.FromSeconds(TimeoutInSeconds));
 
-            // Clear console for better readability ..
-            Console.Clear();
-
-            // Loop to allow multiple prompts ..
-            while (true)
+            // Run Model-Selection Demo first ..
+            Console.WriteLine("Run Simple Model Selection Demo? (y/n) (n)");
+            bool runOptimalModelSelectionDemo = Console.ReadLine()?.Trim().Equals(value: "y", comparisonType: StringComparison.OrdinalIgnoreCase) ?? false;
+            if (runOptimalModelSelectionDemo)
             {
-                // Initialise a cancellation token with a timeout ..
-                using CancellationTokenSource cts = new(TimeSpan.FromSeconds(TimeoutInSeconds));
-
-                // Read prompt from console ..
-                Console.Write("Enter your prompt for OpenAI: ");
-                string userPrompt = Console.ReadLine() ?? string.Empty;
-                if (string.IsNullOrWhiteSpace(userPrompt))
-                {
-                    Console.WriteLine("Prompt cannot be empty. Please try again.");
-                    return;
-                }
-
-                // Ask if creativity settings should be enabled ..
-                Console.Write("Enable creativity settings? (y/n) (n): ");
-                string creativityChoice = Console.ReadLine() == string.Empty ? "n" : "y";
-                bool isDeterministic = creativityChoice.Equals(value: "n", comparisonType: StringComparison.OrdinalIgnoreCase);
-
-                // Process user prompt ..
-                await ProcessUserPromptAsync(client: client, isStreaming: isStreaming, userPrompt: userPrompt, isDeterminismEnabled: isDeterministic, cts: cts);
-
-                // Ask if the user wants to enter another prompt ..
+                string prompt = "explain the theory of relativity in simple terms.";
+                Console.Clear();
+                Console.WriteLine("Running Simple Optimal Model Selection Demo ..");
                 Console.WriteLine();
-                Console.Write("Do you want to enter another prompt? (y/n) (n): ");
-                string continueChoice = Console.ReadLine() ?? "n";
-                if (!continueChoice.Equals(value: "y", comparisonType: StringComparison.OrdinalIgnoreCase))
-                {
-                    break;
-                }
+                Console.WriteLine($"Using Prompt: {prompt}");
+                await SimpleModelSelectionDemo.RunAsync(client: client, prompt: prompt, cts: cts);
+                Console.WriteLine("Press Enter to continue..");
+                Console.ReadLine();
             }
+            else
+            {
+                // Run regular demo starting with whether to use streaming or non-streaming mode ..
+                Console.Write("Use streaming mode? (y/n) (n): ");
+                string streamingChoice = Console.ReadLine() ?? "n";
+                bool isStreaming = streamingChoice.Equals(value: "y", comparisonType: StringComparison.OrdinalIgnoreCase);
 
-            // Final newline for better console readability ..
-            Console.WriteLine();
-            Console.WriteLine("Exiting application. Goodbye!");
+                // Clear console for better readability ..
+                Console.Clear();
+
+                // Loop to allow multiple prompts ..
+                while (true)
+                {
+                    // Reset cancellation token ..
+                    cts.TryReset();
+
+                    // Read prompt from console ..
+                    Console.Write("Enter your prompt for OpenAI: ");
+                    string userPrompt = Console.ReadLine() ?? string.Empty;
+                    if (string.IsNullOrWhiteSpace(userPrompt))
+                    {
+                        Console.WriteLine("Prompt cannot be empty. Please try again.");
+                        return;
+                    }
+
+                    // Ask if creativity settings should be enabled ..
+                    Console.Write("Enable creativity settings? (y/n) (n): ");
+                    string creativityChoice = Console.ReadLine() == string.Empty ? "n" : "y";
+                    bool isDeterministic = creativityChoice.Equals(value: "n", comparisonType: StringComparison.OrdinalIgnoreCase);
+
+                    // Ask to force JSON mode ..
+                    Console.Write("Enable forced JSON output? (y/n) (n): ");
+                    string jsonChoice = Console.ReadLine() == string.Empty ? "n" : "y";
+                    bool isJson = jsonChoice.Equals(value: "y", comparisonType: StringComparison.OrdinalIgnoreCase);
+
+                    // Process user prompt with additional options ..
+                    await ProcessUserPromptAsync(client: client, isStreaming: isStreaming, userPrompt: userPrompt, isDeterministic: isDeterministic, isJson: isJson, cts: cts);
+
+                    // Ask if the user wants to enter another prompt ..
+                    Console.WriteLine();
+                    Console.Write("Do you want to enter another prompt? (y/n) (n): ");
+                    string continueChoice = Console.ReadLine() ?? "n";
+                    if (!continueChoice.Equals(value: "y", comparisonType: StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+                }
+
+                // Final newline for better console readability ..
+                Console.WriteLine();
+                Console.WriteLine("Exiting application. Goodbye!");
+            }
         }
 
         /// <summary>
@@ -82,21 +108,22 @@ namespace OpenAIApiClient.ConsoleApp
         /// <param name="client">The chat client used to send the prompt and receive the response.</param>
         /// <param name="isStreaming">true to enable streaming responses; otherwise, false for non-streaming responses.</param>
         /// <param name="userPrompt">The user input prompt to be sent to the chat client. Cannot be null.</param>
-        /// <param name="isDeterminismEnabled">true to use deterministic output parameters for the chat completion request; otherwise, false to use
+        /// <param name="isDeterministic">true to use deterministic output parameters for the chat completion request; otherwise, false to use
         /// non-deterministic parameters.</param>
+        /// <param name="isJson">true to enable JSON mode for the chat completion request; otherwise, false.</param>
         /// <param name="cts">A CancellationTokenSource used to observe cancellation requests for the operation. Cannot be null.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
-        private static async Task ProcessUserPromptAsync(ChatClient client, bool isStreaming, string userPrompt, bool isDeterminismEnabled, CancellationTokenSource cts)
+        private static async Task ProcessUserPromptAsync(ChatClient client, bool isStreaming, string userPrompt, bool isDeterministic, bool isJson, CancellationTokenSource cts)
         {
             // Set deterministic output parameters ..
             double temperature = 0.0;
             double topP = 0.0;
             double presencePenalty = -2.0;
             double frequencyPenalty = 0.0;
-            if (!isDeterminismEnabled)
+            if (!isDeterministic)
             {
                 temperature = 2.0;
-                topP = 0.99; // using 1.0 can lead to corrupted output in some cases ..
+                topP = 0.99; // Note: using 1.0 can lead to corrupted output in some cases ..
                 presencePenalty = 2.0;
                 frequencyPenalty = 2.0;
             }
@@ -111,6 +138,7 @@ namespace OpenAIApiClient.ConsoleApp
                                                                       .WithTopP(input: topP)
                                                                       .WithPresencePenalty(input: presencePenalty)
                                                                       .WithFrequencyPenalty(input: frequencyPenalty)
+                                                                      .ForceJsonOutput(input: isJson)
                                                                       .Build();
 
             // If not streaming ..

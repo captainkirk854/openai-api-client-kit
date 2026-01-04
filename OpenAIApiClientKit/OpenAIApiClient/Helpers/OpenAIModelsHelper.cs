@@ -29,6 +29,8 @@ namespace OpenAIApiClient.Helpers
                 { OpenAIModels.GPT5_Nano, "gpt-5-nano" },
 
                 // GPT-4 Family
+                { OpenAIModels.GPT4_1_Mini, "gpt-4.1-mini" },
+                { OpenAIModels.GPT4_1_Critic, "gpt-4.1-critic" },
                 { OpenAIModels.GPT4_1, "gpt-4.1" },
                 { OpenAIModels.GPT4o, "gpt-4o" },
                 { OpenAIModels.GPT4o_Mini, "gpt-4o-mini" },
@@ -73,7 +75,7 @@ namespace OpenAIApiClient.Helpers
         /// <param name="model">The OpenAI model enumeration value to convert.</param>
         /// <returns>The API string identifier that corresponds to the specified model.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if the specified model value does not correspond to a known API identifier.</exception>
-        public static string ToApiString(OpenAIModels model)
+        public static string ToApiString(this OpenAIModels model)
         {
             if (EnumToApiMap.TryGetValue(model, out var apiId))
             {
