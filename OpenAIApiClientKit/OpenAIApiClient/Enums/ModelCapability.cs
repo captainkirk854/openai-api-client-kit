@@ -13,5 +13,14 @@ namespace OpenAIApiClient.Enums
         Vision,
         Critic,
         Editor,
+        Text,
+        Chat,
+        AudioIn,
+        AudioOut,
+        Embedding,
+        ImageGeneration,
+        Moderation,
+        HighPerformance,
+        OpenWeight,
     }
 }

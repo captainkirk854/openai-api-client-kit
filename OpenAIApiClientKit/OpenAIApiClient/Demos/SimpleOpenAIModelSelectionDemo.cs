@@ -50,7 +50,7 @@ namespace OpenAIApiClient.Demos
             Console.WriteLine("=== SOURCE RESPONSE(S) ===");
             foreach (OpenAIModelResponse r in final.SourceResponses)
             {
-                Console.WriteLine($"Model: {r.Model.Name}");
+                Console.WriteLine($"Model: {r.Model.Model}");
                 Console.WriteLine($"Success: {r.IsSuccessful}");
                 Console.WriteLine($"Tokens: {r.TotalTokens}");
                 Console.WriteLine($"Cost: {r.EstimatedCost}");

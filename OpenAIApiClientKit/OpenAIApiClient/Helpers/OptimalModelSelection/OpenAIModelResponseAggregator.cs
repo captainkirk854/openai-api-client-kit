@@ -26,7 +26,7 @@ namespace OpenAIApiClient.Helpers.OptimalModelSelection
             return new OpenAICollatedResponse
             {
                 Content = best.RawOutput,
-                Name = best.Model.Name,
+                Name = best.Model.Model,
                 SourceResponses = responses,
                 AggregationStrategy = "LongestOutput",
             };

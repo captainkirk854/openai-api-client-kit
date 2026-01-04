@@ -21,39 +21,75 @@ namespace OpenAIApiClient.Helpers.General
         private static readonly Dictionary<OpenAIModels, string> EnumToApiMap =
             new()
             {
-                // GPT-5 Family
-                { OpenAIModels.GPT5_2, "gpt-5.2" },
-                { OpenAIModels.GPT5_2_Pro, "gpt-5.2-pro" },
-                { OpenAIModels.GPT5, "gpt-5" },
-                { OpenAIModels.GPT5_Mini, "gpt-5-mini" },
-                { OpenAIModels.GPT5_Nano, "gpt-5-nano" },
+                // -------------------------
+                // GPT‑5 Family
+                // -------------------------
+                [OpenAIModels.GPT5_2] = "gpt-5.2",
+                [OpenAIModels.GPT5_2_Pro] = "gpt-5.2-pro",
+                [OpenAIModels.GPT5] = "gpt-5",
+                [OpenAIModels.GPT5_Mini] = "gpt-5-mini",
+                [OpenAIModels.GPT5_Nano] = "gpt-5-nano",
 
-                // GPT-4 Family
-                { OpenAIModels.GPT4_1_Mini, "gpt-4.1-mini" },
-                { OpenAIModels.GPT4_1_Critic, "gpt-4.1-critic" },
-                { OpenAIModels.GPT4_1, "gpt-4.1" },
-                { OpenAIModels.GPT4o, "gpt-4o" },
-                { OpenAIModels.GPT4o_Mini, "gpt-4o-mini" },
-                { OpenAIModels.GPT4_Turbo, "gpt-4-turbo" },
+                // -------------------------
+                // GPT‑4 Family
+                // -------------------------
+                [OpenAIModels.GPT4_1] = "gpt-4.1",
+                [OpenAIModels.GPT4_1_Mini] = "gpt-4.1-mini",
+                [OpenAIModels.GPT4_1_Reasoning] = "gpt-4.1-reasoning",
+                [OpenAIModels.GPT4_1_Critic] = "gpt-4.1-critic",
+                [OpenAIModels.GPT4_Turbo] = "gpt-4-turbo",
 
-                // GPT-3.5 Family
-                { OpenAIModels.GPT3_5_Turbo, "gpt-3.5-turbo" },
+                // -------------------------
+                // GPT‑4o Family
+                // -------------------------
+                [OpenAIModels.GPT4o] = "gpt-4o",
+                [OpenAIModels.GPT4o_Mini] = "gpt-4o-mini",
 
+                // -------------------------
+                // GPT‑3.5 Family
+                // -------------------------
+                [OpenAIModels.GPT3_5_Turbo] = "gpt-3.5-turbo",
+
+                // -------------------------
                 // Embedding Models
-                { OpenAIModels.TextEmbedding_3_Large, "text-embedding-3-large" },
-                { OpenAIModels.TextEmbedding_3_Small, "text-embedding-3-small" },
+                // -------------------------
+                [OpenAIModels.TextEmbedding_3_Large] = "text-embedding-3-large",
+                [OpenAIModels.TextEmbedding_3_Small] = "text-embedding-3-small",
 
-                // Audio Models
-                { OpenAIModels.TTS_1, "gpt-tts-1" },
-                { OpenAIModels.TTS_1_HD, "gpt-tts-1-hd" },
-                { OpenAIModels.Whisper_1, "whisper-1" },
+                // Aliases (if you keep them)
+                [OpenAIModels.TextEmbedding3Small] = "text-embedding-3-small",
+                [OpenAIModels.TextEmbedding3Large] = "text-embedding-3-large",
+                [OpenAIModels.TextEmbeddingAda002] = "text-embedding-ada-002",
 
+                // -------------------------
+                // Audio / TTS / Whisper
+                // -------------------------
+                [OpenAIModels.TTS_1] = "tts-1",
+                [OpenAIModels.TTS_1_HD] = "tts-1-hd",
+                [OpenAIModels.Whisper_1] = "whisper-1",
+                [OpenAIModels.Whisper1] = "whisper-1",
+
+                // Aliases
+                [OpenAIModels.TTS1] = "tts-1",
+                [OpenAIModels.TTS1HD] = "tts-1-hd",
+                [OpenAIModels.TTS1_1106] = "tts-1-1106",
+                [OpenAIModels.TTS1HD_1106] = "tts-1-hd-1106",
+
+                // -------------------------
                 // Image Models
-                { OpenAIModels.DALL_E_3, "dall-e-3" },
+                // -------------------------
+                [OpenAIModels.DALL_E_3] = "dall-e-3",
 
-                // Open-weight Models
-                { OpenAIModels.O1, "o1" },
-                { OpenAIModels.O1_Mini, "o1-mini" },
+                // -------------------------
+                // Open‑weight Models
+                // -------------------------
+                [OpenAIModels.O1] = "o1",
+                [OpenAIModels.O1_Mini] = "o1-mini",
+
+                // -------------------------
+                // Moderation
+                // -------------------------
+                [OpenAIModels.OmniModerationLatest] = "omni-moderation-latest",
             };
 
         /// <summary>

@@ -29,12 +29,12 @@ namespace OpenAIApiClient.Helpers.OptimalModelSelection
         public async Task<OpenAIModelResponse> ExecuteAsync(OpenAIModelDescriptor model, PromptContext context, CancellationToken cancelToken)
         {
             ChatCompletionRequest request = new ClientRequestBuilder()
-                                                .WithModel(model.Name)
+                                                .WithModel(model.Model)
                                                 .AddUserMessage(context.Prompt)
                                                 .Build();
 
             // Get pricing info for the model ..
-            ModelPricing? pricing = OpenAIModelPricingRegistry.Pricing.TryGetValue(model.Name, out ModelPricing? p) ? p : null;
+            ModelPricing? pricing = OpenAIModelPricingRegistry.Pricing.TryGetValue(model.Model, out ModelPricing? p) ? p : null;
 
             // Start timing ..
             Stopwatch sw = Stopwatch.StartNew();

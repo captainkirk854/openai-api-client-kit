@@ -10,9 +10,9 @@ namespace OpenAIApiClient.Models.OptimalModelSelection
     public sealed class OpenAIModelDescriptor
     {
         /// <summary>
-        /// Gets the name of the model.
+        /// Gets the model.
         /// </summary>
-        public OpenAIModels Name
+        public OpenAIModels Model
         {
             get;
             init;
@@ -31,6 +31,6 @@ namespace OpenAIApiClient.Models.OptimalModelSelection
         /// Overrides ToString to provide a string representation of the model descriptor.
         /// </summary>
         /// <returns>A string representation of the model descriptor.</returns>
-        public override string ToString() => this.Name.ToApiString();
+        public override string ToString() => this.Model.ToApiString();
     }
 }
