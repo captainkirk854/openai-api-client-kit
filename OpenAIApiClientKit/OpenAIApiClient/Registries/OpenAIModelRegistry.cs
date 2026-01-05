@@ -7,6 +7,9 @@ namespace OpenAIApiClient.Registries
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.OptimalModelSelection;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OpenAIModelRegistry"/> class.
+    /// </summary>
     public sealed class OpenAIModelRegistry
     {
         // Dictionary to hold model descriptors ..
@@ -15,9 +18,17 @@ namespace OpenAIApiClient.Registries
         /// <summary>
         /// Initializes a new instance of the <see cref="OpenAIModelRegistry"/> class.
         /// </summary>
+        /// <remarks>
+        /// Registry design benefits:
+        /// - No repeated Model property assignments in descriptor as dictionary key is single source of truth
+        /// - No risk of mismatched keys
+        /// - Adding a new model is a single line
+        /// - The descriptor always knows its own model.
+        /// - Resultant registry is immutable and validated.
+        /// </remarks>
         public OpenAIModelRegistry()
         {
-            // Initialize the model descriptors ..
+            // Start building registry dictionary by initializing each model key with its descriptor "Capabilities" value only ..
             this.models = new()
             {
                 // -------------------------
@@ -25,7 +36,6 @@ namespace OpenAIApiClient.Registries
                 // -------------------------
                 [OpenAIModels.GPT5_2] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.GPT5_2,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -37,7 +47,6 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.GPT5_2_Pro] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.GPT5_2_Pro,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -49,7 +58,6 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.GPT5] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.GPT5,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -60,7 +68,6 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.GPT5_Mini] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.GPT5_Mini,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -71,7 +78,6 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.GPT5_Nano] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.GPT5_Nano,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -85,7 +91,6 @@ namespace OpenAIApiClient.Registries
                 // -------------------------
                 [OpenAIModels.GPT4_1] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.GPT4_1,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -96,7 +101,6 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.GPT4_1_Mini] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.GPT4_1_Mini,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -108,7 +112,6 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.GPT4_1_Reasoning] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.GPT4_1_Reasoning,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -120,7 +123,6 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.GPT4_1_Critic] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.GPT4_1_Critic,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -132,7 +134,6 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.GPT4_Turbo] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.GPT4_Turbo,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -146,7 +147,6 @@ namespace OpenAIApiClient.Registries
                 // -------------------------
                 [OpenAIModels.GPT4o] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.GPT4o,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -160,7 +160,6 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.GPT4o_Mini] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.GPT4o_Mini,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -176,7 +175,6 @@ namespace OpenAIApiClient.Registries
                 // -------------------------
                 [OpenAIModels.GPT3_5_Turbo] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.GPT3_5_Turbo,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -190,7 +188,6 @@ namespace OpenAIApiClient.Registries
                 // -------------------------
                 [OpenAIModels.TextEmbedding_3_Large] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.TextEmbedding_3_Large,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Embedding,
@@ -199,7 +196,6 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.TextEmbedding_3_Small] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.TextEmbedding_3_Small,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Embedding,
@@ -208,7 +204,6 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.TextEmbedding3Small] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.TextEmbedding3Small,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Embedding,
@@ -217,7 +212,6 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.TextEmbedding3Large] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.TextEmbedding3Large,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Embedding,
@@ -226,7 +220,6 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.TextEmbeddingAda002] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.TextEmbeddingAda002,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Embedding,
@@ -238,7 +231,6 @@ namespace OpenAIApiClient.Registries
                 // -------------------------
                 [OpenAIModels.TTS_1] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.TTS_1,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.AudioOut,
@@ -247,7 +239,6 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.TTS_1_HD] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.TTS_1_HD,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.AudioOut,
@@ -256,7 +247,6 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.Whisper_1] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.Whisper_1,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.AudioIn,
@@ -265,7 +255,6 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.Whisper1] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.Whisper1,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.AudioIn,
@@ -274,7 +263,6 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.TTS1] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.TTS1,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.AudioOut,
@@ -283,7 +271,6 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.TTS1HD] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.TTS1HD,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.AudioOut,
@@ -292,7 +279,6 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.TTS1_1106] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.TTS1_1106,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.AudioOut,
@@ -301,7 +287,6 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.TTS1HD_1106] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.TTS1HD_1106,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.AudioOut,
@@ -313,7 +298,6 @@ namespace OpenAIApiClient.Registries
                 // -------------------------
                 [OpenAIModels.DALL_E_3] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.DALL_E_3,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.ImageGeneration,
@@ -325,7 +309,6 @@ namespace OpenAIApiClient.Registries
                 // -------------------------
                 [OpenAIModels.O1] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.O1,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -336,7 +319,6 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.O1_Mini] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.O1_Mini,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -351,13 +333,18 @@ namespace OpenAIApiClient.Registries
                 // -------------------------
                 [OpenAIModels.OmniModerationLatest] = new OpenAIModelDescriptor
                 {
-                    Model = OpenAIModels.OmniModerationLatest,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Moderation,
                     },
                 },
             };
+
+            // Finalise the registry, by using dictionary key value to auto-inject the "yet-to-be-set" Model property value for each model descriptor ..
+            foreach ((OpenAIModels model, OpenAIModelDescriptor descriptor) in this.models)
+            {
+                descriptor.Model = model;
+            }
         }
 
         /// <summary>
@@ -366,7 +353,7 @@ namespace OpenAIApiClient.Registries
         public IEnumerable<OpenAIModelDescriptor> All => this.models.Values;
 
         /// <summary>
-        /// Gets the model descriptor for the specified model ..
+        /// Gets the model descriptor for a specified model ..
         /// </summary>
         /// <param name="model"></param>
         /// <returns><see cref="OpenAIModelDescriptor"/>.</returns>

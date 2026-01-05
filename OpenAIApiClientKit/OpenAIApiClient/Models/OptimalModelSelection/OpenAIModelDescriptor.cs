@@ -7,6 +7,13 @@ namespace OpenAIApiClient.Models.OptimalModelSelection
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Helpers.General;
 
+    /// <summary>
+    /// Model descriptor for OpenAI models.
+    /// </summary>
+    /// <remarks>
+    ///  - Model is: 'internal set' so that only the registry builder can create valid instances.
+    ///  - Capabilities is immutable from the outside.
+    /// </remarks>
     public sealed class OpenAIModelDescriptor
     {
         /// <summary>
@@ -15,7 +22,7 @@ namespace OpenAIApiClient.Models.OptimalModelSelection
         public OpenAIModels Model
         {
             get;
-            init;
+            internal set;
         }
 
         /// <summary>

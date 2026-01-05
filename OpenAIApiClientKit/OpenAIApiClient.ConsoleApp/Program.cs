@@ -30,7 +30,7 @@ namespace OpenAIApiClient.ConsoleApp
             using CancellationTokenSource cts = new(TimeSpan.FromSeconds(TimeoutInSeconds));
 
             // Run Model-Selection Demo first ..
-            Console.WriteLine("Run Simple Model Selection Demo? (y/n) (n)");
+            Console.Write("Run Simple Model Selection Demo? (y/n) (n): ");
             bool runOptimalModelSelectionDemo = Console.ReadLine()?.Trim().Equals(value: "y", comparisonType: StringComparison.OrdinalIgnoreCase) ?? false;
             if (runOptimalModelSelectionDemo)
             {

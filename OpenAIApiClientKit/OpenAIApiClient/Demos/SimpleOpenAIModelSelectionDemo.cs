@@ -40,24 +40,27 @@ namespace OpenAIApiClient.Demos
             // Execute the multi-model pipeline
             OpenAICollatedResponse final = await orchestrator.ExecuteAsync(context: context, cancelToken: cts.Token);
 
-            // Output the final aggregated answer
-            Console.WriteLine("=== BEST RESPONSE ===");
-            Console.WriteLine(final.ToString());
-            Console.WriteLine(final.Content);
+            // Output the final aggregated answer ..
             Console.WriteLine();
+            Console.WriteLine("=== BEST RESPONSE ===");
+            Console.WriteLine($"Model: {final.Name}");
+            Console.WriteLine($"Output: {final.Content}");
 
-            // Output all model responses for transparency
+            // Output all model response(s) for results comparison transparency ..
+            Console.WriteLine();
             Console.WriteLine("=== SOURCE RESPONSE(S) ===");
             foreach (OpenAIModelResponse r in final.SourceResponses)
             {
+                Console.WriteLine();
+                Console.WriteLine(new string('-', 80));
                 Console.WriteLine($"Model: {r.Model.Model}");
                 Console.WriteLine($"Success: {r.IsSuccessful}");
                 Console.WriteLine($"Tokens: {r.TotalTokens}");
                 Console.WriteLine($"Cost: {r.EstimatedCost}");
                 Console.WriteLine($"Latency: {r.Latency.TotalMilliseconds} ms");
                 Console.WriteLine($"Output: {r.RawOutput}");
-                Console.WriteLine(new string('-', 80));
             }
+            Console.WriteLine(new string('-', 80));
         }
     }
 }
