@@ -130,5 +130,111 @@ or use the simple console app provided in the ```OpenAIApiClient.ConsoleApp``` p
 
 If everything is configured correctly, you’ll see ChatGPT’s response in your console.
 
+
+# 📘 OpenAI Model Registry & Orchestration Framework
+This project establishes a unified, strongly typed, future‑proof foundation for working with OpenAI models in .NET. The work completed in this discussion consolidates model metadata, capabilities, pricing, and routing information into a single, extensible architecture designed for reliability, maintainability, and clarity.
+
+## 🚀 1. Strongly Typed Model Enumeration
+We defined a comprehensive ```OpenAIModel``` enum covering all relevant OpenAI model families:
+- GPT‑5 (5.2, 5.2 Pro, 5, Mini, Nano)
+- GPT‑4.1 (Standard, Mini, Reasoning, Critic, Turbo)
+- GPT‑4o (Standard, Mini)
+- GPT‑3.5 Turbo
+- Embedding models
+- TTS / Whisper audio models
+- DALL·E 3
+- Open‑weight models (O1, O1‑Mini)
+- Moderation models
+
+This enum becomes the **backbone** of the entire registry system.
+
+## 🔗 2. Model Endpoint Mapping
+We created a strongly typed mapping from each enum value to its actual OpenAI API endpoint string, ensuring:
+- No magic strings
+- Centralized control
+- Easy updates when OpenAI releases new versions
+
+Example:
+OpenAIModel.GPT4_1 → "gpt-4.1"
+
+## 🧠 3. Capability System
+We introduced a flexible ModelCapability enum representing what each model can do:
+- Text / Chat
+- Reasoning
+- Vision
+- Audio In / Out
+- Embedding
+- Image Generation
+- Moderation
+- Low‑Cost
+- High‑Performance
+- Open‑Weight
+
+This enables intelligent routing, filtering, and orchestration decisions.
+
+## 🧩 4. ModelDescriptor Class
+We designed a unified descriptor object that encapsulates:
+- Model enum
+- API endpoint
+- Capabilities
+- Pricing (per‑token)
+
+This becomes the single source of truth for all model metadata.
+
+## 💰 5. Pricing Model (Per‑Token)
+We created a ModelPricing class using cost per token, not per‑1K, making cost calculations simpler and more accurate.
+
+Pricing fields include:
+- Input token cost
+- Output token cost
+- Cached input token cost
+- Reasoning token cost
+- Tool‑use token cost
+
+All values were left as placeholders to populate with real pricing when necessary.
+
+## 🗂️ 6. Combined Model Registry
+The final deliverable is a fully integrated registry:
+```Dictionary<OpenAIModel, ModelDescriptor>```
+
+Each entry includes:
+- The model’s enum
+- The API endpoint
+- Its capabilities
+- Its pricing
+
+This registry is:
+- Immutable
+- Strongly typed
+- Extensible
+- Centralized
+- Perfect for orchestration, routing, and cost estimation
+
+It is the authoritative source for all model metadata in this system.
+
+## 🧭 7. Architectural Benefits
+This design provides:
+✔ Single‑source‑of‑truth
+All model metadata lives in one place.
+✔ Zero duplication
+Endpoints, capabilities, and pricing are defined once.
+✔ Strong typing everywhere
+No stringly‑typed model names or ad‑hoc metadata.
+✔ Future‑proofing
+Adding GPT‑6 or new TTS models is trivial.
+✔ Orchestration‑ready
+Your system can now route based on:
+- Reasoning ability
+- Cost tier
+- Vision support
+- Audio support
+- Performance tier
+✔ Pricing‑ready
+Cost estimation becomes a simple lookup + multiplication.
+
+
+
+
+
 # 📄 License
 MIT License — free to use, modify, and distribute.
