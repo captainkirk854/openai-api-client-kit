@@ -1,0 +1,118 @@
+﻿// <copyright file="OpenAIModelRegistry.cs" company="854 Things (tm)">
+// Copyright (c) 854 Things (tm). All rights reserved.
+// </copyright>
+
+namespace OpenAIApiClient.Tests.Registries
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using OpenAIApiClient.Enums;
+    using OpenAIApiClient.Models.OptimalModelSelection;
+    using testClass = OpenAIApiClient.Registries.OpenAIModelRegistry;
+
+    [TestClass]
+    public class OpenAIModelRegistry
+    {
+        // Access the registry from actual class under test ..
+        private static Dictionary<OpenAIModels, OpenAIModelDescriptor> Registry => new testClass().Registry;
+
+        [TestMethod]
+        public void All_Descriptors_Have_Matching_Model_Key()
+        {
+            foreach ((OpenAIModels model, OpenAIModelDescriptor descriptor) in Registry)
+            {
+                Assert.IsNotNull(descriptor, $"Descriptor for {model} is null");
+                Assert.AreEqual(model, descriptor.Model, $"Descriptor.Model mismatch for {model}");
+            }
+        }
+
+        [TestMethod]
+        public void All_Descriptors_Have_NonNull_Capabilities()
+        {
+            foreach ((OpenAIModels model, OpenAIModelDescriptor descriptor) in Registry)
+            {
+                Assert.IsNotNull(descriptor.Capabilities, $"Capabilities for {model} must not be null");
+            }
+        }
+
+        [TestMethod]
+        public void All_Descriptors_Have_NonNull_Pricing()
+        {
+            foreach ((OpenAIModels model, OpenAIModelDescriptor descriptor) in Registry)
+            {
+                Assert.IsNotNull(descriptor.Pricing, $"Pricing for {model} must not be null");
+            }
+        }
+
+        [TestMethod]
+        public void All_Descriptors_Have_AtLeast_One_Capability()
+        {
+            foreach ((OpenAIModels model, OpenAIModelDescriptor descriptor) in Registry)
+            {
+                Assert.IsNotEmpty(descriptor.Capabilities, $"Capabilities for {model} must not be empty");
+            }
+        }
+
+        [TestMethod]
+        public void Registry_Has_No_Duplicate_Keys()
+        {
+            List<OpenAIModels> keys = [.. Registry.Keys];
+            List<IGrouping<OpenAIModels, OpenAIModels>> duplicates = [.. keys.GroupBy(k => k).Where(g => g.Count() > 1)];
+            Assert.IsEmpty(duplicates, "Registry contains duplicate model keys");
+        }
+
+        [TestMethod]
+        public void Registry_Is_Immutable()
+        {
+            Dictionary<OpenAIModels, OpenAIModelDescriptor> dict = Registry;
+            bool threw = false;
+
+            try
+            {
+                dict.Add(OpenAIModels.GPT5_2, Registry[OpenAIModels.GPT5_2]);
+            }
+            catch (Exception)
+            {
+                threw = true;
+            }
+
+            Assert.IsTrue(threw, "Registry should be immutable and throw on mutation attempts");
+        }
+
+        [TestMethod]
+        public void All_Enum_Values_Are_Represented_Or_Explicitly_Excluded()
+        {
+            List<OpenAIModels> enumValues = [.. Enum.GetValues(typeof(OpenAIModels)).Cast<OpenAIModels>()];
+            List<OpenAIModels> registryValues = [.. Registry.Keys];
+
+            // Full coverage ..
+            Assert.IsTrue(enumValues.All(registryValues.Contains), "Registry missing one or more enum values");
+
+            // If you intentionally exclude some models, enforce explicit documentation ..
+            List<OpenAIModels> missing = [.. enumValues.Except(registryValues)];
+
+            // Define a whitelist of intentionally excluded models:
+            HashSet<OpenAIModels> allowedMissing =
+            [
+                 OpenAIModels.Whisper_1, // Deprecated - use Whisper1
+            ];
+
+            List<OpenAIModels> unexpectedMissing = [.. missing.Except(allowedMissing)];
+            Assert.IsEmpty(unexpectedMissing, $"Registry missing unexpected models: {string.Join(", ", unexpectedMissing)}");
+        }
+
+        [TestMethod]
+        public void Capabilities_Are_Valid_Enum_Values()
+        {
+            foreach ((OpenAIModels model, OpenAIModelDescriptor descriptor) in Registry)
+            {
+                foreach (ModelCapability cap in descriptor.Capabilities)
+                {
+                    Assert.IsTrue(Enum.IsDefined(typeof(ModelCapability), cap), $"Invalid capability {cap} found in {model}");
+                }
+            }
+        }
+    }
+}

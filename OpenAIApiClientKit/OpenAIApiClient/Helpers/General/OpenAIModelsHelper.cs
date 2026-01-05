@@ -55,11 +55,7 @@ namespace OpenAIApiClient.Helpers.General
                 // -------------------------
                 [OpenAIModels.TextEmbedding_3_Large] = "text-embedding-3-large",
                 [OpenAIModels.TextEmbedding_3_Small] = "text-embedding-3-small",
-
-                // Aliases (if you keep them)
-                [OpenAIModels.TextEmbedding3Small] = "text-embedding-3-small",
-                [OpenAIModels.TextEmbedding3Large] = "text-embedding-3-large",
-                [OpenAIModels.TextEmbeddingAda002] = "text-embedding-ada-002",
+                [OpenAIModels.TextEmbedding_Ada_002] = "text-embedding-ada-002",
 
                 // -------------------------
                 // Audio / TTS / Whisper
@@ -67,11 +63,6 @@ namespace OpenAIApiClient.Helpers.General
                 [OpenAIModels.TTS_1] = "tts-1",
                 [OpenAIModels.TTS_1_HD] = "tts-1-hd",
                 [OpenAIModels.Whisper_1] = "whisper-1",
-                [OpenAIModels.Whisper1] = "whisper-1",
-
-                // Aliases
-                [OpenAIModels.TTS1] = "tts-1",
-                [OpenAIModels.TTS1HD] = "tts-1-hd",
                 [OpenAIModels.TTS1_1106] = "tts-1-1106",
                 [OpenAIModels.TTS1HD_1106] = "tts-1-hd-1106",
 

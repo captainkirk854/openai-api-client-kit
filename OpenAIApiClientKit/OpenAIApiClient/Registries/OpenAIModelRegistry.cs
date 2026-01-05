@@ -257,29 +257,7 @@ namespace OpenAIApiClient.Registries
                     outputTokenCost: 0.00000000m),
                 },
 
-                [OpenAIModels.TextEmbedding3Small] = new OpenAIModelDescriptor
-                {
-                    Capabilities = new HashSet<ModelCapability>
-                    {
-                        ModelCapability.Embedding,
-                    },
-                    Pricing = new ModelPricing(
-                    inputTokenCost: 0.00000000m,
-                    outputTokenCost: 0.00000000m),
-                },
-
-                [OpenAIModels.TextEmbedding3Large] = new OpenAIModelDescriptor
-                {
-                    Capabilities = new HashSet<ModelCapability>
-                    {
-                        ModelCapability.Embedding,
-                    },
-                    Pricing = new ModelPricing(
-                    inputTokenCost: 0.00000000m,
-                    outputTokenCost: 0.00000000m),
-                },
-
-                [OpenAIModels.TextEmbeddingAda002] = new OpenAIModelDescriptor
+                [OpenAIModels.TextEmbedding_Ada_002] = new OpenAIModelDescriptor
                 {
                     Capabilities = new HashSet<ModelCapability>
                     {
@@ -320,39 +298,6 @@ namespace OpenAIApiClient.Registries
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.AudioIn,
-                    },
-                    Pricing = new ModelPricing(
-                    inputTokenCost: 0.00000000m,
-                    outputTokenCost: 0.00000000m),
-                },
-
-                [OpenAIModels.Whisper1] = new OpenAIModelDescriptor
-                {
-                    Capabilities = new HashSet<ModelCapability>
-                    {
-                        ModelCapability.AudioIn,
-                    },
-                    Pricing = new ModelPricing(
-                    inputTokenCost: 0.00000000m,
-                    outputTokenCost: 0.00000000m),
-                },
-
-                [OpenAIModels.TTS1] = new OpenAIModelDescriptor
-                {
-                    Capabilities = new HashSet<ModelCapability>
-                    {
-                        ModelCapability.AudioOut,
-                    },
-                    Pricing = new ModelPricing(
-                    inputTokenCost: 0.00000000m,
-                    outputTokenCost: 0.00000000m),
-                },
-
-                [OpenAIModels.TTS1HD] = new OpenAIModelDescriptor
-                {
-                    Capabilities = new HashSet<ModelCapability>
-                    {
-                        ModelCapability.AudioOut,
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
@@ -446,6 +391,11 @@ namespace OpenAIApiClient.Registries
                 descriptor.Model = model;
             }
         }
+
+        /// <summary>
+        /// Gets the complete model registry dictionary ..
+        /// </summary>
+        public Dictionary<OpenAIModels, OpenAIModelDescriptor> Registry => this.models;
 
         /// <summary>
         /// Gets all registered model descriptors ..

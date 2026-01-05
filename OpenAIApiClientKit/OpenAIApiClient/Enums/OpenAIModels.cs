@@ -44,11 +44,7 @@ namespace OpenAIApiClient.Enums
         // -------------------------
         TextEmbedding_3_Large,
         TextEmbedding_3_Small,
-
-        // Aliases
-        TextEmbedding3Small,
-        TextEmbedding3Large,
-        TextEmbeddingAda002,
+        TextEmbedding_Ada_002,
 
         // -------------------------
         // Audio / TTS / Whisper
@@ -58,11 +54,6 @@ namespace OpenAIApiClient.Enums
         TTS1_1106,
         TTS1HD_1106,
         Whisper_1,    // Speech-to-Text
-
-        // Aliases
-        TTS1,
-        TTS1HD,
-        Whisper1,
 
         // -------------------------
         // Image Models
