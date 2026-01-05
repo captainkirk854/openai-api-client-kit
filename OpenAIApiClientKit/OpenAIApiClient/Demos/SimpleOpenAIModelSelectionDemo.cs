@@ -19,10 +19,10 @@ namespace OpenAIApiClient.Demos
             // Initialise Model Router which filters which model(s) to use ..
             OpenAIModelRouter router = new(registry: registry);
 
-            // Initialise the model executor ..
+            // Initialise Model Executor ..
             OpenAIModelExecutor executor = new(client: client);
 
-            // Initialise the multi-model orchestrator ..
+            // Initialise Multi-Model Orchestrator ..
             MultiModelOrchestrator orchestrator = new(router: router, executor: executor);
 
             // Define prompt context including model requirements ..
@@ -37,10 +37,10 @@ namespace OpenAIApiClient.Demos
                 DesiredOutputFormat = "text", // e.g., "text", "json", "markdown", "csv", etc.
             };
 
-            // Execute the multi-model pipeline
+            // Execute selected model(s) in orchestration pipeline ..
             OpenAICollatedResponse final = await orchestrator.ExecuteAsync(context: context, cancelToken: cts.Token);
 
-            // Output the final aggregated answer ..
+            // Output computed best response information ..
             Console.WriteLine();
             Console.WriteLine("=== BEST RESPONSE ===");
             Console.WriteLine($"Model: {final.Name}");
@@ -55,7 +55,7 @@ namespace OpenAIApiClient.Demos
                 Console.WriteLine(new string('-', 80));
                 Console.WriteLine($"Model: {r.Model.Model}");
                 Console.WriteLine($"Success: {r.IsSuccessful}");
-                Console.WriteLine($"Tokens: {r.TotalTokens}");
+                Console.WriteLine($"TokenCost: {r.TotalTokens}");
                 Console.WriteLine($"Cost: {r.EstimatedCost}");
                 Console.WriteLine($"Latency: {r.Latency.TotalMilliseconds} ms");
                 Console.WriteLine($"Output: {r.RawOutput}");

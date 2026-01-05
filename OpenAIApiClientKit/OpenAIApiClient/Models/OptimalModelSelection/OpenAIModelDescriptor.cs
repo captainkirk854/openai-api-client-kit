@@ -6,6 +6,7 @@ namespace OpenAIApiClient.Models.OptimalModelSelection
 {
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Helpers.General;
+    using OpenAIApiClient.Models.Chat.Response.Completion;
 
     /// <summary>
     /// Model descriptor for OpenAI models.
@@ -33,6 +34,15 @@ namespace OpenAIApiClient.Models.OptimalModelSelection
             get;
             init;
         } = new HashSet<ModelCapability>();
+
+        /// <summary>
+        /// Gets the pricing information for the model.
+        /// </summary>
+        public ModelPricing Pricing
+        {
+            get;
+            init;
+        } = new ModelPricing(0, 0);
 
         /// <summary>
         /// Overrides ToString to provide a string representation of the model descriptor.

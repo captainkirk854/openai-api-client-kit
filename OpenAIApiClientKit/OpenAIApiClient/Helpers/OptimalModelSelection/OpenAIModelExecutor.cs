@@ -33,9 +33,6 @@ namespace OpenAIApiClient.Helpers.OptimalModelSelection
                                                 .AddUserMessage(context.Prompt)
                                                 .Build();
 
-            // Get pricing info for the model ..
-            ModelPricing? pricing = OpenAIModelPricingRegistry.Pricing.TryGetValue(model.Model, out ModelPricing? p) ? p : null;
-
             // Start timing ..
             Stopwatch sw = Stopwatch.StartNew();
 
@@ -54,7 +51,7 @@ namespace OpenAIApiClient.Helpers.OptimalModelSelection
                     RawOutput = response!.Choices[0].Message.Content!,
                     IsSuccessful = true,
                     Latency = sw.Elapsed,
-                    EstimatedCost = response!.Usage?.CalculateCost(pricing: pricing!) ?? 0m,
+                    EstimatedCost = response!.Usage?.CalculateCost(pricing: model.Pricing!) ?? 0m,
                     TotalTokens = response!.Usage?.TotalTokens ?? 0m,
                 };
             }

@@ -5,6 +5,7 @@
 namespace OpenAIApiClient.Registries
 {
     using OpenAIApiClient.Enums;
+    using OpenAIApiClient.Models.Chat.Response.Completion;
     using OpenAIApiClient.Models.OptimalModelSelection;
 
     /// <summary>
@@ -19,6 +20,9 @@ namespace OpenAIApiClient.Registries
         /// Initializes a new instance of the <see cref="OpenAIModelRegistry"/> class.
         /// </summary>
         /// <remarks>
+        /// Model registry is built in two phases:
+        /// 1. Initialize each model key with its descriptor "Capabilities" and "Pricing" values only.
+        /// 2. Finalise registry by using dictionary key value to auto-inject the "yet-to-be-set" Model property value for each model descriptor.
         /// Registry design benefits:
         /// - No repeated Model property assignments in descriptor as dictionary key is single source of truth
         /// - No risk of mismatched keys
@@ -28,7 +32,7 @@ namespace OpenAIApiClient.Registries
         /// </remarks>
         public OpenAIModelRegistry()
         {
-            // Start building registry dictionary by initializing each model key with its descriptor "Capabilities" value only ..
+            // Start building registry dictionary by initializing each model key with its descriptor "Capabilities" and "Pricing" values only ..
             this.models = new()
             {
                 // -------------------------
@@ -43,6 +47,9 @@ namespace OpenAIApiClient.Registries
                         ModelCapability.Reasoning,
                         ModelCapability.HighPerformance,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m),
                 },
 
                 [OpenAIModels.GPT5_2_Pro] = new OpenAIModelDescriptor
@@ -54,6 +61,9 @@ namespace OpenAIApiClient.Registries
                         ModelCapability.Reasoning,
                         ModelCapability.HighPerformance,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m),
                 },
 
                 [OpenAIModels.GPT5] = new OpenAIModelDescriptor
@@ -64,6 +74,9 @@ namespace OpenAIApiClient.Registries
                         ModelCapability.Chat,
                         ModelCapability.HighPerformance,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m),
                 },
 
                 [OpenAIModels.GPT5_Mini] = new OpenAIModelDescriptor
@@ -74,6 +87,9 @@ namespace OpenAIApiClient.Registries
                         ModelCapability.Chat,
                         ModelCapability.LowCost,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m),
                 },
 
                 [OpenAIModels.GPT5_Nano] = new OpenAIModelDescriptor
@@ -84,11 +100,15 @@ namespace OpenAIApiClient.Registries
                         ModelCapability.Chat,
                         ModelCapability.LowCost,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m),
                 },
 
                 // -------------------------
                 // GPT‑4 Family
                 // -------------------------
+                // GPT‑4.1 — Standard Reasoning Model
                 [OpenAIModels.GPT4_1] = new OpenAIModelDescriptor
                 {
                     Capabilities = new HashSet<ModelCapability>
@@ -97,8 +117,13 @@ namespace OpenAIApiClient.Registries
                         ModelCapability.Chat,
                         ModelCapability.Reasoning,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00001m,
+                    outputTokenCost: 0.00003m,
+                    cachedInputTokenCost: 0.000002m),
                 },
 
+                // GPT‑4.1 Mini — Fast, Low‑Cost Model
                 [OpenAIModels.GPT4_1_Mini] = new OpenAIModelDescriptor
                 {
                     Capabilities = new HashSet<ModelCapability>
@@ -108,6 +133,9 @@ namespace OpenAIApiClient.Registries
                         ModelCapability.LowCost,
                         ModelCapability.FastInference,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.0000015m,
+                    outputTokenCost: 0.000002m),
                 },
 
                 [OpenAIModels.GPT4_1_Reasoning] = new OpenAIModelDescriptor
@@ -119,8 +147,13 @@ namespace OpenAIApiClient.Registries
                         ModelCapability.Reasoning,
                         ModelCapability.HighPerformance,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m,
+                    reasoningTokenCost: 0.00000000m),
                 },
 
+                // GPT‑4.1 Critic — Evaluation / Critique Model
                 [OpenAIModels.GPT4_1_Critic] = new OpenAIModelDescriptor
                 {
                     Capabilities = new HashSet<ModelCapability>
@@ -130,6 +163,9 @@ namespace OpenAIApiClient.Registries
                         ModelCapability.Reasoning,
                         ModelCapability.Critic,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00001m,
+                    outputTokenCost: 0.00003m),
                 },
 
                 [OpenAIModels.GPT4_Turbo] = new OpenAIModelDescriptor
@@ -140,6 +176,9 @@ namespace OpenAIApiClient.Registries
                         ModelCapability.Chat,
                         ModelCapability.HighPerformance,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m),
                 },
 
                 // -------------------------
@@ -156,8 +195,12 @@ namespace OpenAIApiClient.Registries
                         ModelCapability.AudioOut,
                         ModelCapability.HighPerformance,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m),
                 },
 
+                // GPT‑4o Mini — NEW
                 [OpenAIModels.GPT4o_Mini] = new OpenAIModelDescriptor
                 {
                     Capabilities = new HashSet<ModelCapability>
@@ -168,6 +211,9 @@ namespace OpenAIApiClient.Registries
                         ModelCapability.LowCost,
                         ModelCapability.FastInference,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000015m,
+                    outputTokenCost: 0.00000060m),
                 },
 
                 // -------------------------
@@ -181,6 +227,9 @@ namespace OpenAIApiClient.Registries
                         ModelCapability.Chat,
                         ModelCapability.LowCost,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m),
                 },
 
                 // -------------------------
@@ -192,6 +241,9 @@ namespace OpenAIApiClient.Registries
                     {
                         ModelCapability.Embedding,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m),
                 },
 
                 [OpenAIModels.TextEmbedding_3_Small] = new OpenAIModelDescriptor
@@ -200,6 +252,9 @@ namespace OpenAIApiClient.Registries
                     {
                         ModelCapability.Embedding,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m),
                 },
 
                 [OpenAIModels.TextEmbedding3Small] = new OpenAIModelDescriptor
@@ -208,6 +263,9 @@ namespace OpenAIApiClient.Registries
                     {
                         ModelCapability.Embedding,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m),
                 },
 
                 [OpenAIModels.TextEmbedding3Large] = new OpenAIModelDescriptor
@@ -216,6 +274,9 @@ namespace OpenAIApiClient.Registries
                     {
                         ModelCapability.Embedding,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m),
                 },
 
                 [OpenAIModels.TextEmbeddingAda002] = new OpenAIModelDescriptor
@@ -224,6 +285,9 @@ namespace OpenAIApiClient.Registries
                     {
                         ModelCapability.Embedding,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m),
                 },
 
                 // -------------------------
@@ -235,6 +299,9 @@ namespace OpenAIApiClient.Registries
                     {
                         ModelCapability.AudioOut,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m),
                 },
 
                 [OpenAIModels.TTS_1_HD] = new OpenAIModelDescriptor
@@ -243,6 +310,9 @@ namespace OpenAIApiClient.Registries
                     {
                         ModelCapability.AudioOut,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m),
                 },
 
                 [OpenAIModels.Whisper_1] = new OpenAIModelDescriptor
@@ -251,6 +321,9 @@ namespace OpenAIApiClient.Registries
                     {
                         ModelCapability.AudioIn,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m),
                 },
 
                 [OpenAIModels.Whisper1] = new OpenAIModelDescriptor
@@ -259,6 +332,9 @@ namespace OpenAIApiClient.Registries
                     {
                         ModelCapability.AudioIn,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m),
                 },
 
                 [OpenAIModels.TTS1] = new OpenAIModelDescriptor
@@ -267,6 +343,9 @@ namespace OpenAIApiClient.Registries
                     {
                         ModelCapability.AudioOut,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m),
                 },
 
                 [OpenAIModels.TTS1HD] = new OpenAIModelDescriptor
@@ -275,6 +354,9 @@ namespace OpenAIApiClient.Registries
                     {
                         ModelCapability.AudioOut,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m),
                 },
 
                 [OpenAIModels.TTS1_1106] = new OpenAIModelDescriptor
@@ -283,6 +365,9 @@ namespace OpenAIApiClient.Registries
                     {
                         ModelCapability.AudioOut,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m),
                 },
 
                 [OpenAIModels.TTS1HD_1106] = new OpenAIModelDescriptor
@@ -291,6 +376,9 @@ namespace OpenAIApiClient.Registries
                     {
                         ModelCapability.AudioOut,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m),
                 },
 
                 // -------------------------
@@ -302,6 +390,9 @@ namespace OpenAIApiClient.Registries
                     {
                         ModelCapability.ImageGeneration,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m),
                 },
 
                 // -------------------------
@@ -315,6 +406,9 @@ namespace OpenAIApiClient.Registries
                         ModelCapability.Chat,
                         ModelCapability.OpenWeight,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m),
                 },
 
                 [OpenAIModels.O1_Mini] = new OpenAIModelDescriptor
@@ -326,6 +420,9 @@ namespace OpenAIApiClient.Registries
                         ModelCapability.OpenWeight,
                         ModelCapability.LowCost,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m),
                 },
 
                 // -------------------------
@@ -337,10 +434,13 @@ namespace OpenAIApiClient.Registries
                     {
                         ModelCapability.Moderation,
                     },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m),
                 },
             };
 
-            // Finalise the registry, by using dictionary key value to auto-inject the "yet-to-be-set" Model property value for each model descriptor ..
+            // Finalise registry, by using dictionary key value to auto-inject the "yet-to-be-set" Model property value for each model descriptor ..
             foreach ((OpenAIModels model, OpenAIModelDescriptor descriptor) in this.models)
             {
                 descriptor.Model = model;
