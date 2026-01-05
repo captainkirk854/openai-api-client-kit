@@ -135,7 +135,7 @@ If everything is configured correctly, you’ll see ChatGPT’s response in your
 This project establishes a unified, strongly typed, future‑proof foundation for working with OpenAI models in .NET. The work completed in this discussion consolidates model metadata, capabilities, pricing, and routing information into a single, extensible architecture designed for reliability, maintainability, and clarity.
 
 ## 🚀 1. Strongly Typed Model Enumeration
-We defined a comprehensive ```OpenAIModel``` enum covering all relevant OpenAI model families:
+A comprehensive ```OpenAIModel``` enum has been defined covering all relevant OpenAI model families:
 - GPT‑5 (5.2, 5.2 Pro, 5, Mini, Nano)
 - GPT‑4.1 (Standard, Mini, Reasoning, Critic, Turbo)
 - GPT‑4o (Standard, Mini)
@@ -146,10 +146,10 @@ We defined a comprehensive ```OpenAIModel``` enum covering all relevant OpenAI m
 - Open‑weight models (O1, O1‑Mini)
 - Moderation models
 
-This enum becomes the **backbone** of the entire registry system.
+This enum forms the **backbone** of the entire registry system.
 
 ## 🔗 2. Model Endpoint Mapping
-We created a strongly typed mapping from each enum value to its actual OpenAI API endpoint string, ensuring:
+There is a strongly typed mapping from each enum value to its actual OpenAI API endpoint string, ensuring:
 - No magic strings
 - Centralized control
 - Easy updates when OpenAI releases new versions
@@ -158,7 +158,7 @@ Example:
 OpenAIModel.GPT4_1 → "gpt-4.1"
 
 ## 🧠 3. Capability System
-We introduced a flexible ModelCapability enum representing what each model can do:
+A flexible ```ModelCapability``` enum has been defined to represent what each model can do:
 - Text / Chat
 - Reasoning
 - Vision
@@ -173,7 +173,7 @@ We introduced a flexible ModelCapability enum representing what each model can d
 This enables intelligent routing, filtering, and orchestration decisions.
 
 ## 🧩 4. ModelDescriptor Class
-We designed a unified descriptor object that encapsulates:
+A unified descriptor object encapsulates:
 - Model enum
 - API endpoint
 - Capabilities
@@ -182,7 +182,7 @@ We designed a unified descriptor object that encapsulates:
 This becomes the single source of truth for all model metadata.
 
 ## 💰 5. Pricing Model (Per‑Token)
-We created a ModelPricing class using cost per token, not per‑1K, making cost calculations simpler and more accurate.
+The ModelPricing class uses cost per token, not per‑1K, making cost calculations simpler and more accurate.
 
 Pricing fields include:
 - Input token cost
@@ -210,25 +210,31 @@ This registry is:
 - Centralized
 - Perfect for orchestration, routing, and cost estimation
 
-It is the authoritative source for all model metadata in this system.
+It is the authoritative source for all model-related metadata in this system.
 
 ## 🧭 7. Architectural Benefits
 This design provides:
+
 ✔ Single‑source‑of‑truth
-All model metadata lives in one place.
+- All model metadata lives in one place.
+
 ✔ Zero duplication
-Endpoints, capabilities, and pricing are defined once.
+- Endpoints, capabilities, and pricing are defined once.
+
 ✔ Strong typing everywhere
-No stringly‑typed model names or ad‑hoc metadata.
+- No stringly‑typed model names or ad‑hoc metadata.
+
 ✔ Future‑proofing
-Adding GPT‑6 or new TTS models is trivial.
+- Adding GPT‑6 or new TTS models is trivial.
+
 ✔ Orchestration‑ready
-Your system can now route based on:
-- Reasoning ability
-- Cost tier
-- Vision support
-- Audio support
-- Performance tier
+- The system can route based on:
+    - Reasoning ability
+    - Cost tier
+    - Vision support
+    - Audio support
+    - Performance tier
+
 ✔ Pricing‑ready
 Cost estimation becomes a simple lookup + multiplication.
 
