@@ -46,7 +46,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             }
 
             // Build request payload ..
-            ChatCompletionRequest request = new ClientRequestBuilder().WithModel(input: OpenAIModels.GPT4o_Mini)
+            ChatCompletionRequest request = new ClientRequestBuilder().WithModel(input: OpenAIModel.GPT4o_Mini)
                                                                       .AddSystemMessage(input: "You are a helpful assistant that answers concisely.")
                                                                       .AddUserMessage(input: userPrompt)
                                                                       .UsingMaxTokens(input: 1000)

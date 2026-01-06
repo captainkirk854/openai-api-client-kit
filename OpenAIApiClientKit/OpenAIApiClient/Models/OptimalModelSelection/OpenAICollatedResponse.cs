@@ -13,7 +13,7 @@ namespace OpenAIApiClient.Models.OptimalModelSelection
         /// <summary>
         /// Gets the name of the model used to generate the final response.
         /// </summary>
-        public OpenAIModels Name
+        public OpenAIModel Name
         {
             get;
             init;

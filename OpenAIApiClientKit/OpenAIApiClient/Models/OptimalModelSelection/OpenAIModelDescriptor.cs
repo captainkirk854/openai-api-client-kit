@@ -20,7 +20,7 @@ namespace OpenAIApiClient.Models.OptimalModelSelection
         /// <summary>
         /// Gets the model.
         /// </summary>
-        public OpenAIModels Model
+        public OpenAIModel Model
         {
             get;
             internal set;

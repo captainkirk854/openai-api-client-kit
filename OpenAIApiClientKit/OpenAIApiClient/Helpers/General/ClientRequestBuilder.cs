@@ -62,7 +62,7 @@ namespace OpenAIApiClient.Helpers.General
         /// </summary>
         /// <param name="input">The OpenAI model to be used for the request.</param>
         /// <returns>The current instance of <see cref="ClientRequestBuilder"/> with the updated Model setting.</returns>
-        public ClientRequestBuilder WithModel(OpenAIModels input)
+        public ClientRequestBuilder WithModel(OpenAIModel input)
         {
             this.model = input.ToApiString();
             return this;

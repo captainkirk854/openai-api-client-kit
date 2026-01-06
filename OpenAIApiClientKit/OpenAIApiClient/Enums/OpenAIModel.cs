@@ -1,4 +1,4 @@
-﻿// <copyright file="OpenAIModels.cs" company="854 Things (tm)">
+﻿// <copyright file="OpenAIModel.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -8,7 +8,7 @@ namespace OpenAIApiClient.Enums
     /// List of OpenAI models.
     /// list is based on the latest OpenAI documentation as of December 2025.
     /// </summary>
-    public enum OpenAIModels
+    public enum OpenAIModel
     {
         // -------------------------
         // GPT‑5 Family
