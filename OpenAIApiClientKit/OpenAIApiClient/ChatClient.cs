@@ -75,13 +75,13 @@ namespace OpenAIApiClient
         {
             request.Stream = false;
 
-            // Serialize request payload
+            // Serialize request payload ..
             string json = JsonSerializer.Serialize(value: request, options: this.jsonOptions);
 
-            // Prepare HTTP content
+            // Prepare HTTP content ..
             HttpContent httpContent = new StringContent(content: json, encoding: Encoding.UTF8, mediaType: MediaTypeJson);
 
-            // Execute with retry logic
+            // Execute with retry logic ..
             return await this.ExecuteWithRetryAsync(
                 operation: async () =>
                 {

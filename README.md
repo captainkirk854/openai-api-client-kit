@@ -7,24 +7,26 @@ Supports:
 - ✔️ Streaming responses (token‑by‑token)
 - ✔️ Automatic retries
 - ✔️ Exponential backoff with jitter
-- ✔️ Smart handling of HTTP 429 Rate Limit + Retry-After header
+- ✔️ Smart handling of ```HTTP 429 Rate Limit``` + ```Retry-After``` header
 - ✔️ Clean, reusable API surface
 
 # 📘 Overview
 
 This project provides a robust, developer‑friendly C# client for interacting with OpenAI’s Chat Completion API.
+
 It’s designed for:
 - Backend services
 - Desktop apps
 - Tools and utilities
 - High‑reliability integrations
+
 No Azure OpenAI deployment is required — this client talks directly to OpenAI’s public API.
 
 # 🔧 Features
 
 ## 🧵 Streaming Support
 
-Consume responses as they are generated using IAsyncEnumerable<string>.
+Consume responses as they are generated using ```IAsyncEnumerable<ChatCompletionChunk>```.
 
 ## 🔁 Retry Logic
 
@@ -34,16 +36,16 @@ Automatic retries on:
 - HTTP 429 (rate limit)
 
 ## ⏳ Rate‑Limit Handling
-Honors the server’s Retry-After header when present.
+Honors the server’s ```Retry-After``` header when present in response.
 
 ## 🧱 Minimal Dependencies
 
-Only uses System.Net.Http and System.Text.Json.
+Only uses ```System.Net.Http``` and ```System.Text.Json```.
 
 # 📦 Installation
 
-Add the required package:
-```dotnet add package System.Net.Http.Json```
+Add the required package(s) if required:
+e.g., ```dotnet add package System.Net.Http.Json```
 
 # 🔑 Getting an OpenAI API Key
 - Visit https://platform.openai.com
@@ -56,9 +58,8 @@ Set it as an environment variable:
 Windows (PowerShell):
 ```setx OPENAI_API_KEY "your-api-key"```
 
-# 🧠 ChatGptClient
-Place the full wrapper class in:
-/src/ChatGptClient.cs
+# 🧠 ChatClient
+Place the full wrapper class in: ```ChatClient.cs```
 
 This class includes:
 - Normal completions
@@ -71,20 +72,21 @@ This class includes:
 
 ## Common Setup
 ```
-var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
+string? apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
 
 ChatClient client = new(apiKey: apiKey);
 
-ChatCompletionRequest request = new ClientRequestBuilder().WithModel(input: OpenAIModels.GPT4o_Mini)
-                                                          .AddSystemMessage(input: "You are a helpful assistant that answers concisely.")
-                                                          .AddUserMessage(input: "Write a haiku about winter mornings.")
-                                                          .UsingMaxTokens(input: 1000)
-                                                          .EnableStreaming(input: isStreaming)
-                                                          .WithTemperature(input: temperature)
-                                                          .WithTopP(input: topP)
-                                                          .WithPresencePenalty(input: presencePenalty)
-                                                          .WithFrequencyPenalty(input: frequencyPenalty)
-                                                          .Build();
+ChatCompletionRequest request = 
+new ClientRequestBuilder().WithModel(input: OpenAIModels.GPT4o_Mini)
+                          .AddSystemMessage(input: "You are a helpful assistant that answers concisely.")
+                          .AddUserMessage(input: "Write a haiku about winter mornings.")
+                          .UsingMaxTokens(input: 1000)
+                          .EnableStreaming(input: isStreaming)
+                          .WithTemperature(input: temperature)
+                          .WithTopP(input: topP)
+                          .WithPresencePenalty(input: presencePenalty)
+                          .WithFrequencyPenalty(input: frequencyPenalty)
+                          .Build();
 
 using CancellationTokenSource cts = new(TimeSpan.FromSeconds(30));
 ```
@@ -102,7 +104,7 @@ string? response = string.Empty;
 // Stream the response chunk(s) ..
 await foreach (ChatCompletionChunk chunk in client.CreateChatCompletionStreamAsync(request: request, cancelToken: cts.Token))
 {
-    // Extract delta content from chunk ..
+    // Extract delta content from chunk and concatenate to final response ..
     ChatDelta chunkDelta = chunk.Choices[0].Delta;
     response += chunkDelta.Content;
 }

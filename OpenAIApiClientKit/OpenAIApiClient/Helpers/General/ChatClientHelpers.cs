@@ -46,13 +46,13 @@ namespace OpenAIApiClient.Helpers.General
             // Stream the response chunk(s) ..
             await foreach (ChatCompletionChunk chunk in client.CreateChatCompletionStreamAsync(request: request, cancelToken: cancelTokenSource.Token))
             {
-                // Extract delta content from chunk ..
+                // Extract delta content from chunk and concatenate to final response ..
                 ChatDelta chunkDelta = chunk.Choices[0].Delta;
                 response += chunkDelta.Content;
                 chunkCount++;
             }
 
-            // Return the aggregated streamed response ..
+            // Return the finalised response ..
             return (response, chunkCount);
         }
     }
