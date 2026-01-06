@@ -4,10 +4,7 @@
 
 namespace OpenAIApiClient.ConsoleApp
 {
-    using OpenAIApiClient.Demos;
-    using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Helpers.General;
-    using OpenAIApiClient.Models.Chat.Request;
+    using OpenAIApiClient.ConsoleApp.Demos;
 
     public class Program
     {
@@ -30,25 +27,26 @@ namespace OpenAIApiClient.ConsoleApp
             using CancellationTokenSource cts = new(TimeSpan.FromSeconds(TimeoutInSeconds));
 
             // Run Model-Selection Demo first ..
-            Console.Write("Run Simple Model Selection Demo? (y/n) (n): ");
-            bool runOptimalModelSelectionDemo = Console.ReadLine()?.Trim().Equals(value: "y", comparisonType: StringComparison.OrdinalIgnoreCase) ?? false;
+            bool runOptimalModelSelectionDemo = SetBooleanPrompt(message: "Run Model Selection Demo?", setTrue: 'y', setFalse: 'n');
             if (runOptimalModelSelectionDemo)
             {
                 string prompt = "explain the theory of relativity in simple terms.";
+
                 Console.Clear();
-                Console.WriteLine("Running Simple Optimal Model Selection Demo ..");
+                Console.WriteLine("Running Optimal Model Selection Demo ..");
                 Console.WriteLine();
                 Console.WriteLine($"Using Prompt: {prompt}");
-                await SimpleOpenAIModelSelectionDemo.RunAsync(client: client, prompt: prompt, cts: cts);
+
+                // Get best model for the prompt ..
+                await OptimalModelSelectionDemo.GetBestModelAsync(client: client, prompt: prompt, cts: cts);
+
                 Console.WriteLine("Press Enter to continue..");
                 Console.ReadLine();
             }
             else
             {
-                // Run regular demo starting with whether to use streaming or non-streaming mode ..
-                Console.Write("Use streaming mode? (y/n) (n): ");
-                string streamingChoice = Console.ReadLine() ?? "n";
-                bool isStreaming = streamingChoice.Equals(value: "y", comparisonType: StringComparison.OrdinalIgnoreCase);
+                // Run regular demo starting with whether to use streaming or non-streaming modes ..
+                bool isStreaming = SetBooleanPrompt(message: "Use streaming mode?", setTrue: 'y', setFalse: 'n');
 
                 // Clear console for better readability ..
                 Console.Clear();
@@ -69,23 +67,18 @@ namespace OpenAIApiClient.ConsoleApp
                     }
 
                     // Ask if creativity settings should be enabled ..
-                    Console.Write("Enable creativity settings? (y/n) (n): ");
-                    string creativityChoice = Console.ReadLine() == string.Empty ? "n" : "y";
-                    bool isDeterministic = creativityChoice.Equals(value: "n", comparisonType: StringComparison.OrdinalIgnoreCase);
+                    bool isDeterministic = SetBooleanPrompt(message: "Enable creativity settings?", setTrue: 'n', setFalse: 'y', setDefault: 'n');
 
                     // Ask to force JSON mode ..
-                    Console.Write("Enable forced JSON output? (y/n) (n): ");
-                    string jsonChoice = Console.ReadLine() == string.Empty ? "n" : "y";
-                    bool isJson = jsonChoice.Equals(value: "y", comparisonType: StringComparison.OrdinalIgnoreCase);
+                    bool isJson = SetBooleanPrompt(message: "Enable forced JSON output?", setTrue: 'y', setFalse: 'n', setDefault: 'n');
 
                     // Process user prompt with additional options ..
-                    await ProcessUserPromptAsync(client: client, isStreaming: isStreaming, userPrompt: userPrompt, isDeterministic: isDeterministic, isJson: isJson, cts: cts);
+                    await ModelPromptDemo.ProcessUserPromptAsync(client: client, isStreaming: isStreaming, userPrompt: userPrompt, isDeterministic: isDeterministic, isJson: isJson, cts: cts);
 
                     // Ask if the user wants to enter another prompt ..
                     Console.WriteLine();
-                    Console.Write("Do you want to enter another prompt? (y/n) (n): ");
-                    string continueChoice = Console.ReadLine() ?? "n";
-                    if (!continueChoice.Equals(value: "y", comparisonType: StringComparison.OrdinalIgnoreCase))
+                    bool continuePrompting = SetBooleanPrompt(message: "Do you want to enter another prompt?", setTrue: 'y', setFalse: 'n');
+                    if (!continuePrompting)
                     {
                         break;
                     }
@@ -98,91 +91,24 @@ namespace OpenAIApiClient.ConsoleApp
         }
 
         /// <summary>
-        /// Processes a user prompt by sending it to the chat client and displaying the response, supporting both streaming and non-streaming modes.
+        /// Boolean Console Prompt helper method.
         /// </summary>
-        /// <remarks>
-        /// If the operation is cancelled via the provided CancellationTokenSource, a
-        /// cancellation message is displayed. The method writes the user prompt and the response to the console.
-        /// Deterministic or non-deterministic parameters are applied to the chat completion request based on the value yof isDeterminismEnabled.
-        /// </remarks>
-        /// <param name="client">The chat client used to send the prompt and receive the response.</param>
-        /// <param name="isStreaming">true to enable streaming responses; otherwise, false for non-streaming responses.</param>
-        /// <param name="userPrompt">The user input prompt to be sent to the chat client. Cannot be null.</param>
-        /// <param name="isDeterministic">true to use deterministic output parameters for the chat completion request; otherwise, false to use
-        /// non-deterministic parameters.</param>
-        /// <param name="isJson">true to enable JSON mode for the chat completion request; otherwise, false.</param>
-        /// <param name="cts">A CancellationTokenSource used to observe cancellation requests for the operation. Cannot be null.</param>
-        /// <returns>A task that represents the asynchronous operation.</returns>
-        private static async Task ProcessUserPromptAsync(ChatClient client, bool isStreaming, string userPrompt, bool isDeterministic, bool isJson, CancellationTokenSource cts)
+        /// <param name="message">Prompt message.</param>
+        /// <param name="setTrue">Positive response.</param>
+        /// <param name="setFalse">Negative response.</param>
+        /// <param name="setDefault">Default response.</param>
+        /// <returns><see cref="bool"/>.</returns>
+        public static bool SetBooleanPrompt(string message, char setTrue, char setFalse, char setDefault = 'n')
         {
-            // Set deterministic output parameters ..
-            double temperature = 0.0;
-            double topP = 0.0;
-            double presencePenalty = -2.0;
-            double frequencyPenalty = 0.0;
-            if (!isDeterministic)
-            {
-                temperature = 2.0;
-                topP = 0.99; // Note: using 1.0 can lead to corrupted output in some cases ..
-                presencePenalty = 2.0;
-                frequencyPenalty = 2.0;
-            }
+            // Prompt user ..
+            Console.Write($"{message} ({setTrue}/{setFalse}) ({setDefault}) ");
 
-            // Build request payload ..
-            ChatCompletionRequest request = new ClientRequestBuilder().WithModel(input: OpenAIModels.GPT4o_Mini)
-                                                                      .AddSystemMessage(input: "You are a helpful assistant that answers concisely.")
-                                                                      .AddUserMessage(input: userPrompt)
-                                                                      .UsingMaxTokens(input: 1000)
-                                                                      .EnableStreaming(input: isStreaming)
-                                                                      .WithTemperature(input: temperature)
-                                                                      .WithTopP(input: topP)
-                                                                      .WithPresencePenalty(input: presencePenalty)
-                                                                      .WithFrequencyPenalty(input: frequencyPenalty)
-                                                                      .ForceJsonOutput(input: isJson)
-                                                                      .Build();
+            // Read input and determine choice ..
+            string? input = Console.ReadLine();
+            string choice = string.IsNullOrEmpty(input) ? setDefault.ToString() : input;
 
-            // If not streaming ..
-            if (!isStreaming)
-            {
-                // Perform Non-streaming Call ..
-                Console.WriteLine("Waiting for Non-Streaming Response ..");
-                try
-                {
-                    string? content = await ChatClientHelpers.GetChatCompletionNonStreamingMessageContentAsync(client: client, request: request, cancelTokenSource: cts);
-                    Console.WriteLine();
-                    Console.WriteLine(content);
-                }
-                catch (OperationCanceledException)
-                {
-                    Console.WriteLine("Non-Streaming Request was cancelled.");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error: {ex.Message}");
-                }
-            }
-            else
-            {
-                // Perform Streaming Call ..
-                Console.WriteLine("Waiting for Streaming Response ..");
-                try
-                {
-                    (string?, int) response = await ChatClientHelpers.GetChatCompletionStreamingMessageContentAsync(client: client, request: request, cancelTokenSource: cts);
-                    string content = response.Item1 ?? string.Empty;
-                    int chunkCount = response.Item2;
-                    Console.WriteLine();
-                    Console.WriteLine(content);
-                    Console.WriteLine($"(Total Chunk(s) received: {chunkCount})");
-                }
-                catch (OperationCanceledException)
-                {
-                    Console.WriteLine("Streaming request was cancelled.");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error: {ex.Message}");
-                }
-            }
+            // Return true for positive choice, false otherwise ..
+            return choice.Equals(value: setTrue.ToString(), comparisonType: StringComparison.OrdinalIgnoreCase);
         }
     }
 }

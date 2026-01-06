@@ -1,17 +1,27 @@
-﻿// <copyright file="SimpleOpenAIModelSelectionDemo.cs" company="854 Things (tm)">
+﻿// <copyright file="OptimalModelSelectionDemo.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Demos
+namespace OpenAIApiClient.ConsoleApp.Demos
 {
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Helpers.OptimalModelSelection;
     using OpenAIApiClient.Models.OptimalModelSelection;
     using OpenAIApiClient.Registries;
 
-    public static class SimpleOpenAIModelSelectionDemo
+    /// <summary>
+    /// Console App Demo to demonstrate implementation example for OpenAI optimal model selection.
+    /// </summary>
+    public static class OptimalModelSelectionDemo
     {
-        public static async Task RunAsync(ChatClient client, string prompt, CancellationTokenSource cts)
+        /// <summary>
+        /// Generic demo method to run optimal model selection based on prompt context.
+        /// </summary>
+        /// <param name="client"><see cref="ChatClient"/> instance.</param>
+        /// <param name="prompt">The prompt to send to the model(s).</param>
+        /// <param name="cts"><see cref="CancellationTokenSource"/> instance.</param>
+        /// <returns><see cref="Task"/> representing the asynchronous operation.</returns>
+        public static async Task GetBestModelAsync(ChatClient client, string prompt, CancellationTokenSource cts)
         {
             // Initialise model registry ..
             OpenAIModelRegistry registry = new();

@@ -123,6 +123,11 @@ The client automatically:
 You can configure retry behavior:
 ```ChatClient client = new(apiKey: apiKey, maxRetries: 5, baseDelayMs: 1000);```
 
+# 🧠 Implementation Examples
+See the ```OpenAIApiClient.ConsoleApp``` project for a simple console application demonstrating usage.
+- The ```ModelPromptDemo.cs``` file provides an example of how to prompt different models and handle their responses (non-streaming and streaming).)
+- The ```OptimalModelSelectionDemo.cs``` file provides an example as to how to select the best model based on capabilities and cost.
+
 # 🧪 Testing Your Setup
 Run:
 ```dotnet run```
