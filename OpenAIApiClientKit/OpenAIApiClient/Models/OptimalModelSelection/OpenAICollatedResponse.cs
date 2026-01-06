@@ -6,6 +6,7 @@ namespace OpenAIApiClient.Models.OptimalModelSelection
 {
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Helpers.General;
+    using OpenAIApiClient.Registries;
 
     public sealed class OpenAICollatedResponse
     {

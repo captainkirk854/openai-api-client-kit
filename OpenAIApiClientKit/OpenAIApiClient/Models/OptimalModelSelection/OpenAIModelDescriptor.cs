@@ -7,6 +7,7 @@ namespace OpenAIApiClient.Models.OptimalModelSelection
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Helpers.General;
     using OpenAIApiClient.Models.Chat.Response.Completion;
+    using OpenAIApiClient.Registries;
 
     /// <summary>
     /// Model descriptor for OpenAI models.

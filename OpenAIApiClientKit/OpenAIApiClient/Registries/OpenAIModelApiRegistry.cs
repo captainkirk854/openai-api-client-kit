@@ -1,22 +1,25 @@
-﻿// <copyright file="OpenAIModelsHelper.cs" company="854 Things (tm)">
+﻿// <copyright file="OpenAIModelApiRegistry.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Helpers.General
+namespace OpenAIApiClient.Registries
 {
     using System;
     using System.Collections.Generic;
     using OpenAIApiClient.Enums;
 
-    public static class OpenAIModelsHelper
+    /// <summary>
+    /// OpenAI Model API Registry.
+    /// </summary>
+    public static class OpenAIModelApiRegistry
     {
         /// <summary>
-        /// Reverse dictionary: API string → Enum.
+        /// Reverse dictionary: Map API string → Enum.
         /// </summary>
         private static readonly Dictionary<string, OpenAIModels> ApiToEnumMap = new(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
-        /// Primary dictionary: Enum → API string.
+        /// Primary dictionary: Map Enum → API string.
         /// </summary>
         private static readonly Dictionary<OpenAIModels, string> EnumToApiMap =
             new()
@@ -84,13 +87,13 @@ namespace OpenAIApiClient.Helpers.General
             };
 
         /// <summary>
-        /// Initializes static members of the <see cref="OpenAIModelsHelper"/> class.
+        /// Initializes static members of the <see cref="OpenAIModelApiRegistry"/> class.
         /// Static constructor to initialize the reverse mapping dictionary.
         /// </summary>
-        static OpenAIModelsHelper()
+        static OpenAIModelApiRegistry()
         {
             // Build ApiToEnumMap from EnumToApiMap ..
-            foreach (var kvp in EnumToApiMap)
+            foreach (KeyValuePair<OpenAIModels, string> kvp in EnumToApiMap)
             {
                 ApiToEnumMap[kvp.Value] = kvp.Key;
             }
@@ -109,7 +112,7 @@ namespace OpenAIApiClient.Helpers.General
                 return apiId;
             }
 
-            throw new ArgumentOutOfRangeException(nameof(model), model, "Unknown model enum value");
+            throw new ArgumentOutOfRangeException(nameof(model), model, "Unknown Model Enum value");
         }
 
         /// <summary>
@@ -125,7 +128,7 @@ namespace OpenAIApiClient.Helpers.General
                 return model;
             }
 
-            throw new ArgumentException($"Unknown API model ID: {apiModelId}", nameof(apiModelId));
+            throw new ArgumentException($"Unknown API Model ID: {apiModelId}", nameof(apiModelId));
         }
 
         /// <summary>
