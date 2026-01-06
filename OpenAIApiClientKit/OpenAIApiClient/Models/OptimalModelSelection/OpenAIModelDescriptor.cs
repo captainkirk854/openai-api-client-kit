@@ -5,7 +5,6 @@
 namespace OpenAIApiClient.Models.OptimalModelSelection
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Helpers.General;
     using OpenAIApiClient.Models.Chat.Response.Completion;
     using OpenAIApiClient.Registries;
 
@@ -46,9 +45,9 @@ namespace OpenAIApiClient.Models.OptimalModelSelection
         } = new ModelPricing(0, 0);
 
         /// <summary>
-        /// Overrides ToString to provide a string representation of the model descriptor.
+        /// Overrides ToString() to provide a string representation of the OpenAIModels enum.
         /// </summary>
-        /// <returns>A string representation of the model descriptor.</returns>
+        /// <returns>String representation of the OpenAIModels enum.</returns>
         public override string ToString() => this.Model.ToApiString();
     }
 }
