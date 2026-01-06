@@ -27,6 +27,24 @@ namespace OpenAIApiClient.Models.OptimalModelSelection
         }
 
         /// <summary>
+        /// Gets the generation of the model.
+        /// </summary>
+        public OpenAIModelGeneration Generation
+        {
+            get;
+            init;
+        } = OpenAIModelGeneration.Other;
+
+        /// <summary>
+        /// Gets the domain of the model.
+        /// </summary>
+        public ModelDomain Domain
+        {
+            get;
+            init;
+        } = ModelDomain.Other;
+
+        /// <summary>
         /// Gets the capabilities of the model.
         /// </summary>
         public IReadOnlySet<ModelCapability> Capabilities

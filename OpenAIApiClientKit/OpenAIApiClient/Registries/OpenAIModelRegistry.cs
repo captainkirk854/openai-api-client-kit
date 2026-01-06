@@ -44,6 +44,8 @@ namespace OpenAIApiClient.Registries
                 // -------------------------
                 [OpenAIModels.GPT5_2] = new OpenAIModelDescriptor
                 {
+                    Generation = OpenAIModelGeneration.GPT5,
+                    Domain = ModelDomain.Chat,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -58,6 +60,8 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.GPT5_2_Pro] = new OpenAIModelDescriptor
                 {
+                    Generation = OpenAIModelGeneration.GPT5,
+                    Domain = ModelDomain.Chat,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -72,6 +76,8 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.GPT5] = new OpenAIModelDescriptor
                 {
+                    Generation = OpenAIModelGeneration.GPT5,
+                    Domain = ModelDomain.Chat,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -85,6 +91,8 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.GPT5_Mini] = new OpenAIModelDescriptor
                 {
+                    Generation = OpenAIModelGeneration.GPT5,
+                    Domain = ModelDomain.Chat,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -98,6 +106,8 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.GPT5_Nano] = new OpenAIModelDescriptor
                 {
+                    Generation = OpenAIModelGeneration.GPT5,
+                    Domain = ModelDomain.Chat,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -115,6 +125,8 @@ namespace OpenAIApiClient.Registries
                 // GPT‑4.1 — Standard Reasoning Model
                 [OpenAIModels.GPT4_1] = new OpenAIModelDescriptor
                 {
+                    Generation = OpenAIModelGeneration.GPT41,
+                    Domain = ModelDomain.Chat,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -130,6 +142,8 @@ namespace OpenAIApiClient.Registries
                 // GPT‑4.1 Mini — Fast, Low‑Cost Model
                 [OpenAIModels.GPT4_1_Mini] = new OpenAIModelDescriptor
                 {
+                    Generation = OpenAIModelGeneration.GPT41,
+                    Domain = ModelDomain.Chat,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -144,6 +158,8 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.GPT4_1_Reasoning] = new OpenAIModelDescriptor
                 {
+                    Generation = OpenAIModelGeneration.GPT41,
+                    Domain = ModelDomain.Chat,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -160,6 +176,8 @@ namespace OpenAIApiClient.Registries
                 // GPT‑4.1 Critic — Evaluation / Critique Model
                 [OpenAIModels.GPT4_1_Critic] = new OpenAIModelDescriptor
                 {
+                    Generation = OpenAIModelGeneration.GPT41,
+                    Domain = ModelDomain.Chat,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -174,6 +192,8 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.GPT4_Turbo] = new OpenAIModelDescriptor
                 {
+                    Generation = OpenAIModelGeneration.GPT4,
+                    Domain = ModelDomain.Chat,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -190,6 +210,8 @@ namespace OpenAIApiClient.Registries
                 // -------------------------
                 [OpenAIModels.GPT4o] = new OpenAIModelDescriptor
                 {
+                    Generation = OpenAIModelGeneration.GPT41,
+                    Domain = ModelDomain.Chat,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -207,6 +229,8 @@ namespace OpenAIApiClient.Registries
                 // GPT‑4o Mini — NEW
                 [OpenAIModels.GPT4o_Mini] = new OpenAIModelDescriptor
                 {
+                    Generation = OpenAIModelGeneration.GPT4o,
+                    Domain = ModelDomain.Chat,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -225,6 +249,8 @@ namespace OpenAIApiClient.Registries
                 // -------------------------
                 [OpenAIModels.GPT3_5_Turbo] = new OpenAIModelDescriptor
                 {
+                    Generation = OpenAIModelGeneration.GPT35,
+                    Domain = ModelDomain.Chat,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -241,6 +267,8 @@ namespace OpenAIApiClient.Registries
                 // -------------------------
                 [OpenAIModels.TextEmbedding_3_Large] = new OpenAIModelDescriptor
                 {
+                    Generation = OpenAIModelGeneration.Other,
+                    Domain = ModelDomain.Embedding,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Embedding,
@@ -252,6 +280,8 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.TextEmbedding_3_Small] = new OpenAIModelDescriptor
                 {
+                    Generation = OpenAIModelGeneration.Other,
+                    Domain = ModelDomain.Embedding,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Embedding,
@@ -263,6 +293,8 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.TextEmbedding_Ada_002] = new OpenAIModelDescriptor
                 {
+                    Generation = OpenAIModelGeneration.GPT3,
+                    Domain = ModelDomain.Embedding,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Embedding,
@@ -277,6 +309,8 @@ namespace OpenAIApiClient.Registries
                 // -------------------------
                 [OpenAIModels.TTS_1] = new OpenAIModelDescriptor
                 {
+                    Generation = OpenAIModelGeneration.Other,
+                    Domain = ModelDomain.Audio,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.AudioOut,
@@ -288,6 +322,8 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.TTS_1_HD] = new OpenAIModelDescriptor
                 {
+                    Generation = OpenAIModelGeneration.Other,
+                    Domain = ModelDomain.Audio,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.AudioOut,
@@ -299,6 +335,8 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.Whisper_1] = new OpenAIModelDescriptor
                 {
+                    Generation = OpenAIModelGeneration.Other,
+                    Domain = ModelDomain.Audio,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.AudioIn,
@@ -310,6 +348,8 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.TTS1_1106] = new OpenAIModelDescriptor
                 {
+                    Generation = OpenAIModelGeneration.Other,
+                    Domain = ModelDomain.Audio,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.AudioOut,
@@ -321,6 +361,8 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.TTS1HD_1106] = new OpenAIModelDescriptor
                 {
+                    Generation = OpenAIModelGeneration.Other,
+                    Domain = ModelDomain.Audio,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.AudioOut,
@@ -335,6 +377,8 @@ namespace OpenAIApiClient.Registries
                 // -------------------------
                 [OpenAIModels.DALL_E_3] = new OpenAIModelDescriptor
                 {
+                    Generation = OpenAIModelGeneration.Other,
+                    Domain = ModelDomain.Image,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.ImageGeneration,
@@ -345,10 +389,12 @@ namespace OpenAIApiClient.Registries
                 },
 
                 // -------------------------
-                // Open‑weight Models
+                // Open‑Weight Models
                 // -------------------------
                 [OpenAIModels.O1] = new OpenAIModelDescriptor
                 {
+                    Generation = OpenAIModelGeneration.Other,
+                    Domain = ModelDomain.Chat,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -362,6 +408,8 @@ namespace OpenAIApiClient.Registries
 
                 [OpenAIModels.O1_Mini] = new OpenAIModelDescriptor
                 {
+                    Generation = OpenAIModelGeneration.Other,
+                    Domain = ModelDomain.Chat,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Text,
@@ -379,6 +427,8 @@ namespace OpenAIApiClient.Registries
                 // -------------------------
                 [OpenAIModels.OmniModerationLatest] = new OpenAIModelDescriptor
                 {
+                    Generation = OpenAIModelGeneration.GPT4o,
+                    Domain = ModelDomain.Moderation,
                     Capabilities = new HashSet<ModelCapability>
                     {
                         ModelCapability.Moderation,

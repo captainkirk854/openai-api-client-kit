@@ -29,11 +29,11 @@ namespace OpenAIApiClient.Models.OptimalModelSelection
         /// <summary>
         /// Gets the desired output format.
         /// </summary>
-        public string? DesiredOutputFormat
+        public OutputFormat? OutputFormat
         {
             get;
             init;
-        } // e.g. "text", "json"
+        }
 
         /// <summary>
         /// Gets the maximum acceptable latency for processing this prompt.

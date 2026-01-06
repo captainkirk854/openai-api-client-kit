@@ -44,7 +44,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                     ModelCapability.LowCost,
                     ModelCapability.FastInference,
                 },
-                DesiredOutputFormat = "text", // e.g., "text", "json", "markdown", "csv", etc.
+                OutputFormat = OutputFormat.Text,
             };
 
             // Execute selected model(s) in orchestration pipeline ..

@@ -27,15 +27,16 @@ namespace OpenAIApiClient.ConsoleApp
             using CancellationTokenSource cts = new(TimeSpan.FromSeconds(TimeoutInSeconds));
 
             // Run Model-Selection Demo first ..
-            bool runOptimalModelSelectionDemo = SetBooleanPrompt(message: "Run Model Selection Demo?", setTrue: 'y', setFalse: 'n');
+            bool runOptimalModelSelectionDemo = SetBooleanPrompt(message: "Run Optimal Model Selection Demo?", setTrue: 'y', setFalse: 'n');
             if (runOptimalModelSelectionDemo)
             {
                 string prompt = "explain the theory of relativity in simple terms.";
 
                 Console.Clear();
-                Console.WriteLine("Running Optimal Model Selection Demo ..");
+                Console.WriteLine("Running Demo ..");
                 Console.WriteLine();
                 Console.WriteLine($"Using Prompt: {prompt}");
+                Console.WriteLine();
 
                 // Get best model for the prompt ..
                 await OptimalModelSelectionDemo.GetBestModelAsync(client: client, prompt: prompt, cts: cts);
