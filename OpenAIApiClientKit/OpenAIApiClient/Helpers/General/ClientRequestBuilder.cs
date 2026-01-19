@@ -33,7 +33,7 @@ namespace OpenAIApiClient.Helpers.General
     ///                                                                                           .WithTopP(input: 0.5)
     ///                                                                                           .WithPresencePenalty(input: 2.0)
     ///                                                                                           .WithFrequencyPenalty(input: 2.0)
-    ///                                                                                           .ForceJsonOutput(input: false)
+    ///                                                                                           .SetOutputFormat(input: OutputFormat.Csv)
     ///                                                                                           .AddToolCall(id: "weather-1", name: "getWeather", args: new Dictionary string, object
     ///                                                                                            {
     ///                                                                                               { "city", "London" },
@@ -55,7 +55,7 @@ namespace OpenAIApiClient.Helpers.General
         private double? presencePenalty;
         private double? temperature;
         private double? topP;
-        private bool jsonModeEnabled;
+        private bool outputFormatEnabled = false;
 
         /// <summary>
         /// Define the OpenAI model to use.
@@ -76,6 +76,18 @@ namespace OpenAIApiClient.Helpers.General
         public ClientRequestBuilder AddSystemMessage(string input)
         {
             this.messages.Add(new ChatMessage { RoleAsEnum = OpenAIRole.System, Content = input });
+            return this;
+        }
+
+        /// <summary>
+        /// Configures the output format for the client request by adding the required system message.
+        /// </summary>
+        /// <param name="input">The desired output format to use for the request.</param>
+        /// <returns>The updated ClientRequestBuilder instance.</returns>
+        public ClientRequestBuilder SetOutputFormat(OutputFormat input)
+        {
+            this.messages.Add(new ChatMessage { RoleAsEnum = OpenAIRole.System, Content = OutputFormatRegistry.Prompts[input] });
+            this.outputFormatEnabled = true;
             return this;
         }
 
@@ -242,17 +254,6 @@ namespace OpenAIApiClient.Helpers.General
             return this;
         }
 
-        /// <summary>
-        /// Force Output to be in JSON for the chat completion request.
-        /// </summary>
-        /// <param name="input">Set to <see langword="true"/> to force JSON output; otherwise, <see langword="false"/>.</param>
-        /// <returns>The current <see cref="ClientRequestBuilder"/> instance with JSON mode enabled.</returns>
-        public ClientRequestBuilder ForceJsonOutput(bool input)
-        {
-            this.jsonModeEnabled = input;
-            return this;
-        }
-
         // -----------------------------
         // Tool Calls
         // -----------------------------
@@ -290,6 +291,12 @@ namespace OpenAIApiClient.Helpers.General
         /// <returns>A <see cref="ChatCompletionRequest"/> object populated with the configured model, messages, and parameter values.</returns>
         public ChatCompletionRequest Build()
         {
+            if(!this.outputFormatEnabled)
+            {
+                 // Default to plain text output if no output format specified ..
+                this.messages.Add(new ChatMessage { RoleAsEnum = OpenAIRole.System, Content = OutputFormatRegistry.Prompts[OutputFormat.PlainText] });
+            }
+
             // Combine all messages: developer messages first, then standard messages, then tool calls if any (as assistant messages) ..
             List<ChatMessage> allMessages =
             [
@@ -300,19 +307,6 @@ namespace OpenAIApiClient.Helpers.General
                 // Standard messages ..
                 .. this.messages,
             ];
-
-            // If JSON mode is enabled, add system message to enforce JSON-only responses ..
-            if (this.jsonModeEnabled)
-            {
-                allMessages.Add(new ChatMessage
-                                {
-                                    RoleAsEnum = OpenAIRole.System,
-                                    Content =
-                                    "You MUST respond with a valid JSON object only. " +
-                                    "No explanations, no prose, no markdown. " +
-                                    "Return strictly valid JSON that matches the expected schema.",
-                                });
-            }
 
             // Tool Calls become Assistant Messages with tool_call content ..
             foreach (ToolCall tool in this.toolCalls)

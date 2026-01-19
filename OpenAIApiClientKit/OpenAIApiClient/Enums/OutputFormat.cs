@@ -7,7 +7,7 @@ namespace OpenAIApiClient.Enums
     public enum OutputFormat
     {
         // Textual formats
-        Text,
+        PlainText,
         Markdown,
         Html,
         Json,

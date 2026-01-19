@@ -27,10 +27,10 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// <param name="isStreaming">true to enable streaming responses; otherwise, false for non-streaming responses.</param>
         /// <param name="userPrompt">The user input prompt to be sent to the chat client. Cannot be null.</param>
         /// <param name="isDeterministic">true to use deterministic output parameters for the chat completion request; otherwise, false to use non-deterministic parameters.</param>
-        /// <param name="isJson">true to enable JSON mode for the chat completion request; otherwise, false.</param>
+        /// <param name="outputFormat">The desired output format for the chat completion response.</param>
         /// <param name="cts">A CancellationTokenSource used to observe cancellation requests for the operation. Cannot be null.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
-        public static async Task ProcessUserPromptAsync(ChatClient client, bool isStreaming, string userPrompt, bool isDeterministic, bool isJson, CancellationTokenSource cts)
+        public static async Task ProcessUserPromptAsync(ChatClient client, bool isStreaming, string userPrompt, bool isDeterministic, OutputFormat outputFormat, CancellationTokenSource cts)
         {
             // Set deterministic output parameters ..
             double temperature = 0.0;
@@ -55,7 +55,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                                                                       .WithTopP(input: topP)
                                                                       .WithPresencePenalty(input: presencePenalty)
                                                                       .WithFrequencyPenalty(input: frequencyPenalty)
-                                                                      .ForceJsonOutput(input: isJson)
+                                                                      .SetOutputFormat(input: outputFormat)
                                                                       .Build();
 
             // If not streaming ..

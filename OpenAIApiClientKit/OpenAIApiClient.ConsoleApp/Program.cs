@@ -5,6 +5,7 @@
 namespace OpenAIApiClient.ConsoleApp
 {
     using OpenAIApiClient.ConsoleApp.Demos;
+    using OpenAIApiClient.Enums;
 
     public class Program
     {
@@ -70,11 +71,36 @@ namespace OpenAIApiClient.ConsoleApp
                     // Ask if creativity settings should be enabled ..
                     bool isDeterministic = SetBooleanPrompt(message: "Enable creativity settings?", setTrue: 'n', setFalse: 'y', setDefault: 'n');
 
-                    // Ask to force JSON mode ..
-                    bool isJson = SetBooleanPrompt(message: "Enable forced JSON output?", setTrue: 'y', setFalse: 'n', setDefault: 'n');
+                    // Prompt for output format ..
+                    Console.WriteLine("Select output format:");
+                    Console.WriteLine("1. PlainText");
+                    Console.WriteLine("2. Markdown");
+                    Console.WriteLine("3. Html");
+                    Console.WriteLine("4. Json");
+                    Console.WriteLine("5. Xml");
+                    Console.WriteLine("6. Yaml");
+                    Console.WriteLine("7. Sql");
+                    Console.WriteLine("Press Enter to select default (PlainText).");
+                    Console.Write("Enter choice (1-7) [default is 1]: ");
+
+                    // Read format choice ..
+                    string? formatInput = Console.ReadLine();
+                    OutputFormat outputFormatChoice = formatInput switch
+                    {
+                        "1" => OutputFormat.PlainText,
+                        "2" => OutputFormat.Markdown,
+                        "3" => OutputFormat.Html,
+                        "4" => OutputFormat.Json,
+                        "5" => OutputFormat.Xml,
+                        "6" => OutputFormat.Yaml,
+                        "7" => OutputFormat.Sql,
+                        _ => OutputFormat.PlainText,
+                    };
+                    Console.WriteLine($"Selected output format: {outputFormatChoice}");
+                    Console.WriteLine();
 
                     // Process user prompt with additional options ..
-                    await ModelPromptDemo.ProcessUserPromptAsync(client: client, isStreaming: isStreaming, userPrompt: userPrompt, isDeterministic: isDeterministic, isJson: isJson, cts: cts);
+                    await ModelPromptDemo.ProcessUserPromptAsync(client: client, isStreaming: isStreaming, userPrompt: userPrompt, isDeterministic: isDeterministic, outputFormat: outputFormatChoice, cts: cts);
 
                     // Ask if the user wants to enter another prompt ..
                     Console.WriteLine();

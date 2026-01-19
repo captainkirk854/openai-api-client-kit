@@ -44,7 +44,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                     ModelCapability.LowCost,
                     ModelCapability.FastInference,
                 },
-                OutputFormat = OutputFormat.Text,
+                OutputFormat = OutputFormat.PlainText,
             };
 
             // Execute selected model(s) in orchestration pipeline ..
@@ -59,16 +59,16 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             // Output all model response(s) for results comparison transparency ..
             Console.WriteLine();
             Console.WriteLine("=== SOURCE RESPONSE(S) ===");
-            foreach (OpenAIModelResponse r in final.SourceResponses)
+            foreach (OpenAIModelResponse response in final.SourceResponses)
             {
                 Console.WriteLine();
                 Console.WriteLine(new string('-', 80));
-                Console.WriteLine($"Model: {r.Model.Model}");
-                Console.WriteLine($"Success: {r.IsSuccessful}");
-                Console.WriteLine($"TokenCost: {r.TotalTokens}");
-                Console.WriteLine($"Cost: {r.EstimatedCost}");
-                Console.WriteLine($"Latency: {r.Latency.TotalMilliseconds} ms");
-                Console.WriteLine($"Output: {r.RawOutput}");
+                Console.WriteLine($"Model: {response.Model.Model}");
+                Console.WriteLine($"Success: {response.IsSuccessful}");
+                Console.WriteLine($"TokenCost: {response.TotalTokens}");
+                Console.WriteLine($"Cost: {response.EstimatedCost}");
+                Console.WriteLine($"Latency: {response.Latency.TotalMilliseconds} ms");
+                Console.WriteLine($"Output: {response.RawOutput}");
             }
             Console.WriteLine(new string('-', 80));
         }
