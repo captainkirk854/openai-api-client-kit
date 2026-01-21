@@ -80,8 +80,9 @@ namespace OpenAIApiClient.ConsoleApp
                     Console.WriteLine("5. Xml");
                     Console.WriteLine("6. Yaml");
                     Console.WriteLine("7. Sql");
+                    Console.WriteLine("8. Tabular");
                     Console.WriteLine("Press Enter to select default (PlainText).");
-                    Console.Write("Enter choice (1-7) [default is 1]: ");
+                    Console.Write("Enter choice (1-8) [default is 1]: ");
 
                     // Read format choice ..
                     string? formatInput = Console.ReadLine();
@@ -94,6 +95,7 @@ namespace OpenAIApiClient.ConsoleApp
                         "5" => OutputFormat.Xml,
                         "6" => OutputFormat.Yaml,
                         "7" => OutputFormat.Sql,
+                        "8" => OutputFormat.Table,
                         _ => OutputFormat.PlainText,
                     };
                     Console.WriteLine($"Selected output format: {outputFormatChoice}");

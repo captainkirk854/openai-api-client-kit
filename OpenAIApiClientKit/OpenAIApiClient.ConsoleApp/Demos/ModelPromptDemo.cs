@@ -4,11 +4,11 @@
 
 namespace OpenAIApiClient.ConsoleApp.Demos
 {
-    using System;
-    using System.Threading.Tasks;
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Helpers.General;
+    using OpenAIApiClient.Interfaces;
     using OpenAIApiClient.Models.Chat.Request;
+    using OpenAIApiClient.Registries;
 
     /// <summary>
     /// Console App Demo to demonstrate implementation example for processing user prompts with various models.
@@ -20,8 +20,8 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// </summary>
         /// <remarks>
         /// If the operation is cancelled via the provided CancellationTokenSource, a cancellation message is displayed. The method writes the user prompt
-        /// and the response to the console. Deterministic or non-deterministic parameters are applied to the chat completion request based on the value of:
-        /// isDeterminismEnabled.
+        /// and the response to the console. Deterministic or non-deterministic parameters are applied to the chat completion request based on the value
+        /// of: isDeterminismEnabled.
         /// </remarks>
         /// <param name="client">The chat client used to send the prompt and receive the response.</param>
         /// <param name="isStreaming">true to enable streaming responses; otherwise, false for non-streaming responses.</param>
@@ -65,9 +65,20 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 Console.WriteLine("Waiting for Non-Streaming Response ..");
                 try
                 {
+                    // Get response content ..
                     string? content = await ChatClientHelpers.GetChatCompletionNonStreamingMessageContentAsync(client: client, request: request, cancelTokenSource: cts);
-                    Console.WriteLine();
-                    Console.WriteLine(content);
+
+                    // Validate response format ..
+                    if(!content.IsValidFormat(outputFormat: outputFormat))
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        // Output response content ..
+                        Console.WriteLine();
+                        Console.WriteLine(content);
+                    }
                 }
                 catch (OperationCanceledException)
                 {
@@ -87,9 +98,19 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                     (string?, int) response = await ChatClientHelpers.GetChatCompletionStreamingMessageContentAsync(client: client, request: request, cancelTokenSource: cts);
                     string content = response.Item1 ?? string.Empty;
                     int chunkCount = response.Item2;
-                    Console.WriteLine();
-                    Console.WriteLine(content);
-                    Console.WriteLine($"(Total Chunk(s) received: {chunkCount})");
+
+                    // Validate response format ..
+                    if (!content.IsValidFormat(outputFormat: outputFormat))
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        // Output response content ..
+                        Console.WriteLine();
+                        Console.WriteLine(content);
+                        Console.WriteLine($"(Total Chunk(s) received: {chunkCount})");
+                    }
                 }
                 catch (OperationCanceledException)
                 {
@@ -100,6 +121,24 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                     Console.WriteLine($"Error: {ex.Message}");
                 }
             }
+        }
+
+        /// <summary>
+        /// Helper method to validate if the content matches the expected output format.
+        /// </summary>
+        /// <param name="content"></param>
+        /// <param name="outputFormat"></param>
+        private static bool IsValidFormat(this string? content, OutputFormat outputFormat)
+        {
+            IOutputFormatValidator validator = OutputFormatRegistry.Prompts[outputFormat].Validator;
+            if (!validator.IsValidFormat(content: content ?? string.Empty, out string? error))
+            {
+                Console.WriteLine();
+                Console.WriteLine($"Warning: The response format is invalid based on the {error}.");
+                return false;
+            }
+
+            return true;
         }
     }
 }

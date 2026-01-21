@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <NoWarn>AD0001</NoWarn> <!-- Suppress StyleCop warnings about analyzer failures when using Records -->
   </PropertyGroup>
   
   <ItemGroup>
@@ -11,10 +12,12 @@
   </ItemGroup>
   
    <ItemGroup>
+     <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
      <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
        <PrivateAssets>all</PrivateAssets>
        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
      </PackageReference>
-   </ItemGroup> 
+     <PackageReference Include="YamlDotNet" Version="16.3.0" />
+   </ItemGroup>
 
 </Project>
