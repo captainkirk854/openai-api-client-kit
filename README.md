@@ -201,7 +201,7 @@ Pricing fields include:
 All values were left as placeholders to populate with real pricing when necessary.
 
 ## 🗂️ 6. Combined Model Registry
-The final deliverable is a fully integrated registry:
+We end up with a fully integrated registry:
 ```Dictionary<OpenAIModel, ModelDescriptor>```
 
 Each entry includes:
@@ -219,7 +219,72 @@ This registry is:
 
 It is the authoritative source for all model-related metadata in this system.
 
-## 🧭 7. Architectural Benefits
+
+## 🧩 7. Combined Prompt and Format Registry
+
+We have a complete, extendable framework that unifies:
+
+- **Output formats** (TXT, JSON, CSV, XML, Markdown, YAML, HTML, SQL)
+- **System prompts** required for each format
+- **Format‑specific validators** to ensure compliance
+- **A unified `FormatDescriptor` registry** to hold it all together
+
+The result is a clean, deterministic, strongly‑typed architecture with zero duplication and a single source of truth.
+
+### 🧪 Format Validators
+
+Validators have been implemented for the following format:
+
+- **PlainTextValidator**  
+- **JsonValidator**  
+- **CsvValidator**  
+- **XmlValidator**  
+- **MarkdownValidator**  
+- **YamlValidator**  
+- **HtmlValidator**  
+- **SqlValidator** (dialect‑agnostic)
+
+Each validator implements a shared interface:
+
+```csharp
+public interface IOutputFormatValidator
+{
+    bool IsValidFormat(string content, out string? error);
+}
+```
+Prompts and validators are merged into a single atomic unit:
+
+```csharp
+public sealed record FormatDescriptor(
+    string SystemPrompt,
+    IOutputFormatValidator Validator
+);
+```
+
+These are then stored in a strongly typed, immutable registry as a dictionary eliminating duplication and creating
+a single source of truth for all formatting metadata:
+
+```csharp
+public static readonly Dictionary<OutputFormat, FormatDescriptor> FormatRegistry = 
+    new()
+    {
+        { OutputFormat.PlainText, new FormatDescriptor( ... ) },
+        { OutputFormat.Json, new FormatDescriptor( ... ) },
+        { OutputFormat.Csv, new FormatDescriptor( ... ) },
+        { OutputFormat.Xml, new FormatDescriptor( ... ) },
+        { OutputFormat.Markdown, new FormatDescriptor( ... ) },
+        { OutputFormat.Yaml, new FormatDescriptor( ... ) },
+        { OutputFormat.Html, new FormatDescriptor( ... ) },
+        { OutputFormat.Sql, new FormatDescriptor( ... ) },
+    };
+```
+
+
+---
+
+
+
+# 🧭 Architectural Benefits
 This design provides:
 
 ✔ Single‑source‑of‑truth
