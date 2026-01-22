@@ -1,39 +1,39 @@
-﻿// <copyright file="OptimalModelSelectionDemo.cs" company="854 Things (tm)">
+﻿// <copyright file="BestModelResponseSelectionDemo.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
 namespace OpenAIApiClient.ConsoleApp.Demos
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Helpers.OptimalModelSelection;
-    using OpenAIApiClient.Models.OptimalModelSelection;
+    using OpenAIApiClient.Helpers.Orchestration;
+    using OpenAIApiClient.Models.Selection;
     using OpenAIApiClient.Registries;
 
     /// <summary>
     /// Console App Demo to demonstrate implementation example for OpenAI optimal model selection.
     /// </summary>
-    public static class OptimalModelSelectionDemo
+    public static class BestModelResponseSelectionDemo
     {
         /// <summary>
-        /// Generic demo method to run optimal model selection based on prompt context.
+        /// A demo implementation to get the best model response for the given prompt using multi-model orchestration.
         /// </summary>
         /// <param name="client"><see cref="ChatClient"/> instance.</param>
         /// <param name="prompt">The prompt to send to the model(s).</param>
         /// <param name="cts"><see cref="CancellationTokenSource"/> instance.</param>
         /// <returns><see cref="Task"/> representing the asynchronous operation.</returns>
-        public static async Task GetBestModelAsync(ChatClient client, string prompt, CancellationTokenSource cts)
+        public static async Task GetBestModelResponseAsync(ChatClient client, string prompt, CancellationTokenSource cts)
         {
             // Initialise model registry ..
             OpenAIModelRegistry registry = new();
 
             // Initialise Model Router which filters which model(s) to use ..
-            OpenAIModelRouter router = new(registry: registry);
+            ModelRouter router = new(registry: registry);
 
             // Initialise Model Executor ..
-            OpenAIModelExecutor executor = new(client: client);
+            ModelExecutor executor = new(client: client);
 
             // Initialise Multi-Model Orchestrator ..
-            MultiModelOrchestrator orchestrator = new(router: router, executor: executor);
+            ModelsOrchestrator orchestrator = new(router: router, executor: executor);
 
             // Define prompt context including model requirements ..
             PromptContext context = new()
@@ -48,7 +48,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             };
 
             // Execute selected model(s) in orchestration pipeline ..
-            OpenAICollatedResponse final = await orchestrator.ExecuteAsync(context: context, cancelToken: cts.Token);
+            CollatedModelResponse final = await orchestrator.ExecuteAsync(context: context, cancelToken: cts.Token);
 
             // Output computed best response information ..
             Console.WriteLine();
@@ -59,7 +59,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             // Output all model response(s) for results comparison transparency ..
             Console.WriteLine();
             Console.WriteLine("=== SOURCE RESPONSE(S) ===");
-            foreach (OpenAIModelResponse response in final.SourceResponses)
+            foreach (ModelResponse response in final.SourceResponses)
             {
                 Console.WriteLine();
                 Console.WriteLine(new string('-', 80));

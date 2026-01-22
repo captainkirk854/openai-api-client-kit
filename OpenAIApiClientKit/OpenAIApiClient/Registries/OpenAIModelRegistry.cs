@@ -6,7 +6,7 @@ namespace OpenAIApiClient.Registries
 {
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Chat.Response.Completion;
-    using OpenAIApiClient.Models.OptimalModelSelection;
+    using OpenAIApiClient.Models.Selection;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OpenAIModelRegistry"/> class.
@@ -14,7 +14,7 @@ namespace OpenAIApiClient.Registries
     public sealed class OpenAIModelRegistry
     {
         // Dictionary to hold model descriptors ..
-        private readonly Dictionary<OpenAIModel, OpenAIModelDescriptor> models;
+        private readonly Dictionary<OpenAIModel, ModelDescriptor> models;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OpenAIModelRegistry"/> class.
@@ -42,7 +42,7 @@ namespace OpenAIApiClient.Registries
                 // -------------------------
                 // GPT‑5 Family
                 // -------------------------
-                [OpenAIModel.GPT5_2] = new OpenAIModelDescriptor
+                [OpenAIModel.GPT5_2] = new ModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT5,
                     Domain = ModelDomain.Chat,
@@ -58,7 +58,7 @@ namespace OpenAIApiClient.Registries
                     outputTokenCost: 0.00000000m),
                 },
 
-                [OpenAIModel.GPT5_2_Pro] = new OpenAIModelDescriptor
+                [OpenAIModel.GPT5_2_Pro] = new ModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT5,
                     Domain = ModelDomain.Chat,
@@ -74,7 +74,7 @@ namespace OpenAIApiClient.Registries
                     outputTokenCost: 0.00000000m),
                 },
 
-                [OpenAIModel.GPT5] = new OpenAIModelDescriptor
+                [OpenAIModel.GPT5] = new ModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT5,
                     Domain = ModelDomain.Chat,
@@ -89,7 +89,7 @@ namespace OpenAIApiClient.Registries
                     outputTokenCost: 0.00000000m),
                 },
 
-                [OpenAIModel.GPT5_Mini] = new OpenAIModelDescriptor
+                [OpenAIModel.GPT5_Mini] = new ModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT5,
                     Domain = ModelDomain.Chat,
@@ -104,7 +104,7 @@ namespace OpenAIApiClient.Registries
                     outputTokenCost: 0.00000000m),
                 },
 
-                [OpenAIModel.GPT5_Nano] = new OpenAIModelDescriptor
+                [OpenAIModel.GPT5_Nano] = new ModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT5,
                     Domain = ModelDomain.Chat,
@@ -123,7 +123,7 @@ namespace OpenAIApiClient.Registries
                 // GPT‑4 Family
                 // -------------------------
                 // GPT‑4.1 — Standard Reasoning Model
-                [OpenAIModel.GPT4_1] = new OpenAIModelDescriptor
+                [OpenAIModel.GPT4_1] = new ModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT41,
                     Domain = ModelDomain.Chat,
@@ -140,7 +140,7 @@ namespace OpenAIApiClient.Registries
                 },
 
                 // GPT‑4.1 Mini — Fast, Low‑Cost Model
-                [OpenAIModel.GPT4_1_Mini] = new OpenAIModelDescriptor
+                [OpenAIModel.GPT4_1_Mini] = new ModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT41,
                     Domain = ModelDomain.Chat,
@@ -156,7 +156,7 @@ namespace OpenAIApiClient.Registries
                     outputTokenCost: 0.000002m),
                 },
 
-                [OpenAIModel.GPT4_1_Reasoning] = new OpenAIModelDescriptor
+                [OpenAIModel.GPT4_1_Reasoning] = new ModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT41,
                     Domain = ModelDomain.Chat,
@@ -174,7 +174,7 @@ namespace OpenAIApiClient.Registries
                 },
 
                 // GPT‑4.1 Critic — Evaluation / Critique Model
-                [OpenAIModel.GPT4_1_Critic] = new OpenAIModelDescriptor
+                [OpenAIModel.GPT4_1_Critic] = new ModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT41,
                     Domain = ModelDomain.Chat,
@@ -190,7 +190,7 @@ namespace OpenAIApiClient.Registries
                     outputTokenCost: 0.00003m),
                 },
 
-                [OpenAIModel.GPT4_Turbo] = new OpenAIModelDescriptor
+                [OpenAIModel.GPT4_Turbo] = new ModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT4,
                     Domain = ModelDomain.Chat,
@@ -208,7 +208,7 @@ namespace OpenAIApiClient.Registries
                 // -------------------------
                 // GPT‑4o Family
                 // -------------------------
-                [OpenAIModel.GPT4o] = new OpenAIModelDescriptor
+                [OpenAIModel.GPT4o] = new ModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT41,
                     Domain = ModelDomain.Chat,
@@ -227,7 +227,7 @@ namespace OpenAIApiClient.Registries
                 },
 
                 // GPT‑4o Mini — NEW
-                [OpenAIModel.GPT4o_Mini] = new OpenAIModelDescriptor
+                [OpenAIModel.GPT4o_Mini] = new ModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT4o,
                     Domain = ModelDomain.Chat,
@@ -247,7 +247,7 @@ namespace OpenAIApiClient.Registries
                 // -------------------------
                 // GPT‑3.5 Family
                 // -------------------------
-                [OpenAIModel.GPT3_5_Turbo] = new OpenAIModelDescriptor
+                [OpenAIModel.GPT3_5_Turbo] = new ModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT35,
                     Domain = ModelDomain.Chat,
@@ -265,7 +265,7 @@ namespace OpenAIApiClient.Registries
                 // -------------------------
                 // Embedding Models
                 // -------------------------
-                [OpenAIModel.TextEmbedding_3_Large] = new OpenAIModelDescriptor
+                [OpenAIModel.TextEmbedding_3_Large] = new ModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.Other,
                     Domain = ModelDomain.Embedding,
@@ -278,7 +278,7 @@ namespace OpenAIApiClient.Registries
                     outputTokenCost: 0.00000000m),
                 },
 
-                [OpenAIModel.TextEmbedding_3_Small] = new OpenAIModelDescriptor
+                [OpenAIModel.TextEmbedding_3_Small] = new ModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.Other,
                     Domain = ModelDomain.Embedding,
@@ -291,7 +291,7 @@ namespace OpenAIApiClient.Registries
                     outputTokenCost: 0.00000000m),
                 },
 
-                [OpenAIModel.TextEmbedding_Ada_002] = new OpenAIModelDescriptor
+                [OpenAIModel.TextEmbedding_Ada_002] = new ModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT3,
                     Domain = ModelDomain.Embedding,
@@ -307,7 +307,7 @@ namespace OpenAIApiClient.Registries
                 // -------------------------
                 // Audio / TTS / Whisper
                 // -------------------------
-                [OpenAIModel.TTS_1] = new OpenAIModelDescriptor
+                [OpenAIModel.TTS_1] = new ModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.Other,
                     Domain = ModelDomain.Audio,
@@ -320,7 +320,7 @@ namespace OpenAIApiClient.Registries
                     outputTokenCost: 0.00000000m),
                 },
 
-                [OpenAIModel.TTS_1_HD] = new OpenAIModelDescriptor
+                [OpenAIModel.TTS_1_HD] = new ModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.Other,
                     Domain = ModelDomain.Audio,
@@ -333,7 +333,7 @@ namespace OpenAIApiClient.Registries
                     outputTokenCost: 0.00000000m),
                 },
 
-                [OpenAIModel.Whisper_1] = new OpenAIModelDescriptor
+                [OpenAIModel.Whisper_1] = new ModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.Other,
                     Domain = ModelDomain.Audio,
@@ -346,7 +346,7 @@ namespace OpenAIApiClient.Registries
                     outputTokenCost: 0.00000000m),
                 },
 
-                [OpenAIModel.TTS1_1106] = new OpenAIModelDescriptor
+                [OpenAIModel.TTS1_1106] = new ModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.Other,
                     Domain = ModelDomain.Audio,
@@ -359,7 +359,7 @@ namespace OpenAIApiClient.Registries
                     outputTokenCost: 0.00000000m),
                 },
 
-                [OpenAIModel.TTS1HD_1106] = new OpenAIModelDescriptor
+                [OpenAIModel.TTS1HD_1106] = new ModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.Other,
                     Domain = ModelDomain.Audio,
@@ -375,7 +375,7 @@ namespace OpenAIApiClient.Registries
                 // -------------------------
                 // Image Models
                 // -------------------------
-                [OpenAIModel.DALL_E_3] = new OpenAIModelDescriptor
+                [OpenAIModel.DALL_E_3] = new ModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.Other,
                     Domain = ModelDomain.Image,
@@ -391,7 +391,7 @@ namespace OpenAIApiClient.Registries
                 // -------------------------
                 // Open‑Weight Models
                 // -------------------------
-                [OpenAIModel.O1] = new OpenAIModelDescriptor
+                [OpenAIModel.O1] = new ModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.Other,
                     Domain = ModelDomain.Chat,
@@ -406,7 +406,7 @@ namespace OpenAIApiClient.Registries
                     outputTokenCost: 0.00000000m),
                 },
 
-                [OpenAIModel.O1_Mini] = new OpenAIModelDescriptor
+                [OpenAIModel.O1_Mini] = new ModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.Other,
                     Domain = ModelDomain.Chat,
@@ -425,7 +425,7 @@ namespace OpenAIApiClient.Registries
                 // -------------------------
                 // Moderation
                 // -------------------------
-                [OpenAIModel.OmniModerationLatest] = new OpenAIModelDescriptor
+                [OpenAIModel.OmniModerationLatest] = new ModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT4o,
                     Domain = ModelDomain.Moderation,
@@ -440,7 +440,7 @@ namespace OpenAIApiClient.Registries
             };
 
             // Finalise registry, by using dictionary key value to auto-inject the "yet-to-be-set" Model property value for each model descriptor ..
-            foreach ((OpenAIModel model, OpenAIModelDescriptor descriptor) in this.models)
+            foreach ((OpenAIModel model, ModelDescriptor descriptor) in this.models)
             {
                 descriptor.Model = model;
             }
@@ -449,18 +449,18 @@ namespace OpenAIApiClient.Registries
         /// <summary>
         /// Gets the complete model registry dictionary ..
         /// </summary>
-        public Dictionary<OpenAIModel, OpenAIModelDescriptor> Registry => this.models;
+        public Dictionary<OpenAIModel, ModelDescriptor> Registry => this.models;
 
         /// <summary>
         /// Gets all registered model descriptors ..
         /// </summary>
-        public IEnumerable<OpenAIModelDescriptor> All => this.models.Values;
+        public IEnumerable<ModelDescriptor> All => this.models.Values;
 
         /// <summary>
         /// Gets the model descriptor for a specified model ..
         /// </summary>
         /// <param name="model"></param>
-        /// <returns><see cref="OpenAIModelDescriptor"/>.</returns>
-        public OpenAIModelDescriptor Get(OpenAIModel model) => this.models[model];
+        /// <returns><see cref="ModelDescriptor"/>.</returns>
+        public ModelDescriptor Get(OpenAIModel model) => this.models[model];
     }
 }

@@ -1,14 +1,13 @@
-﻿// <copyright file="OpenAICollatedResponse.cs" company="854 Things (tm)">
+﻿// <copyright file="CollatedModelResponse.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Models.OptimalModelSelection
+namespace OpenAIApiClient.Models.Selection
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Helpers.General;
     using OpenAIApiClient.Registries;
 
-    public sealed class OpenAICollatedResponse
+    public sealed class CollatedModelResponse
     {
         /// <summary>
         /// Gets the name of the model used to generate the final response.
@@ -31,16 +30,16 @@ namespace OpenAIApiClient.Models.OptimalModelSelection
         /// <summary>
         /// Gets the list of all model responses.
         /// </summary>
-        public IReadOnlyList<OpenAIModelResponse> SourceResponses
+        public IReadOnlyList<ModelResponse> SourceResponses
         {
             get;
             init;
         } = [];
 
         /// <summary>
-        /// Gets the strategy used to aggregate multiple model responses, if applicable.
+        /// Gets the strategy used to collate multiple model responses, if applicable.
         /// </summary>
-        public string? AggregationStrategy
+        public string? CollationStrategy
         {
             get;
             init;

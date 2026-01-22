@@ -1,8 +1,8 @@
-﻿// <copyright file="OpenAIModelDescriptor.cs" company="854 Things (tm)">
+﻿// <copyright file="ModelDescriptor.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Models.OptimalModelSelection
+namespace OpenAIApiClient.Models.Selection
 {
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Chat.Response.Completion;
@@ -15,7 +15,7 @@ namespace OpenAIApiClient.Models.OptimalModelSelection
     ///  - Model is: 'internal set' so that only the registry builder can create valid instances.
     ///  - Capabilities is immutable from the outside.
     /// </remarks>
-    public sealed class OpenAIModelDescriptor
+    public sealed class ModelDescriptor
     {
         /// <summary>
         /// Gets the model.

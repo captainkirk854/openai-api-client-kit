@@ -1,8 +1,8 @@
-﻿// <copyright file="OpenAIModelExecutor.cs" company="854 Things (tm)">
+﻿// <copyright file="ModelExecutor.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Helpers.OptimalModelSelection
+namespace OpenAIApiClient.Helpers.Orchestration
 {
     using System;
     using System.Diagnostics;
@@ -10,14 +10,13 @@ namespace OpenAIApiClient.Helpers.OptimalModelSelection
     using OpenAIApiClient.Helpers.General;
     using OpenAIApiClient.Models.Chat.Request;
     using OpenAIApiClient.Models.Chat.Response.Completion;
-    using OpenAIApiClient.Models.OptimalModelSelection;
-    using OpenAIApiClient.Registries;
+    using OpenAIApiClient.Models.Selection;
 
     /// <summary>
     /// Executes OpenAI models using the provided ChatClient.
     /// </summary>
     /// <param name="client"></param>
-    public sealed class OpenAIModelExecutor(ChatClient client)
+    public sealed class ModelExecutor(ChatClient client)
     {
         /// <summary>
         /// Executes the given model with the provided prompt context.
@@ -26,11 +25,12 @@ namespace OpenAIApiClient.Helpers.OptimalModelSelection
         /// <param name="context">The prompt context.</param>
         /// <param name="cancelToken">Cancellation token.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains the model response.</returns>
-        public async Task<OpenAIModelResponse> ExecuteAsync(OpenAIModelDescriptor model, PromptContext context, CancellationToken cancelToken)
+        public async Task<ModelResponse> ExecuteAsync(ModelDescriptor model, PromptContext context, CancellationToken cancelToken)
         {
             ChatCompletionRequest request = new ClientRequestBuilder()
                                                 .WithModel(model.Model)
                                                 .AddUserMessage(context.Prompt)
+                                                .SetOutputFormat((Enums.OutputFormat)context.OutputFormat!)
                                                 .Build();
 
             // Start timing ..
@@ -45,7 +45,7 @@ namespace OpenAIApiClient.Helpers.OptimalModelSelection
                 sw.Stop();
 
                 // Return successful response ..
-                return new OpenAIModelResponse
+                return new ModelResponse
                 {
                     Model = model,
                     RawOutput = response!.Choices[0].Message.Content!,
@@ -61,7 +61,7 @@ namespace OpenAIApiClient.Helpers.OptimalModelSelection
                 sw.Stop();
 
                 // Return failed response ..
-                return new OpenAIModelResponse
+                return new ModelResponse
                 {
                     Model = model,
                     RawOutput = string.Empty,
