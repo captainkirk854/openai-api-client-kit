@@ -29,7 +29,9 @@ namespace OpenAIApiClient.Helpers.Orchestration
         {
             ChatCompletionRequest request = new ClientRequestBuilder()
                                                 .WithModel(model.Model)
+                                                .AddSystemMessage(input: "You are a helpful assistant that answers concisely.")
                                                 .AddUserMessage(context.Prompt)
+                                                .UsingMaxTokens(input: 1000)
                                                 .SetOutputFormat((Enums.OutputFormat)context.OutputFormat!)
                                                 .Build();
 

@@ -1,4 +1,4 @@
-﻿// <copyright file="BestModelResponseSelectionDemo.cs" company="854 Things (tm)">
+﻿// <copyright file="BestModelResponseDemo.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -12,7 +12,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
     /// <summary>
     /// Console App Demo to demonstrate implementation example for OpenAI optimal model selection.
     /// </summary>
-    public static class BestModelResponseSelectionDemo
+    public static class BestModelResponseDemo
     {
         /// <summary>
         /// A demo implementation to get the best model response for the given prompt using multi-model orchestration.

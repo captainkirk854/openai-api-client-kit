@@ -28,7 +28,7 @@ namespace OpenAIApiClient.ConsoleApp
             using CancellationTokenSource cts = new(TimeSpan.FromSeconds(TimeoutInSeconds));
 
             // Run Best Model-Selection Demo first ..
-            bool runBestModelSelectionDemo = SetBooleanPrompt(message: "Run Best Model Response Selection Demo?", setTrue: 'y', setFalse: 'n');
+            bool runBestModelSelectionDemo = SetBooleanPrompt(message: "Run Best Model Response Demo?", setTrue: 'y', setFalse: 'n');
             if (runBestModelSelectionDemo)
             {
                 string prompt = "explain the theory of relativity in simple terms.";
@@ -40,7 +40,7 @@ namespace OpenAIApiClient.ConsoleApp
                 Console.WriteLine();
 
                 // Get best model for the prompt ..
-                await BestModelResponseSelectionDemo.GetBestModelResponseAsync(client: client, prompt: prompt, cts: cts);
+                await BestModelResponseDemo.GetBestModelResponseAsync(client: client, prompt: prompt, cts: cts);
 
                 Console.WriteLine("Press Enter to continue..");
                 Console.ReadLine();
