@@ -2,9 +2,12 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Helpers.Orchestration
+namespace OpenAIApiClient.Orchestration
 {
-    using OpenAIApiClient.Models.Selection;
+    using OpenAIApiClient.Models.Orchestration;
+    using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Models.Routing;
+    using OpenAIApiClient.Routing;
 
     public sealed class ModelsOrchestrator(ModelRouter router, ModelExecutor executor)
     {
@@ -31,8 +34,8 @@ namespace OpenAIApiClient.Helpers.Orchestration
             // Await all model responses ..
             ModelResponse[] responses = await Task.WhenAll(tasks);
 
-            // Aggregate all model responses into a final response ..
-            return Selection.ModelResponseSelector.SelectBest(responses: responses);
+            // Select a final response from the model response(s) ..
+            return ModelResponseSelector.SelectOptimal(responses: responses);
         }
     }
 }

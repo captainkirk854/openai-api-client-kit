@@ -2,7 +2,7 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Helpers.Orchestration
+namespace OpenAIApiClient.Orchestration
 {
     using System;
     using System.Diagnostics;
@@ -10,7 +10,8 @@ namespace OpenAIApiClient.Helpers.Orchestration
     using OpenAIApiClient.Helpers.General;
     using OpenAIApiClient.Models.Chat.Request;
     using OpenAIApiClient.Models.Chat.Response.Completion;
-    using OpenAIApiClient.Models.Selection;
+    using OpenAIApiClient.Models.Orchestration;
+    using OpenAIApiClient.Models.Registries;
 
     /// <summary>
     /// Executes OpenAI models using the provided ChatClient.

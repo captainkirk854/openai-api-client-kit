@@ -2,8 +2,10 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Models.Selection
+namespace OpenAIApiClient.Models.Orchestration
 {
+    using OpenAIApiClient.Models.Registries;
+
     public sealed class ModelResponse
     {
         /// <summary>

@@ -6,7 +6,7 @@ namespace OpenAIApiClient.Registries
 {
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Chat.Response.Completion;
-    using OpenAIApiClient.Models.Selection;
+    using OpenAIApiClient.Models.Registries;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OpenAIModelRegistry"/> class.
