@@ -13,8 +13,8 @@ namespace OpenAIApiClient.ConsoleApp.Demos
     public static class ModelRoutingDemo
     {
         private static readonly OpenAIModelRegistry ModelRegistry = new();
-        private static readonly ModelRouter SingleRouter = new(registry: ModelRegistry.Registry);
-        private static readonly EnsembleRouter EnsembleRouter = new(registry: ModelRegistry.Registry);
+        private static readonly ModelRouter SingleRouter = new(modelRegistry: ModelRegistry.Registry);
+        private static readonly EnsembleRouter EnsembleRouter = new(modelRegistry: ModelRegistry.Registry);
 
         public static void Run()
         {
@@ -82,6 +82,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         private static void RunExplicitRouting()
         {
             Console.WriteLine("Enter model name (e.g., GPT4o, GPT5_2):");
+            Console.WriteLine("Options: " + string.Join(", ", Enum.GetNames(typeof(OpenAIModel))));
             string? input = Console.ReadLine();
 
             if (!Enum.TryParse<OpenAIModel>(input, out OpenAIModel model))
@@ -188,7 +189,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         private static void RunCustomEnsemble()
         {
             Console.WriteLine("Enter required capabilities (comma-separated):");
-            Console.WriteLine("Options: Text, Chat, Reasoning, Vision, AudioIn, AudioOut, Embedding, Moderation, LowCost, HighPerformance, OpenWeight");
+            Console.WriteLine("Options: " + string.Join(", ", Enum.GetNames(typeof(ModelCapability))));
 
             string? input = Console.ReadLine();
 

@@ -7,9 +7,9 @@ namespace OpenAIApiClient.Routing.Individual
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Registries;
 
-    public sealed class ModelRouter(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> registry)
+    public sealed class ModelRouter(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry)
     {
-        private readonly IReadOnlyDictionary<OpenAIModel, ModelDescriptor> registry = registry;
+        private readonly IReadOnlyDictionary<OpenAIModel, ModelDescriptor> registry = modelRegistry;
 
         /// <summary>
         /// Routes a model request based on the specified routing strategy.
