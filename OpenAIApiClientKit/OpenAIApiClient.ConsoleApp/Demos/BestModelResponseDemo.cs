@@ -5,10 +5,8 @@
 namespace OpenAIApiClient.ConsoleApp.Demos
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Models.Orchestration;
-    using OpenAIApiClient.Models.Routing;
-    using OpenAIApiClient.Orchestration;
     using OpenAIApiClient.Registries;
+    using OpenAIApiClient.Routing.Asynchronous;
 
     /// <summary>
     /// Console App Demo to demonstrate implementation example for OpenAI optimal model selection.
@@ -34,7 +32,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             ModelExecutor executor = new(client: client);
 
             // Initialise Multi-Model Orchestrator ..
-            ModelsOrchestrator orchestrator = new(router: router, executor: executor);
+            ModelOrchestrator orchestrator = new(router: router, executor: executor);
 
             // Define prompt context including model requirements ..
             PromptContext context = new()
@@ -48,7 +46,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 OutputFormat = OutputFormat.PlainText,
             };
 
-            // Execute selected model(s) in orchestration pipeline ..
+            // Execute selected model(s) in asynchronous pipelines ..
             CollatedModelResponse final = await orchestrator.ExecuteAsync(context: context, cancelToken: cts.Token);
 
             // Output computed best response information ..

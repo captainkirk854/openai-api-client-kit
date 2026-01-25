@@ -2,7 +2,7 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Orchestration
+namespace OpenAIApiClient.Routing.Asynchronous
 {
     using System;
     using System.Diagnostics;
@@ -10,7 +10,6 @@ namespace OpenAIApiClient.Orchestration
     using OpenAIApiClient.Helpers.General;
     using OpenAIApiClient.Models.Chat.Request;
     using OpenAIApiClient.Models.Chat.Response.Completion;
-    using OpenAIApiClient.Models.Orchestration;
     using OpenAIApiClient.Models.Registries;
 
     /// <summary>

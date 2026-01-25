@@ -2,9 +2,8 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Orchestration
+namespace OpenAIApiClient.Routing.Asynchronous
 {
-    using OpenAIApiClient.Models.Orchestration;
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Registries;
 

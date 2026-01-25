@@ -2,10 +2,9 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Models.Routing
+namespace OpenAIApiClient.Routing.Asynchronous
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Models.Orchestration;
     using OpenAIApiClient.Registries;
 
     public sealed class CollatedModelResponse

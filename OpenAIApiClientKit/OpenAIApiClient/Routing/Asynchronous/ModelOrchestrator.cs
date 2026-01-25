@@ -1,15 +1,17 @@
-﻿// <copyright file="ModelsOrchestrator.cs" company="854 Things (tm)">
+﻿// <copyright file="ModelOrchestrator.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Orchestration
+namespace OpenAIApiClient.Routing.Asynchronous
 {
-    using OpenAIApiClient.Models.Orchestration;
     using OpenAIApiClient.Models.Registries;
-    using OpenAIApiClient.Models.Routing;
-    using OpenAIApiClient.Routing;
 
-    public sealed class ModelsOrchestrator(ModelRouter router, ModelExecutor executor)
+    /// <summary>
+    /// Model Orchestrator that routes prompts to multiple models and selects optimal response.
+    /// </summary>
+    /// <param name="router"></param>
+    /// <param name="executor"></param>
+    public sealed class ModelOrchestrator(ModelRouter router, ModelExecutor executor)
     {
         // <summary>
         // Orchestrates the execution of multiple OpenAI models based on routing decisions.

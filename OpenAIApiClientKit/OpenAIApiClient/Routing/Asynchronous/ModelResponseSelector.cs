@@ -2,11 +2,8 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Routing
+namespace OpenAIApiClient.Routing.Asynchronous
 {
-    using OpenAIApiClient.Models.Orchestration;
-    using OpenAIApiClient.Models.Routing;
-
     public sealed class ModelResponseSelector
     {
         /// <summary>
