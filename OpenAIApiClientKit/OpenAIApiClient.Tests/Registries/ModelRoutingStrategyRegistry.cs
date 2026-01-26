@@ -65,7 +65,7 @@ namespace OpenAIApiClient.Tests.Registries
             }
             catch (KeyNotFoundException ex)
             {
-                Assert.Contains(ex.Message, "No routing strategy registered");
+                Assert.Contains("No routing strategy registered", ex.Message);
             }
         }
 
@@ -104,7 +104,7 @@ namespace OpenAIApiClient.Tests.Registries
             }
             catch (InvalidOperationException ex)
             {
-                Assert.Contains(ex.Message, "Explicit routing requires");
+                Assert.Contains("Explicit routing requires", ex.Message);
             }
         }
 

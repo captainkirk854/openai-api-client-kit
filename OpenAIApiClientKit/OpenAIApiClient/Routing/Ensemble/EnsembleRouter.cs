@@ -26,7 +26,7 @@ namespace OpenAIApiClient.Routing.Ensemble
             }
 
             // Get the strategy from the registry and invoke it ..
-            EnsembleStrategy strategy = EnsembleStrategyRegistry.Get(strategy: request.Strategy);
+            EnsembleRoutingStrategyHandler strategy = EnsembleRoutingStrategyRegistry.Get(strategy: request.Strategy);
             return strategy(modelRegistry: this.modelRegistry);
         }
 

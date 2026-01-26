@@ -8,5 +8,5 @@ namespace OpenAIApiClient.Delegates
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Routing.Individual;
 
-    public delegate ModelRouterResult ModelRoutingStrategyHandler(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> registry, ModelRouterRequest request);
+    public delegate ModelRouterResult ModelRoutingStrategyHandler(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, ModelRouterRequest request);
 }

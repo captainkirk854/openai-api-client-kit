@@ -1,4 +1,4 @@
-﻿// <copyright file="EnsembleStrategyRegistry.cs" company="854 Things (tm)">
+﻿// <copyright file="EnsembleRoutingStrategyRegistry.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -10,10 +10,10 @@ namespace OpenAIApiClient.Tests.Registries
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Routing.Ensemble;
-    using testClass = OpenAIApiClient.Registries.EnsembleStrategyRegistry;
+    using testClass = OpenAIApiClient.Registries.EnsembleRoutingStrategyRegistry;
 
     [TestClass]
-    public class EnsembleStrategyRegistry
+    public class EnsembleRoutingStrategyRegistry
     {
         private IReadOnlyDictionary<OpenAIModel, ModelDescriptor>? modelRegistry;
 
@@ -45,7 +45,7 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void Get_ShouldReturnStrategyDelegate()
         {
-            EnsembleStrategy strategy = testClass.Get(EnsembleRoutingStrategy.Reasoning);
+            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleRoutingStrategy.Reasoning);
             Assert.IsNotNull(strategy);
         }
 
@@ -70,7 +70,7 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void ReasoningEnsemble_ShouldReturnThreeModels()
         {
-            EnsembleStrategy strategy = testClass.Get(EnsembleRoutingStrategy.Reasoning);
+            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleRoutingStrategy.Reasoning);
             EnsembleRouterResult result = strategy(modelRegistry: this.modelRegistry!);
             Assert.HasCount(3, result.Models);
         }
@@ -78,7 +78,7 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void ReasoningEnsemble_ShouldContainAReasoningModel()
         {
-            EnsembleStrategy strategy = testClass.Get(EnsembleRoutingStrategy.Reasoning);
+            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleRoutingStrategy.Reasoning);
             EnsembleRouterResult result = strategy(modelRegistry: this.modelRegistry!);
 
             Assert.IsTrue(result.Models.Any(m => m.Capabilities.Contains(ModelCapability.Reasoning)), "Reasoning ensemble must include at least one reasoning model.");
@@ -87,7 +87,7 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void ReasoningEnsemble_ShouldContainAFastChatModel()
         {
-            EnsembleStrategy strategy = testClass.Get(EnsembleRoutingStrategy.Reasoning);
+            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleRoutingStrategy.Reasoning);
             EnsembleRouterResult result = strategy(modelRegistry: this.modelRegistry!);
 
             Assert.IsTrue(result.Models.Any(m => m.Capabilities.Contains(ModelCapability.Chat)), "Reasoning ensemble must include a fast chat model.");
@@ -99,7 +99,7 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void VisionEnsemble_ShouldReturnTwoModels()
         {
-            EnsembleStrategy strategy = testClass.Get(EnsembleRoutingStrategy.Vision);
+            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleRoutingStrategy.Vision);
             EnsembleRouterResult result = strategy(modelRegistry: this.modelRegistry!);
 
             Assert.HasCount(2, result.Models);
@@ -108,7 +108,7 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void VisionEnsemble_ShouldContainVisionModel()
         {
-            EnsembleStrategy strategy = testClass.Get(EnsembleRoutingStrategy.Vision);
+            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleRoutingStrategy.Vision);
             EnsembleRouterResult result = strategy(modelRegistry: this.modelRegistry!);
 
             Assert.IsTrue(result.Models.Any(m => m.Capabilities.Contains(ModelCapability.Vision)), "Vision ensemble must include a vision-capable model.");
@@ -117,7 +117,7 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void VisionEnsemble_ShouldContainFastChatModel()
         {
-            EnsembleStrategy strategy = testClass.Get(EnsembleRoutingStrategy.Vision);
+            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleRoutingStrategy.Vision);
             EnsembleRouterResult result = strategy(modelRegistry: this.modelRegistry!);
 
             Assert.IsTrue(result.Models.Any(m => m.Capabilities.Contains(ModelCapability.Chat)), "Vision ensemble must include a fast chat model.");
@@ -129,7 +129,7 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void CostOptimizedEnsemble_ShouldReturnThreeModels()
         {
-            EnsembleStrategy strategy = testClass.Get(EnsembleRoutingStrategy.CostOptimized);
+            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleRoutingStrategy.CostOptimized);
             EnsembleRouterResult result = strategy(modelRegistry: this.modelRegistry!);
 
             Assert.HasCount(3, result.Models);
@@ -138,7 +138,7 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void CostOptimizedEnsemble_ShouldContainLowCostModel()
         {
-            EnsembleStrategy strategy = testClass.Get(EnsembleRoutingStrategy.CostOptimized);
+            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleRoutingStrategy.CostOptimized);
             EnsembleRouterResult result = strategy(modelRegistry: this.modelRegistry!);
 
             Assert.IsTrue(result.Models.Any(m => m.Capabilities.Contains(ModelCapability.LowCost)), "Cost-optimized ensemble must include a low-cost model.");
@@ -147,7 +147,7 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void CostOptimizedEnsemble_ShouldContainHighPerformanceModel()
         {
-            EnsembleStrategy strategy = testClass.Get(EnsembleRoutingStrategy.CostOptimized);
+            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleRoutingStrategy.CostOptimized);
             EnsembleRouterResult result = strategy(modelRegistry: this.modelRegistry!);
 
             Assert.IsTrue(result.Models.Any(m => m.Capabilities.Contains(ModelCapability.HighPerformance)), "Cost-optimized ensemble must include a high-performance model.");
@@ -159,7 +159,7 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void ReasoningEnsemble_FirstModelShouldBeHighPerformanceReasoning()
         {
-            EnsembleStrategy strategy = testClass.Get(EnsembleRoutingStrategy.Reasoning);
+            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleRoutingStrategy.Reasoning);
             EnsembleRouterResult result = strategy(modelRegistry: this.modelRegistry!);
 
             ModelDescriptor first = result.Models[0];
@@ -171,7 +171,7 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void VisionEnsemble_FirstModelShouldBeHighPerformanceVision()
         {
-            EnsembleStrategy strategy = testClass.Get(EnsembleRoutingStrategy.Vision);
+            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleRoutingStrategy.Vision);
             EnsembleRouterResult result = strategy(modelRegistry: this.modelRegistry!);
 
             ModelDescriptor first = result.Models[0];

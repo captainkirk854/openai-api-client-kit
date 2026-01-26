@@ -1,4 +1,4 @@
-﻿// <copyright file="EnsembleStrategyRegistry.cs" company="854 Things (tm)">
+﻿// <copyright file="EnsembleRoutingStrategyRegistry.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -12,13 +12,13 @@ namespace OpenAIApiClient.Registries
     /// <summary>
     /// A (extendable) registry of ensemble routing strategies mapped to their implementations.
     /// </summary>
-    public static class EnsembleStrategyRegistry
+    public static class EnsembleRoutingStrategyRegistry
     {
         /// <summary>
         /// Dictionary mapping ensemble routing strategies to their corresponding strategy implementations and ultimately their associated models.
         /// </summary>
-        public static readonly IReadOnlyDictionary<EnsembleRoutingStrategy, EnsembleStrategy> Strategies =
-            new Dictionary<EnsembleRoutingStrategy, EnsembleStrategy>
+        public static readonly IReadOnlyDictionary<EnsembleRoutingStrategy, EnsembleRoutingStrategyHandler> Strategies =
+            new Dictionary<EnsembleRoutingStrategy, EnsembleRoutingStrategyHandler>
             {
                 [EnsembleRoutingStrategy.Reasoning] = BuildReasoningEnsemble,
                 [EnsembleRoutingStrategy.Vision] = BuildVisionEnsemble,
@@ -31,9 +31,9 @@ namespace OpenAIApiClient.Registries
         /// <param name="strategy"></param>
         /// <returns>EnsembleStrategy definition.</returns>
         /// <exception cref="KeyNotFoundException">Thrown if strategy not registered.</exception>
-        public static EnsembleStrategy Get(EnsembleRoutingStrategy strategy)
+        public static EnsembleRoutingStrategyHandler Get(EnsembleRoutingStrategy strategy)
         {
-            if (!Strategies.TryGetValue(strategy, out EnsembleStrategy? strat))
+            if (!Strategies.TryGetValue(strategy, out EnsembleRoutingStrategyHandler? strat))
             {
                 throw new KeyNotFoundException($"No ensemble strategy registered for {strategy}");
             }

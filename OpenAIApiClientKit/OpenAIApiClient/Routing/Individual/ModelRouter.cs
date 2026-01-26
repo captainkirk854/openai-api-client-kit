@@ -21,8 +21,8 @@ namespace OpenAIApiClient.Routing.Individual
         /// <exception cref="InvalidOperationException">Thrown if the request does not specify an explicit model.</exception>
         public ModelRouterResult Route(ModelRouterRequest request)
         {
-            ModelRoutingStrategyHandler handler = ModelRoutingStrategyRegistry.Get(request.Strategy);
-            return handler(this.modelRegistry, request);
+            ModelRoutingStrategyHandler handler = ModelRoutingStrategyRegistry.Get(strategy: request.Strategy);
+            return handler(modelRegistry: this.modelRegistry, request);
         }
     }
 }
