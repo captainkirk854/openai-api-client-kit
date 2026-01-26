@@ -155,6 +155,9 @@ namespace OpenAIApiClient.ConsoleApp
             await Demos.ModelPromptDemo.ProcessUserPromptAsync(client: client, isStreaming: isStreaming, userPrompt: userPrompt, isDeterministic: isDeterministic, outputFormat: outputFormatChoice, cts: cts);
         }
 
+        /// <summary>
+        /// A demo implementation to showcase model routing capabilities.
+        /// </summary>
         private static void ModelRoutingDemo()
         {
             Demos.ModelRoutingDemo.Run();

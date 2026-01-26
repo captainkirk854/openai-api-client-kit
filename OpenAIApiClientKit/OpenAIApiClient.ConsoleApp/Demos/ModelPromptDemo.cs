@@ -46,17 +46,18 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             }
 
             // Build request payload ..
-            ChatCompletionRequest request = new ClientRequestBuilder().WithModel(input: OpenAIModel.GPT4o_Mini)
-                                                                      .AddSystemMessage(input: "You are a helpful assistant that answers concisely.")
-                                                                      .AddUserMessage(input: userPrompt)
-                                                                      .UsingMaxTokens(input: 1000)
-                                                                      .EnableStreaming(input: isStreaming)
-                                                                      .WithTemperature(input: temperature)
-                                                                      .WithTopP(input: topP)
-                                                                      .WithPresencePenalty(input: presencePenalty)
-                                                                      .WithFrequencyPenalty(input: frequencyPenalty)
-                                                                      .SetOutputFormat(input: outputFormat)
-                                                                      .Build();
+            ChatCompletionRequest request = new ClientRequestBuilder()
+                .WithModel(input: OpenAIModel.GPT4o_Mini)
+                .AddSystemMessage(input: "You are a helpful assistant that answers concisely.")
+                .AddUserMessage(input: userPrompt)
+                .UsingMaxTokens(input: 1000)
+                .EnableStreaming(input: isStreaming)
+                .WithTemperature(input: temperature)
+                .WithTopP(input: topP)
+                .WithPresencePenalty(input: presencePenalty)
+                .WithFrequencyPenalty(input: frequencyPenalty)
+                .SetOutputFormat(input: outputFormat)
+                .Build();
 
             // If not streaming ..
             if (!isStreaming)

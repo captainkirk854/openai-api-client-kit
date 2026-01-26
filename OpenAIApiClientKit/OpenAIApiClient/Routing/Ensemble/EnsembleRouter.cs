@@ -46,9 +46,9 @@ namespace OpenAIApiClient.Routing.Ensemble
             int count = request.ModelCount ?? 1;
 
             List<ModelDescriptor> models = [.. this.modelRegistry.Values
-                                                   .Where(m => request.RequiredCapabilities.All(c => m.Capabilities.Contains(c)))
-                                                   .OrderBy(m => m.Pricing.InputTokenCost)
-                                                   .Take(count)];
+                .Where(m => request.RequiredCapabilities.All(c => m.Capabilities.Contains(c)))
+                .OrderBy(m => m.Pricing.InputTokenCost)
+                .Take(count)];
 
             if (models.Count == 0)
             {

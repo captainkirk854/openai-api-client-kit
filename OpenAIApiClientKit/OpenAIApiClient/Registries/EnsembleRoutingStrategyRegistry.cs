@@ -54,19 +54,19 @@ namespace OpenAIApiClient.Registries
         private static EnsembleRouterResult BuildReasoningEnsemble(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> registry)
         {
             ModelDescriptor reasoning = registry.Values
-                                        .Where(m => m.Capabilities.Contains(ModelCapability.Reasoning))
-                                        .OrderByDescending(m => m.Capabilities.Contains(ModelCapability.HighPerformance))
-                                        .First();
+                .Where(m => m.Capabilities.Contains(ModelCapability.Reasoning))
+                .OrderByDescending(m => m.Capabilities.Contains(ModelCapability.HighPerformance))
+                .First();
 
             ModelDescriptor fast = registry.Values
-                                   .Where(m => m.Capabilities.Contains(ModelCapability.Chat))
-                                   .OrderBy(m => m.Pricing.InputTokenCost)
-                                   .First();
+                .Where(m => m.Capabilities.Contains(ModelCapability.Chat))
+                .OrderBy(m => m.Pricing.InputTokenCost)
+                .First();
 
             ModelDescriptor critic = registry.Values
-                                     .Where(m => m.Capabilities.Contains(ModelCapability.Reasoning))
-                                     .OrderBy(m => m.Pricing.InputTokenCost)
-                                     .First();
+                .Where(m => m.Capabilities.Contains(ModelCapability.Reasoning))
+                .OrderBy(m => m.Pricing.InputTokenCost)
+                .First();
 
             return new EnsembleRouterResult(models:
              [
@@ -85,14 +85,14 @@ namespace OpenAIApiClient.Registries
         private static EnsembleRouterResult BuildVisionEnsemble(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry)
         {
             ModelDescriptor vision = modelRegistry.Values
-                                     .Where(m => m.Capabilities.Contains(ModelCapability.Vision))
-                                     .OrderByDescending(m => m.Capabilities.Contains(ModelCapability.HighPerformance))
-                                     .First();
+                .Where(m => m.Capabilities.Contains(ModelCapability.Vision))
+                .OrderByDescending(m => m.Capabilities.Contains(ModelCapability.HighPerformance))
+                .First();
 
             ModelDescriptor fastText = modelRegistry.Values
-                                       .Where(m => m.Capabilities.Contains(ModelCapability.Chat))
-                                       .OrderBy(m => m.Pricing.InputTokenCost)
-                                       .First();
+                .Where(m => m.Capabilities.Contains(ModelCapability.Chat))
+                .OrderBy(m => m.Pricing.InputTokenCost)
+                .First();
 
             return new EnsembleRouterResult(models:
             [
@@ -108,20 +108,20 @@ namespace OpenAIApiClient.Registries
         private static EnsembleRouterResult BuildCostOptimizedEnsemble(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry)
         {
             ModelDescriptor low = modelRegistry.Values
-                                  .Where(m => m.Capabilities.Contains(ModelCapability.LowCost))
-                                  .OrderBy(m => m.Pricing.InputTokenCost)
-                                  .First();
+                .Where(m => m.Capabilities.Contains(ModelCapability.LowCost))
+                .OrderBy(m => m.Pricing.InputTokenCost)
+                .First();
 
             ModelDescriptor mid = modelRegistry.Values
-                                  .Where(m => m.Capabilities.Contains(ModelCapability.Chat))
-                                  .OrderBy(m => m.Pricing.InputTokenCost)
-                                  .Skip(1)
-                                  .FirstOrDefault() ?? low;
+                .Where(m => m.Capabilities.Contains(ModelCapability.Chat))
+                .OrderBy(m => m.Pricing.InputTokenCost)
+                .Skip(1)
+                .FirstOrDefault() ?? low;
 
             ModelDescriptor high = modelRegistry.Values
-                                   .Where(m => m.Capabilities.Contains(ModelCapability.HighPerformance))
-                                   .OrderBy(m => m.Pricing.InputTokenCost)
-                                   .First();
+                .Where(m => m.Capabilities.Contains(ModelCapability.HighPerformance))
+                .OrderBy(m => m.Pricing.InputTokenCost)
+                .First();
 
             return new EnsembleRouterResult(models:
             [

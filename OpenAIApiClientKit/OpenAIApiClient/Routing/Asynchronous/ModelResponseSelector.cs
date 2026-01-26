@@ -24,8 +24,8 @@ namespace OpenAIApiClient.Routing.Asynchronous
 
             // Native-style heuristic: pick the highest token count (best reasoning) ..
             ModelResponse best = successful
-                                .OrderByDescending(r => r.RawOutput.Length)
-                                .First();
+                .OrderByDescending(r => r.RawOutput.Length)
+                .First();
 
             // Return the final collated response ..
             return new CollatedModelResponse
