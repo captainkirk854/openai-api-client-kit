@@ -24,7 +24,7 @@ namespace OpenAIApiClient.Tests.Registries
             foreach ((OpenAIModel model, ModelDescriptor descriptor) in Registry)
             {
                 Assert.IsNotNull(descriptor, $"Descriptor for {model} is null");
-                Assert.AreEqual(model, descriptor.Model, $"Descriptor.Model mismatch for {model}");
+                Assert.AreEqual(model, descriptor.Name, $"Descriptor.Model mismatch for {model}");
             }
         }
 

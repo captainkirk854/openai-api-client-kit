@@ -28,7 +28,7 @@ namespace OpenAIApiClient.Routing.Asynchronous
         public async Task<ModelResponse> ExecuteAsync(ModelDescriptor model, PromptContext context, CancellationToken cancelToken)
         {
             ChatCompletionRequest request = new ClientRequestBuilder()
-                .WithModel(model.Model)
+                .WithModel(model.Name)
                 .AddSystemMessage(input: "You are a helpful assistant that answers concisely.")
                 .AddUserMessage(context.Prompt)
                 .UsingMaxTokens(input: 1000)

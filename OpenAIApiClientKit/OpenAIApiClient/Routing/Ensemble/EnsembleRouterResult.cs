@@ -8,6 +8,9 @@ namespace OpenAIApiClient.Routing.Ensemble
 
     public sealed class EnsembleRouterResult(IEnumerable<ModelDescriptor> models)
     {
-        public IReadOnlyList<ModelDescriptor> Models { get; } = [.. models];
+        /// <summary>
+        /// Gets a unique list of model descriptors selected for the ensemble.
+        /// </summary>
+        public IReadOnlyList<ModelDescriptor> Models { get; } = [.. models.Distinct()];
     }
 }

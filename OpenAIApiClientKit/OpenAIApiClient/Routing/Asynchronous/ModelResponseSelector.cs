@@ -31,7 +31,7 @@ namespace OpenAIApiClient.Routing.Asynchronous
             return new CollatedModelResponse
             {
                 Content = best.RawOutput,
-                Name = best.Model.Model,
+                Name = best.Model.Name,
                 SourceResponses = responses,
                 CollationStrategy = "LongestOutput",
             };

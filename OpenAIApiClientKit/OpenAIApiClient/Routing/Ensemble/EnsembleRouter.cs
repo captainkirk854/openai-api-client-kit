@@ -9,24 +9,29 @@ namespace OpenAIApiClient.Routing.Ensemble
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Registries;
 
+    /// <summary>
+    /// EnsembleRouter routes ensemble requests to the appropriate strategy based on the provided context.
+    /// </summary>
+    /// <param name="modelRegistry"></param>
     public sealed class EnsembleRouter(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry)
     {
         private readonly IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry = modelRegistry;
 
         /// <summary>
-        /// Routes the ensemble request to the appropriate strategy and returns the result.
+        /// Routes an ensemble context to the appropriate strategy and returns related model(s) as part of EnsembleRouterResult.
         /// </summary>
-        /// <param name="request"></param>
-        /// <returns>EnsembleRouterResult.</returns>
-        public EnsembleRouterResult Route(EnsembleRouterRequest request)
+        /// <param name="context"></param>
+        /// <returns cref ="EnsembleRouterResult"> containing the resolved model descriptor(s).</returns>
+        public EnsembleRouterResult Route(EnsembleContext context)
         {
-            if (request.Strategy == EnsembleRoutingStrategy.Custom)
+            // Special case for custom strategy ..
+            if (context.Strategy == EnsembleRoutingStrategy.Custom)
             {
-                return this.BuildCustomEnsemble(request);
+                return this.BuildCustomEnsemble(context);
             }
 
             // Get the strategy from the registry and invoke it ..
-            EnsembleRoutingStrategyHandler strategy = EnsembleRoutingStrategyRegistry.Get(strategy: request.Strategy);
+            EnsembleRoutingStrategyHandler strategy = EnsembleRoutingStrategyRegistry.Get(strategy: context.Strategy);
             return strategy(modelRegistry: this.modelRegistry);
         }
 
@@ -36,7 +41,7 @@ namespace OpenAIApiClient.Routing.Ensemble
         /// <param name="request">The ensemble router request containing required capabilities and model count.</param>
         /// <returns>An EnsembleRouterResult containing the selected models.</returns>
         /// <exception cref="InvalidOperationException">Thrown if no required capabilities are specified or if no models match the requested capabilities.</exception>
-        private EnsembleRouterResult BuildCustomEnsemble(EnsembleRouterRequest request)
+        private EnsembleRouterResult BuildCustomEnsemble(EnsembleContext request)
         {
             if (request.RequiredCapabilities is null || request.RequiredCapabilities.Count == 0)
             {
@@ -52,7 +57,7 @@ namespace OpenAIApiClient.Routing.Ensemble
 
             if (models.Count == 0)
             {
-                throw new InvalidOperationException("No models match the requested capabilities.");
+                throw new InvalidOperationException("No model(s) match the requested capabilities.");
             }
 
             return new EnsembleRouterResult(models: models);

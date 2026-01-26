@@ -442,7 +442,7 @@ namespace OpenAIApiClient.Registries
             // Finalise registry, by using dictionary key value to auto-inject the "yet-to-be-set" Model property value for each model descriptor ..
             foreach ((OpenAIModel model, ModelDescriptor descriptor) in this.models)
             {
-                descriptor.Model = model;
+                descriptor.Name = model;
             }
         }
 

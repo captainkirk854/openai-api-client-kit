@@ -1,33 +1,33 @@
-﻿// <copyright file="EnsembleRouterRequest.cs" company="854 Things (tm)">
+﻿// <copyright file="SingleContext.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Routing.Ensemble
+namespace OpenAIApiClient.Routing.Single
 {
     using OpenAIApiClient.Enums;
 
-    public sealed class EnsembleRouterRequest
+    public sealed class SingleContext
     {
         /// <summary>
-        /// Gets the ensemble routing strategy used.
+        /// Gets the model routing strategy.
         /// </summary>
-        public EnsembleRoutingStrategy Strategy
+        public ModelRoutingStrategy Strategy
         {
             get;
             init;
         }
 
         /// <summary>
-        /// Gets the desired number of models to route to.
+        /// Gets the explicitly specified model, if any.
         /// </summary>
-        public int? ModelCount
+        public OpenAIModel? ExplicitModel
         {
             get;
             init;
         }
 
         /// <summary>
-        /// Gets the collection of required model capabilities.
+        /// Gets the required model capabilities.
         /// </summary>
         public IReadOnlyCollection<ModelCapability>? RequiredCapabilities
         {

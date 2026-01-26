@@ -62,7 +62,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             {
                 Console.WriteLine();
                 Console.WriteLine(new string('-', 80));
-                Console.WriteLine($"Model: {response.Model.Model}");
+                Console.WriteLine($"Model: {response.Model.Name}");
                 Console.WriteLine($"Success: {response.IsSuccessful}");
                 Console.WriteLine($"TokenCost: {response.TotalTokens}");
                 Console.WriteLine($"Cost: {response.EstimatedCost}");
