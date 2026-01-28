@@ -2,13 +2,12 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Routing.Asynchronous
+namespace OpenAIApiClient.Orchestration2
 {
     public sealed class ModelResponseSelector
     {
         /// <summary>
-        /// Selects the best OpenAI model response from a list, preferring the response with the longest output among
-        /// successful responses.
+        /// Selects the best OpenAI model response from a list, preferring the response with the longest output among successful responses.
         /// </summary>
         /// <param name="responses">A read-only list of OpenAI model responses to evaluate.</param>
         /// <returns>An OpenAIModelResponseCollator containing the selected best response and related metadata.</returns>

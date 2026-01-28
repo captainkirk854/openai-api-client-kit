@@ -1,4 +1,4 @@
-﻿// <copyright file="SingleRoutingStrategyRegistry.cs" company="854 Things (tm)">
+﻿// <copyright file="SingleModelRoutingStrategyRegistry.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -9,11 +9,11 @@ namespace OpenAIApiClient.Tests.Registries
     using OpenAIApiClient.Delegates;
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Registries;
-    using OpenAIApiClient.Routing.Single;
-    using testClass = OpenAIApiClient.Registries.SingleRoutingStrategyRegistry;
+    using OpenAIApiClient.Routing.SingleModel;
+    using testClass = OpenAIApiClient.Registries.SingleModelRoutingStrategyRegistry;
 
     [TestClass]
-    public class SingleRoutingStrategyRegistry
+    public class SingleModelRoutingStrategyRegistry
     {
         private IReadOnlyDictionary<OpenAIModel, ModelDescriptor>? modelRegistry;
 
@@ -51,7 +51,7 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void Get_ShouldReturnStrategyDelegate()
         {
-            Delegates.SingleRoutingStrategyHandler handler = testClass.Get(ModelRoutingStrategy.LowestCost);
+            Delegates.SingleModelRoutingStrategyHandler handler = testClass.Get(ModelRoutingStrategy.LowestCost);
             Assert.IsNotNull(handler);
         }
 
@@ -75,14 +75,14 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void ExplicitRouting_ShouldReturnCorrectModel()
         {
-            SingleContext request = new()
+            SingleModelContext request = new()
             {
                 Strategy = ModelRoutingStrategy.Explicit,
                 ExplicitModel = OpenAIModel.GPT4o,
             };
 
-            SingleRoutingStrategyHandler handler = testClass.Get(ModelRoutingStrategy.Explicit);
-            SingleRouterResult result = handler(this.modelRegistry!, request);
+            SingleModelRoutingStrategyHandler handler = testClass.Get(ModelRoutingStrategy.Explicit);
+            SingleModelRouterResult result = handler(this.modelRegistry!, request);
 
             Assert.AreEqual(OpenAIModel.GPT4o, result.Model.Name);
         }
@@ -90,12 +90,12 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void ExplicitRouting_ShouldThrowIfNoModelProvided()
         {
-            SingleContext request = new()
+            SingleModelContext request = new()
             {
                 Strategy = ModelRoutingStrategy.Explicit,
             };
 
-            SingleRoutingStrategyHandler handler = testClass.Get(ModelRoutingStrategy.Explicit);
+            SingleModelRoutingStrategyHandler handler = testClass.Get(ModelRoutingStrategy.Explicit);
 
             try
             {
@@ -114,13 +114,13 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void LowestCost_ShouldReturnModelWithLowestInputCost()
         {
-            SingleContext request = new()
+            SingleModelContext request = new()
             {
                 Strategy = ModelRoutingStrategy.LowestCost,
             };
 
-            SingleRoutingStrategyHandler handler = testClass.Get(ModelRoutingStrategy.LowestCost);
-            SingleRouterResult result = handler(this.modelRegistry!, request);
+            SingleModelRoutingStrategyHandler handler = testClass.Get(ModelRoutingStrategy.LowestCost);
+            SingleModelRouterResult result = handler(this.modelRegistry!, request);
 
             ModelDescriptor lowest = this.modelRegistry!.Values
                 .OrderBy(m => m.Pricing.InputTokenCost)
@@ -136,13 +136,13 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void HighestPerformance_ShouldReturnHighPerformanceModel()
         {
-            SingleContext request = new()
+            SingleModelContext request = new()
             {
                 Strategy = ModelRoutingStrategy.HighestPerformance,
             };
 
-            SingleRoutingStrategyHandler handler = testClass.Get(ModelRoutingStrategy.HighestPerformance);
-            SingleRouterResult result = handler(this.modelRegistry!, request);
+            SingleModelRoutingStrategyHandler handler = testClass.Get(ModelRoutingStrategy.HighestPerformance);
+            SingleModelRouterResult result = handler(this.modelRegistry!, request);
 
             Assert.Contains(ModelCapability.HighPerformance, result.Model.Capabilities);
         }
@@ -153,13 +153,13 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void BestReasoning_ShouldReturnReasoningModel()
         {
-            SingleContext request = new()
+            SingleModelContext request = new()
             {
                 Strategy = ModelRoutingStrategy.BestReasoning,
             };
 
-            SingleRoutingStrategyHandler handler = testClass.Get(ModelRoutingStrategy.BestReasoning);
-            SingleRouterResult result = handler(this.modelRegistry!, request);
+            SingleModelRoutingStrategyHandler handler = testClass.Get(ModelRoutingStrategy.BestReasoning);
+            SingleModelRouterResult result = handler(this.modelRegistry!, request);
 
             Assert.Contains(ModelCapability.Reasoning, result.Model.Capabilities);
         }
@@ -170,13 +170,13 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void BestVision_ShouldReturnVisionModel()
         {
-            SingleContext request = new()
+            SingleModelContext request = new()
             {
                 Strategy = ModelRoutingStrategy.BestVision,
             };
 
-            SingleRoutingStrategyHandler handler = testClass.Get(ModelRoutingStrategy.BestVision);
-            SingleRouterResult result = handler(this.modelRegistry!, request);
+            SingleModelRoutingStrategyHandler handler = testClass.Get(ModelRoutingStrategy.BestVision);
+            SingleModelRouterResult result = handler(this.modelRegistry!, request);
 
             Assert.Contains(ModelCapability.Vision, result.Model.Capabilities);
         }
@@ -187,13 +187,13 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void BestAudioIn_ShouldReturnAudioInModel()
         {
-            SingleContext request = new()
+            SingleModelContext request = new()
             {
                 Strategy = ModelRoutingStrategy.BestAudioIn,
             };
 
-            SingleRoutingStrategyHandler handler = testClass.Get(ModelRoutingStrategy.BestAudioIn);
-            SingleRouterResult result = handler(this.modelRegistry!, request);
+            SingleModelRoutingStrategyHandler handler = testClass.Get(ModelRoutingStrategy.BestAudioIn);
+            SingleModelRouterResult result = handler(this.modelRegistry!, request);
 
             Assert.Contains(ModelCapability.AudioIn, result.Model.Capabilities);
         }
@@ -201,13 +201,13 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void BestAudioOut_ShouldReturnAudioOutModel()
         {
-            SingleContext request = new()
+            SingleModelContext request = new()
             {
                 Strategy = ModelRoutingStrategy.BestAudioOut,
             };
 
-            SingleRoutingStrategyHandler handler = testClass.Get(ModelRoutingStrategy.BestAudioOut);
-            SingleRouterResult result = handler(this.modelRegistry!, request);
+            SingleModelRoutingStrategyHandler handler = testClass.Get(ModelRoutingStrategy.BestAudioOut);
+            SingleModelRouterResult result = handler(this.modelRegistry!, request);
 
             Assert.Contains(ModelCapability.AudioOut, result.Model.Capabilities);
         }
@@ -218,13 +218,13 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void Embedding_ShouldReturnEmbeddingModel()
         {
-            SingleContext request = new()
+            SingleModelContext request = new()
             {
                 Strategy = ModelRoutingStrategy.Embedding,
             };
 
-            SingleRoutingStrategyHandler handler = testClass.Get(ModelRoutingStrategy.Embedding);
-            SingleRouterResult result = handler(this.modelRegistry!, request);
+            SingleModelRoutingStrategyHandler handler = testClass.Get(ModelRoutingStrategy.Embedding);
+            SingleModelRouterResult result = handler(this.modelRegistry!, request);
 
             Assert.Contains(ModelCapability.Embedding, result.Model.Capabilities);
         }
@@ -235,13 +235,13 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void Moderation_ShouldReturnModerationModel()
         {
-            SingleContext request = new()
+            SingleModelContext request = new()
             {
                 Strategy = ModelRoutingStrategy.Moderation,
             };
 
-            SingleRoutingStrategyHandler handler = testClass.Get(ModelRoutingStrategy.Moderation);
-            SingleRouterResult result = handler(this.modelRegistry!, request);
+            SingleModelRoutingStrategyHandler handler = testClass.Get(ModelRoutingStrategy.Moderation);
+            SingleModelRouterResult result = handler(this.modelRegistry!, request);
 
             Assert.Contains(ModelCapability.Moderation, result.Model.Capabilities);
         }

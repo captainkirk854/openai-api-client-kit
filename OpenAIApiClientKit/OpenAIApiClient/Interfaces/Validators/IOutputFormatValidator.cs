@@ -2,7 +2,7 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Interfaces
+namespace OpenAIApiClient.Interfaces.Validators
 {
     public interface IOutputFormatValidator
     {

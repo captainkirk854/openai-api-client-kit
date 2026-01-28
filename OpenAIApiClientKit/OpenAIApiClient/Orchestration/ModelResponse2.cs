@@ -1,0 +1,74 @@
+﻿// <copyright file="ModelResponse2.cs" company="854 Things (tm)">
+// Copyright (c) 854 Things (tm). All rights reserved.
+// </copyright>
+
+namespace OpenAIApiClient.Orchestration
+{
+    using OpenAIApiClient.Models.Registries;
+
+    public sealed class ModelResponse2
+    {
+        /// <summary>
+        /// Gets the model descriptor.
+        /// </summary>
+        public ModelDescriptor Model
+        {
+            get;
+            init;
+        } = default!;
+
+        /// <summary>
+        /// Gets the raw output from the model.
+        /// </summary>
+        public string RawOutput
+        {
+            get;
+            init;
+        } = string.Empty;
+
+        /// <summary>
+        /// Gets a value indicating whether the model call was successful.
+        /// </summary>
+        public bool IsSuccessful
+        {
+            get;
+            init;
+        }
+
+        /// <summary>
+        /// Gets the error message if the model call was not successful.
+        /// </summary>
+        public string? ErrorMessage
+        {
+            get;
+            init;
+        }
+
+        /// <summary>
+        /// Gets the latency of the model call.
+        /// </summary>
+        public TimeSpan Latency
+        {
+            get;
+            init;
+        }
+
+        /// <summary>
+        /// Gets the total tokens used in the model call.
+        /// </summary>
+        public decimal TotalTokens
+        {
+            get;
+            init;
+        }
+
+        /// <summary>
+        /// Gets the estimated cost of the model call.
+        /// </summary>
+        public decimal EstimatedCost
+        {
+            get;
+            init;
+        }
+    }
+}

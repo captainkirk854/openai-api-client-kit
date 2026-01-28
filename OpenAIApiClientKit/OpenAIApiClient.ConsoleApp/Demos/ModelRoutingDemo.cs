@@ -8,12 +8,15 @@ namespace OpenAIApiClient.ConsoleApp.Demos
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Registries;
     using OpenAIApiClient.Routing.Ensemble;
-    using OpenAIApiClient.Routing.Single;
+    using OpenAIApiClient.Routing.SingleModel;
 
+    /// <summary>
+    /// Ensemble and Single Model Routing Demo.
+    /// </summary>
     public static class ModelRoutingDemo
     {
         private static readonly OpenAIModelRegistry ModelRegistry = new();
-        private static readonly SingleRouter SingleRouter = new(modelRegistry: ModelRegistry.Registry);
+        private static readonly SingleModelRouter SingleRouter = new(modelRegistry: ModelRegistry.Registry);
         private static readonly EnsembleRouter EnsembleRouter = new(modelRegistry: ModelRegistry.Registry);
 
         public static void Run()
@@ -91,7 +94,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 return;
             }
 
-            SingleRouterResult result = SingleRouter.Route(new SingleContext
+            SingleModelRouterResult result = SingleRouter.Route(new SingleModelContext
             {
                 Strategy = ModelRoutingStrategy.Explicit,
                 ExplicitModel = model,
@@ -105,7 +108,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// </summary>
         private static void RunBestReasoning()
         {
-            SingleRouterResult result = SingleRouter.Route(new SingleContext
+            SingleModelRouterResult result = SingleRouter.Route(new SingleModelContext
             {
                 Strategy = ModelRoutingStrategy.BestReasoning,
             });
@@ -118,7 +121,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// </summary>
         private static void RunLowestCostChat()
         {
-            SingleRouterResult result = SingleRouter.Route(new SingleContext
+            SingleModelRouterResult result = SingleRouter.Route(new SingleModelContext
             {
                 Strategy = ModelRoutingStrategy.LowestCost,
                 RequiredCapabilities = [ModelCapability.Chat],
@@ -132,7 +135,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// </summary>
         private static void RunBestVision()
         {
-            SingleRouterResult result = SingleRouter.Route(new SingleContext
+            SingleModelRouterResult result = SingleRouter.Route(new SingleModelContext
             {
                 Strategy = ModelRoutingStrategy.BestVision,
             });
@@ -265,7 +268,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// </summary>
         /// <param name="title"></param>
         /// <param name="result"></param>
-        private static void PrintSingleResult(string title, SingleRouterResult result)
+        private static void PrintSingleResult(string title, SingleModelRouterResult result)
         {
             Console.WriteLine($"\n=== {title} ===");
             Console.WriteLine($"Model:     {result.Model.Name}");
@@ -282,7 +285,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         {
             Console.WriteLine($"\n=== {title} ===");
 
-            foreach (ModelDescriptor model in result.Models)
+            foreach (ModelDescriptor model in result.Models.Distinct())
             {
                 Console.WriteLine($"Model:     {model.Name}");
                 Console.WriteLine($"Capabilities: {string.Join(", ", model.Capabilities)}");

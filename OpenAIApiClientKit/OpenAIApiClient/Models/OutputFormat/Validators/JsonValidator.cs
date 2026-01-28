@@ -5,7 +5,7 @@
 namespace OpenAIApiClient.Models.OutputFormat.Validators
 {
     using System.Text.Json;
-    using OpenAIApiClient.Interfaces;
+    using OpenAIApiClient.Interfaces.Validators;
 
     public sealed class JsonValidator : IOutputFormatValidator
     {

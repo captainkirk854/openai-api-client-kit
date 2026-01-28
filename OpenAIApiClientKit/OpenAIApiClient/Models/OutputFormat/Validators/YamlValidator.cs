@@ -5,7 +5,7 @@
 namespace OpenAIApiClient.Models.OutputFormat.Validators
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Interfaces;
+    using OpenAIApiClient.Interfaces.Validators;
     using YamlDotNet.Core;
     using YamlDotNet.RepresentationModel;
 

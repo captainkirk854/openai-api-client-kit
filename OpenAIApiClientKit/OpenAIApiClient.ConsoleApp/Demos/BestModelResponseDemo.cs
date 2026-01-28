@@ -5,8 +5,8 @@
 namespace OpenAIApiClient.ConsoleApp.Demos
 {
     using OpenAIApiClient.Enums;
+    using OpenAIApiClient.Orchestration2;
     using OpenAIApiClient.Registries;
-    using OpenAIApiClient.Routing.Asynchronous;
 
     /// <summary>
     /// Console App Demo to demonstrate implementation example for OpenAI optimal model selection.

@@ -5,7 +5,7 @@
 #pragma warning disable SA1313 // Parameter names should begin with lower-case letter
 namespace OpenAIApiClient.Models.OutputFormat.General
 {
-    using OpenAIApiClient.Interfaces;
+    using OpenAIApiClient.Interfaces.Validators;
 
     public sealed record FormatDescriptor(
 

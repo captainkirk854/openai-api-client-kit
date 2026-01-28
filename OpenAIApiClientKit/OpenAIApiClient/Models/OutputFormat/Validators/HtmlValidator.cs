@@ -6,7 +6,7 @@ namespace OpenAIApiClient.Models.OutputFormat.Validators
 {
     using HtmlAgilityPack;
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Interfaces;
+    using OpenAIApiClient.Interfaces.Validators;
 
     public sealed class HtmlValidator : IOutputFormatValidator
     {

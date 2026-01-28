@@ -1,8 +1,8 @@
-﻿// <copyright file="ModelExecutor.cs" company="854 Things (tm)">
+﻿// <copyright file="ModelExecutor2.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Routing.Asynchronous
+namespace OpenAIApiClient.Orchestration
 {
     using System;
     using System.Diagnostics;
@@ -16,7 +16,7 @@ namespace OpenAIApiClient.Routing.Asynchronous
     /// Executes OpenAI models using the provided ChatClient.
     /// </summary>
     /// <param name="client"></param>
-    public sealed class ModelExecutor(ChatClient client)
+    public sealed class ModelExecutor2(ChatClient client)
     {
         /// <summary>
         /// Executes the given model with the provided prompt context.
@@ -25,7 +25,7 @@ namespace OpenAIApiClient.Routing.Asynchronous
         /// <param name="context">The prompt context.</param>
         /// <param name="cancelToken">Cancellation token.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains the model response.</returns>
-        public async Task<ModelResponse> ExecuteAsync(ModelDescriptor model, PromptContext context, CancellationToken cancelToken)
+        public async Task<ModelResponse2> ExecuteAsync(ModelDescriptor model, PromptContext2 context, CancellationToken cancelToken)
         {
             ChatCompletionRequest request = new ClientRequestBuilder()
                 .WithModel(model.Name)
@@ -47,7 +47,7 @@ namespace OpenAIApiClient.Routing.Asynchronous
                 sw.Stop();
 
                 // Return successful response ..
-                return new ModelResponse
+                return new ModelResponse2
                 {
                     Model = model,
                     RawOutput = response!.Choices[0].Message.Content!,
@@ -63,7 +63,7 @@ namespace OpenAIApiClient.Routing.Asynchronous
                 sw.Stop();
 
                 // Return failed response ..
-                return new ModelResponse
+                return new ModelResponse2
                 {
                     Model = model,
                     RawOutput = string.Empty,

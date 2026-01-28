@@ -1,12 +1,12 @@
-﻿// <copyright file="SingleContext.cs" company="854 Things (tm)">
+﻿// <copyright file="SingleModelContext.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Routing.Single
+namespace OpenAIApiClient.Routing.SingleModel
 {
     using OpenAIApiClient.Enums;
 
-    public sealed class SingleContext
+    public sealed class SingleModelContext
     {
         /// <summary>
         /// Gets the model routing strategy.

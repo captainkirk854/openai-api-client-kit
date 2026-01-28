@@ -6,7 +6,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
 {
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Helpers.General;
-    using OpenAIApiClient.Interfaces;
+    using OpenAIApiClient.Interfaces.Validators;
     using OpenAIApiClient.Models.Chat.Request;
     using OpenAIApiClient.Registries;
 
