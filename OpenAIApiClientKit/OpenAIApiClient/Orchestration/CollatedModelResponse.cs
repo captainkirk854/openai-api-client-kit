@@ -2,7 +2,7 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Orchestration2
+namespace OpenAIApiClient.Orchestration
 {
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Registries;

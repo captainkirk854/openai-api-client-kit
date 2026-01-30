@@ -29,8 +29,9 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// <param name="isDeterministic">true to use deterministic output parameters for the chat completion request; otherwise, false to use non-deterministic parameters.</param>
         /// <param name="outputFormat">The desired output format for the chat completion response.</param>
         /// <param name="cts">A CancellationTokenSource used to observe cancellation requests for the operation. Cannot be null.</param>
+        /// <param name="model">The OpenAI model to use for the chat completion request. Defaults to GPT4o_Mini.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
-        public static async Task ProcessUserPromptAsync(ChatClient client, bool isStreaming, string userPrompt, bool isDeterministic, OutputFormat outputFormat, CancellationTokenSource cts)
+        public static async Task ProcessUserPromptAsync(ChatClient client, bool isStreaming, string userPrompt, bool isDeterministic, OutputFormat outputFormat, CancellationTokenSource cts, OpenAIModel model = OpenAIModel.GPT4o_Mini)
         {
             // Set deterministic output parameters ..
             double temperature = 0.0;
@@ -47,7 +48,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
 
             // Build request payload ..
             ChatCompletionRequest request = new ClientRequestBuilder()
-                .WithModel(input: OpenAIModel.GPT4o_Mini)
+                .WithModel(input: model)
                 .AddSystemMessage(input: "You are a helpful assistant that answers concisely.")
                 .AddUserMessage(input: userPrompt)
                 .UsingMaxTokens(input: 1000)
@@ -58,6 +59,8 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 .WithFrequencyPenalty(input: frequencyPenalty)
                 .SetOutputFormat(input: outputFormat)
                 .Build();
+
+            Console.WriteLine($"Using Model: {model}");
 
             // If not streaming ..
             if (!isStreaming)

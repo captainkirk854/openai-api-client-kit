@@ -5,7 +5,7 @@
 namespace OpenAIApiClient.ConsoleApp.Demos
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Orchestration2;
+    using OpenAIApiClient.Orchestration;
     using OpenAIApiClient.Registries;
 
     /// <summary>

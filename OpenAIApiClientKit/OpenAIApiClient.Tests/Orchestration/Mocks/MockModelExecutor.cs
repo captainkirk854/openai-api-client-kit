@@ -7,7 +7,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
     using OpenAIApiClient.Interfaces.Orchestration;
     using OpenAIApiClient.Models.Registries;
 
-    public sealed class MockModelExecutor : IModelExecutor
+    public sealed class MockModelExecutor : ISingleModelExecutor
     {
         /// <summary>
         /// Gets the calls made to the executor.

@@ -1,4 +1,4 @@
-﻿// <copyright file="ModelResponse2.cs" company="854 Things (tm)">
+﻿// <copyright file="ModelResponse.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -6,7 +6,7 @@ namespace OpenAIApiClient.Orchestration
 {
     using OpenAIApiClient.Models.Registries;
 
-    public sealed class ModelResponse2
+    public sealed class ModelResponse
     {
         /// <summary>
         /// Gets the model descriptor.

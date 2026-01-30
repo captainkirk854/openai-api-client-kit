@@ -77,7 +77,7 @@ namespace OpenAIApiClient.Models.Chat.Request
         /// <summary>
         /// Gets or sets the maximum number of tokens the model is allowed to generate.
         /// </summary>
-        [JsonPropertyName("max_tokens")]
+        [JsonPropertyName("max_completion_tokens")]
         public int? MaxTokens
         {
             get;

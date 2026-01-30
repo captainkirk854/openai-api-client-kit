@@ -1,4 +1,4 @@
-﻿// <copyright file="PromptContext2.cs" company="854 Things (tm)">
+﻿// <copyright file="PromptContext.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -6,7 +6,7 @@ namespace OpenAIApiClient.Orchestration
 {
     using OpenAIApiClient.Enums;
 
-    public sealed class PromptContext2
+    public sealed class PromptContext
     {
         /// <summary>
         /// Gets the prompt to be sent to the model.

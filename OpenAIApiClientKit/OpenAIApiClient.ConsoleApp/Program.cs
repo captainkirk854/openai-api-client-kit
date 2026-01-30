@@ -38,8 +38,9 @@ namespace OpenAIApiClient.ConsoleApp
                 Console.WriteLine("1. Model Prompt Demo");
                 Console.WriteLine("2. Best Model Response Demo");
                 Console.WriteLine("3. Model Routing Demo");
+                Console.WriteLine("4. AI Orchestration Demo");
 
-                Console.Write("Enter choice (1-3): ");
+                Console.Write("Enter choice (1-4): ");
                 string? demoChoice = Console.ReadLine();
                 Console.WriteLine();
 
@@ -55,6 +56,10 @@ namespace OpenAIApiClient.ConsoleApp
 
                     case "3":
                         ModelRoutingDemo();
+                        break;
+
+                    case "4":
+                        await OrchestratorDemo(client: client, cts: cts);
                         break;
 
                     default:
@@ -118,6 +123,25 @@ namespace OpenAIApiClient.ConsoleApp
                 return;
             }
 
+            // Prompt user for model selection ..
+            Console.WriteLine("Which OpenAI model would you like to use?");
+            Console.WriteLine("1. GPT-4o-Mini");
+            Console.WriteLine("2. GPT-3.5-Turbo");
+            Console.WriteLine("3. GPT-4o");
+            Console.WriteLine("4. GPT-5-Mini");
+            Console.WriteLine("5. GPT-5");
+            Console.Write("Enter choice (1-5) [default is 1]: ");
+            string? modelInput = Console.ReadLine();
+            OpenAIModel selectedModel = modelInput switch
+            {
+                "1" => OpenAIModel.GPT4o_Mini,
+                "2" => OpenAIModel.GPT3_5_Turbo,
+                "3" => OpenAIModel.GPT4o,
+                "4" => OpenAIModel.GPT5_Mini,
+                "5" => OpenAIModel.GPT5,
+                _ => OpenAIModel.GPT4o_Mini,
+            };
+
             // Ask if creativity settings should be enabled ..
             bool isDeterministic = SetBooleanPrompt(message: "Enable creativity settings?", setTrue: 'n', setFalse: 'y', setDefault: 'n');
 
@@ -152,7 +176,7 @@ namespace OpenAIApiClient.ConsoleApp
             Console.WriteLine();
 
             // Process user prompt with additional options ..
-            await Demos.ModelPromptDemo.ProcessUserPromptAsync(client: client, isStreaming: isStreaming, userPrompt: userPrompt, isDeterministic: isDeterministic, outputFormat: outputFormatChoice, cts: cts);
+            await Demos.ModelPromptDemo.ProcessUserPromptAsync(client: client, isStreaming: isStreaming, userPrompt: userPrompt, isDeterministic: isDeterministic, outputFormat: outputFormatChoice, cts: cts, model: selectedModel);
         }
 
         /// <summary>
@@ -161,6 +185,25 @@ namespace OpenAIApiClient.ConsoleApp
         private static void ModelRoutingDemo()
         {
             Demos.ModelRoutingDemo.Run();
+        }
+
+        /// <summary>
+        /// A demo implementation to showcase AI orchestration capabilities.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="cts"></param>
+        /// <returns>Task.</returns>
+        private static async Task OrchestratorDemo(ChatClient client, CancellationTokenSource cts)
+        {
+            string prompt = "Explain quantum tunneling in one paragraph.";
+            Console.WriteLine($"Using Prompt: {prompt}");
+            Console.WriteLine();
+
+            // Run AI Orchestrator demo ..
+            await Demos.AIOrchestratorDemo.RunAsync(client: client, prompt: prompt, cancelToken: cts.Token);
+
+            Console.WriteLine("Press Enter to continue..");
+            Console.ReadLine();
         }
 
         /// <summary>

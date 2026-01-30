@@ -2,8 +2,9 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Orchestration
+namespace OpenAIApiClient.OrchestrationNEW03
 {
+    using OpenAIApiClient.Enums;
     using OpenAIApiClient.Routing.Ensemble;
     using OpenAIApiClient.Routing.SingleModel;
 
@@ -44,5 +45,14 @@ namespace OpenAIApiClient.Orchestration
             get;
             init;
         } = string.Empty;
+
+        /// <summary>
+        /// Gets the output format requested by the user.
+        /// </summary>
+        public OutputFormat OutputFormat
+        {
+            get;
+            init;
+        }
     }
 }

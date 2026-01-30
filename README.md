@@ -129,9 +129,196 @@ See the ```OpenAIApiClient.ConsoleApp``` project for a simple console applicatio
 - The ```OptimalModelSelectionDemo.cs``` file provides an example as to how to select the best model based on capabilities and cost.
 
 # 🧪 Testing Your Setup
-Run:
-```dotnet run```
-or use the simple console app provided in the ```OpenAIApiClient.ConsoleApp``` project.
+
+## Set your OpenAI API Key environment variable
+```powershell
+setx OPENAI__API_KEY "your-api-key"
+```
+
+## Run:
+### Option 1: Using PowerShell to list available OpenAI models
+
+#### Simple PowerShell script to list available OpenAI models associated with your API key
+```powershell
+function Get-OpenAIModels {
+    param(
+        [string]$ApiKey = $env:OPENAI_API_KEY
+    )
+
+    Invoke-RestMethod `
+        -Uri "https://api.openai.com/v1/models" `
+        -Headers @{ "Authorization" = "Bearer $ApiKey" } `
+        -Method Get
+}
+
+(Get-OpenAIModels).data | Sort-Object -Property id
+```
+
+### Option 2: Using PowerShell to send a chat completion request using GPT-5
+
+Note: OpenAI requires GPT-5 access to be enabled on your account which means verifying 
+your organization and billing details at https://platform.openai.com/settings/organization/general.
+Lack of access will result in a 403 Forbidden response or similar.
+
+#### Simple PowerShell script to send a chat completion request to GPT-5
+```powershell
+function Invoke-GPT5Prompt {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Prompt,
+
+        [string]$ApiKey = $env:OPENAI_API_KEY,
+
+        # Optional: adjust temperature if desired
+        [double]$Temperature = 1.0 # GPT-5 only supports 1.0
+    )
+
+    if (-not $ApiKey) {
+        throw "No API key provided. Set OPENAI_API_KEY or pass -ApiKey."
+    }
+
+    $url = "https://api.openai.com/v1/chat/completions"
+
+    $headers = @{
+        "Authorization" = "Bearer $ApiKey"
+        "Content-Type"  = "application/json"
+    }
+
+    $body = @{
+        model = "gpt-5"
+        messages = @(
+            @{
+                role    = "user"
+                content = $Prompt
+            }
+        )
+        temperature = $Temperature
+    } | ConvertTo-Json -Depth 5
+
+    $response = Invoke-RestMethod -Uri $url -Headers $headers -Method Post -Body $body
+
+    return $response.choices[0].message.content
+}
+# Example usage
+$response = Invoke-GPT5Prompt -Prompt "List the planets and their diameters in order of size"
+$response
+```
+
+#### Extended PowerShell script to send a chat completion request to GPT-5 with more options
+```powershell
+
+function Invoke-GPT5Prompt {
+    [CmdletBinding()]
+    param(
+        # Required user prompt
+        [Parameter(Mandatory = $true)]
+        [string]$Prompt,
+
+        # Optional system prompt
+        [string]$SystemPrompt,
+
+        # API key (defaults to environment variable)
+        [string]$ApiKey = $env:OPENAI_API_KEY,
+
+        # Optional OpenAI parameters
+        [double]$Temperature = 1.0,
+        [double]$TopP = 1.0,
+        [int]$MaxTokens,
+        [double]$PresencePenalty = 0.0,
+        [double]$FrequencyPenalty = 0.0,
+        [string[]]$Stop,
+        [string]$User,
+        [int]$Seed,
+        [int]$N = 1,
+
+        # Optional: JSON object for logit bias
+        [hashtable]$LogitBias,
+
+        # Optional: response format (e.g., "json_object")
+        [string]$ResponseFormat
+    )
+
+    if (-not $ApiKey) {
+        throw "No API key provided. Set OPENAI_API_KEY or pass -ApiKey."
+    }
+
+    $url = "https://api.openai.com/v1/chat/completions"
+
+    $headers = @{
+        "Authorization" = "Bearer $ApiKey"
+        "Content-Type"  = "application/json"
+    }
+
+    # Build messages array
+    $messages = @()
+
+    if ($SystemPrompt) {
+        $messages += @{
+            role    = "system"
+            content = $SystemPrompt
+        }
+    }
+
+    $messages += @{
+        role    = "user"
+        content = $Prompt
+    }
+
+    # Build request body
+    $body = @{
+        model = "gpt-5"
+        messages = $messages
+        temperature = $Temperature # GPT-5 only supports 1.0
+        top_p = $TopP # Not supported by GPT-5 but included for completeness
+        n = $N
+        presence_penalty = $PresencePenalty
+        frequency_penalty = $FrequencyPenalty
+    }
+
+    if ($MaxTokens)      { $body.max_completion_tokens = $MaxTokens }
+    if ($Stop)           { $body.stop = $Stop }
+    if ($User)           { $body.user = $User }
+    if ($Seed)           { $body.seed = $Seed }
+    if ($LogitBias)      { $body.logit_bias = $LogitBias } # Not supported by GPT-5 but included for completeness
+    if ($ResponseFormat) { $body.response_format = @{ type = $ResponseFormat } }
+
+    $json = $body | ConvertTo-Json -Depth 10
+
+    $response = Invoke-RestMethod -Uri $url -Headers $headers -Method Post -Body $json
+
+    # Return the first completion
+    return $response.choices[0].message.content
+}
+
+# Example usage
+
+# Basic
+$response = Invoke-GPT5Prompt -Prompt "Explain the theory of relativity in simple terms."
+$response
+
+# With system prompt and additional parameters
+$response = Invoke-GPT5Prompt -Prompt "Summarize the key points of the article." `
+                              -SystemPrompt "You are a concise summarizer." `
+                              -MaxTokens 150 `
+                              -Temperature 0.7 `
+                              -TopP 0.9
+$response
+
+# With logit bias and response format
+$response = Invoke-GPT5Prompt -Prompt "Generate a JSON object with user details." `
+                              -LogitBias @{ "50256" = -100 } ` # Example token bias
+                              -ResponseFormat "json_object"
+```
+
+
+
+
+
+### Option 2: Use the simple console app provided in the ```OpenAIApiClient.ConsoleApp``` project.
+
+```powershell
+dotnet run --project .\OpenAIApiClient.ConsoleApp\OpenAIApiClient.ConsoleApp.csproj
+```
 
 *(Tip: Remember to set your OPENAI_API_KEY environment variable first (see above))*
 
