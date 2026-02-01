@@ -7,8 +7,16 @@ namespace OpenAIApiClient.Models.OutputFormat.General
 {
     using OpenAIApiClient.Interfaces.Validators;
 
+    /// <summary>
+    /// Format Descriptor.
+    /// </summary>
+    /// <param name="SystemPrompt"></param>
+    /// <param name="Validator"></param>
     public sealed record FormatDescriptor(
 
+        /// <summary>
+        /// Record that contains the system prompt to instruct the AI on the desired output format.
+        /// </summary>
         string SystemPrompt,
 
         IOutputFormatValidator Validator

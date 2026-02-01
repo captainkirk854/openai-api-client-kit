@@ -19,7 +19,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             Console.WriteLine();
 
             // Initialise model registry ..
-            OpenAIModelRegistry registry = new();
+            OpenAIModels registry = new();
 
             // Initialise Model Routers which filter which model(s) to use ..
             SingleModelRouter singleModelRouter = new(modelRegistry: registry.Registry);

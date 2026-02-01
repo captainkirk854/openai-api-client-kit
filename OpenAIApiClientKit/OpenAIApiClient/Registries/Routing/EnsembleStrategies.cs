@@ -1,4 +1,4 @@
-﻿// <copyright file="EnsembleRoutingStrategyRegistry.cs" company="854 Things (tm)">
+﻿// <copyright file="EnsembleStrategies.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -12,7 +12,7 @@ namespace OpenAIApiClient.Registries.Routing
     /// <summary>
     /// A (extendable) registry of ensemble routing strategies mapped to their implementations.
     /// </summary>
-    public static class EnsembleRoutingStrategyRegistry
+    public static class EnsembleStrategies
     {
         /// <summary>
         /// Dictionary mapping ensemble routing strategies to their corresponding strategy implementations and ultimately their associated models.

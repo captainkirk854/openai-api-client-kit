@@ -35,7 +35,7 @@ namespace OpenAIApiClient.Orchestration.Routing
             };
 
             // Get the actual strategy handler definition to use as delegate ..
-            SingleModelRoutingStrategyHandler handler = SingleModelRoutingStrategyRegistry.Get(strategy: context.Strategy);
+            SingleModelRoutingStrategyHandler handler = SingleModelStrategies.Get(strategy: context.Strategy);
 
             // Invoke the handler to get the strategy ..
             return handler(modelRegistry: this.modelRegistry, request: context);

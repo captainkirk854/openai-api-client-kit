@@ -1,4 +1,4 @@
-﻿// <copyright file="OpenAIModelApiRegistry.cs" company="854 Things (tm)">
+﻿// <copyright file="OpenAIModelApis.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -11,7 +11,7 @@ namespace OpenAIApiClient.Tests.Registries
     using testClass = OpenAIApiClient.Registries;
 
     [TestClass]
-    public class OpenAIModelApiRegistry
+    public class OpenAIModelApis
     {
         [TestMethod]
         public void EnumToApiString_And_Back_ShouldMatch()
@@ -23,7 +23,7 @@ namespace OpenAIApiClient.Tests.Registries
                 Assert.IsFalse(string.IsNullOrWhiteSpace(apiString), $"API string for {model} should not be null or empty.");
 
                 // Convert API string → enum
-                OpenAIModel parsedModel = testClass.OpenAIModelApiRegistry.FromApiString(apiString);
+                OpenAIModel parsedModel = testClass.OpenAIModelApis.FromApiString(apiString);
                 Assert.AreEqual(model, parsedModel, $"Round-trip conversion failed for {model}.");
             }
         }
@@ -32,7 +32,7 @@ namespace OpenAIApiClient.Tests.Registries
         public void InvalidApiString_ShouldThrow()
         {
             // Act + Assert
-            Assert.ThrowsExactly<ArgumentException>(() => { testClass.OpenAIModelApiRegistry.FromApiString("non-existent-model"); });
+            Assert.ThrowsExactly<ArgumentException>(() => { testClass.OpenAIModelApis.FromApiString("non-existent-model"); });
         }
 
         [TestMethod]
@@ -48,7 +48,7 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void ListAllModels_ShouldContainAllMappings()
         {
-            IEnumerable<string> allModels = testClass.OpenAIModelApiRegistry.ListAllModels();
+            IEnumerable<string> allModels = testClass.OpenAIModelApis.ListAllModels();
 
             foreach (OpenAIModel model in Enum.GetValues(typeof(OpenAIModel)))
             {
@@ -60,7 +60,7 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void LatestRecommendedModels_ShouldContainAllCategories()
         {
-            Dictionary<string, OpenAIModel> models = testClass.OpenAIModelApiRegistry.LatestRecommendedModels();
+            Dictionary<string, OpenAIModel> models = testClass.OpenAIModelApis.LatestRecommendedModels();
 
             // Expected categories
             List<string> expectedCategories =
@@ -81,7 +81,7 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void LatestRecommendedModels_ShouldReturnCorrectEnumValues()
         {
-            var models = testClass.OpenAIModelApiRegistry.LatestRecommendedModels();
+            var models = testClass.OpenAIModelApis.LatestRecommendedModels();
 
             Assert.AreEqual(OpenAIModel.GPT5_2_Pro, models["Chat"], "Chat category should map to GPT5_2_Pro.");
             Assert.AreEqual(OpenAIModel.TextEmbedding_3_Large, models["Embeddings"], "Embeddings category should map to TextEmbedding_3_Large.");
@@ -93,7 +93,7 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void LatestRecommendedModels_ShouldNotBeEmpty()
         {
-            Dictionary<string, OpenAIModel> models = testClass.OpenAIModelApiRegistry.LatestRecommendedModels();
+            Dictionary<string, OpenAIModel> models = testClass.OpenAIModelApis.LatestRecommendedModels();
             Assert.IsNotEmpty(models, "LatestRecommendedModels should not return an empty dictionary.");
         }
     }

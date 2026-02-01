@@ -14,7 +14,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
     /// </summary>
     public static class ModelRoutingDemo
     {
-        private static readonly OpenAIModelRegistry ModelRegistry = new();
+        private static readonly OpenAIModels ModelRegistry = new();
         private static readonly SingleModelRouter SingleRouter = new(modelRegistry: ModelRegistry.Registry);
         private static readonly EnsembleRouter EnsembleRouter = new(modelRegistry: ModelRegistry.Registry);
 

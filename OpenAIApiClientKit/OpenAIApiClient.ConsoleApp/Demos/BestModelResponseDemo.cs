@@ -19,7 +19,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         public static async Task GetBestModelResponseAsync(ChatClient client, string prompt, CancellationTokenSource cts)
         {
             // Initialise model registry ..
-            OpenAIModelRegistry registry = new();
+            OpenAIModels registry = new();
 
             // Initialise Model Routers which filter which model(s) to use ..
             SingleModelRouter singleModelRouter = new(modelRegistry: registry.Registry);

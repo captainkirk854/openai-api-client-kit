@@ -134,7 +134,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// <param name="outputFormat"></param>
         private static bool IsValidFormat(this string? content, OutputFormat outputFormat)
         {
-            IOutputFormatValidator validator = OutputFormatRegistry.Prompts[outputFormat].Validator;
+            IOutputFormatValidator validator = OutputFormats.FormattingPrompts[outputFormat].Validator;
             if (!validator.IsValidFormat(content: content ?? string.Empty, out string? error))
             {
                 Console.WriteLine();

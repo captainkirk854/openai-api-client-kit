@@ -1,4 +1,4 @@
-﻿// <copyright file="EnsembleRoutingStrategyRegistry.cs" company="854 Things (tm)">
+﻿// <copyright file="EnsembleStrategies.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -10,17 +10,17 @@ namespace OpenAIApiClient.Tests.Registries.Routing
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Orchestration.Routing;
-    using testClass = OpenAIApiClient.Registries.Routing.EnsembleRoutingStrategyRegistry;
+    using testClass = OpenAIApiClient.Registries.Routing.EnsembleStrategies;
 
     [TestClass]
-    public class EnsembleRoutingStrategyRegistry
+    public class EnsembleStrategies
     {
         private IReadOnlyDictionary<OpenAIModel, ModelDescriptor>? modelRegistry;
 
         [TestInitialize]
         public void Setup()
         {
-            this.modelRegistry = new OpenAIApiClient.Registries.OpenAIModelRegistry().Registry;
+            this.modelRegistry = new OpenAIApiClient.Registries.OpenAIModels().Registry;
         }
 
         // ---------------------------------------------------------

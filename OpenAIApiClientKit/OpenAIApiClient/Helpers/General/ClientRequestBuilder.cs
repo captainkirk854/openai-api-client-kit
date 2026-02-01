@@ -86,7 +86,7 @@ namespace OpenAIApiClient.Helpers.General
         /// <returns>The updated ClientRequestBuilder instance.</returns>
         public ClientRequestBuilder SetOutputFormat(OutputFormat input)
         {
-            this.messages.Add(new ChatMessage { RoleAsEnum = OpenAIRole.System, Content = OutputFormatRegistry.Prompts[input].SystemPrompt });
+            this.messages.Add(new ChatMessage { RoleAsEnum = OpenAIRole.System, Content = OutputFormats.FormattingPrompts[input].SystemPrompt });
             this.outputFormatEnabled = true;
             return this;
         }
@@ -294,7 +294,7 @@ namespace OpenAIApiClient.Helpers.General
             if(!this.outputFormatEnabled)
             {
                  // Default to plain text output if no output format specified ..
-                this.messages.Add(new ChatMessage { RoleAsEnum = OpenAIRole.System, Content = OutputFormatRegistry.Prompts[OutputFormat.PlainText].SystemPrompt });
+                this.messages.Add(new ChatMessage { RoleAsEnum = OpenAIRole.System, Content = OutputFormats.FormattingPrompts[OutputFormat.PlainText].SystemPrompt });
             }
 
             // Combine all messages: developer messages first, then standard messages, then tool calls if any (as assistant messages) ..

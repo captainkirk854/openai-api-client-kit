@@ -1,4 +1,4 @@
-﻿// <copyright file="SingleModelRoutingStrategyRegistry.cs" company="854 Things (tm)">
+﻿// <copyright file="SingleModelStrategies.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -9,7 +9,7 @@ namespace OpenAIApiClient.Registries.Routing
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Orchestration.Routing;
 
-    public static class SingleModelRoutingStrategyRegistry
+    public static class SingleModelStrategies
     {
         /// <summary>
         /// Dictionary mapping routing strategies to their handler implementations.

@@ -1,4 +1,4 @@
-﻿// <copyright file="OpenAIModelRegistry.cs" company="854 Things (tm)">
+﻿// <copyright file="OpenAIModels.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -10,10 +10,10 @@ namespace OpenAIApiClient.Tests.Registries
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Registries;
-    using testClass = OpenAIApiClient.Registries.OpenAIModelRegistry;
+    using testClass = OpenAIApiClient.Registries.OpenAIModels;
 
     [TestClass]
-    public class OpenAIModelRegistry
+    public class OpenAIModels
     {
         // Access the registry from actual class under test ..
         private static Dictionary<OpenAIModel, ModelDescriptor> Registry => new testClass().Registry;

@@ -35,7 +35,7 @@ namespace OpenAIApiClient.Orchestration.Routing
             }
 
             // Get the actual strategy handler definition to use as delegate ..
-            EnsembleRoutingStrategyHandler handler = EnsembleRoutingStrategyRegistry.Get(strategy: request.Strategy);
+            EnsembleRoutingStrategyHandler handler = EnsembleStrategies.Get(strategy: request.Strategy);
 
             // Invoke the handler to get the strategy ..
             return handler(modelRegistry: this.modelRegistry);

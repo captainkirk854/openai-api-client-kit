@@ -1,4 +1,4 @@
-﻿// <copyright file="OutputFormatRegistry.cs" company="854 Things (tm)">
+﻿// <copyright file="OutputFormats.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -12,12 +12,12 @@ namespace OpenAIApiClient.Registries
     /// <summary>
     /// Provides a registry of output format prompts mapped to their corresponding output format types.
     /// </summary>
-    public static class OutputFormatRegistry
+    public static class OutputFormats
     {
         /// <summary>
-        /// Dictionary mapping output formats to their format descriptors.
+        /// Dictionary which maps output formats to their format descriptors.
         /// </summary>
-        public static readonly IReadOnlyDictionary<OutputFormat, FormatDescriptor> Prompts =
+        public static readonly IReadOnlyDictionary<OutputFormat, FormatDescriptor> FormattingPrompts =
         new Dictionary<OutputFormat, FormatDescriptor>
         {
             [OutputFormat.PlainText] = new FormatDescriptor(SystemPrompt: PlainTextPrompt, Validator: new PlainTextValidator()),

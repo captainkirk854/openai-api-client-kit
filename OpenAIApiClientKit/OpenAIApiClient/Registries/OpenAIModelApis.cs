@@ -1,4 +1,4 @@
-﻿// <copyright file="OpenAIModelApiRegistry.cs" company="854 Things (tm)">
+﻿// <copyright file="OpenAIModelApis.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -11,7 +11,7 @@ namespace OpenAIApiClient.Registries
     /// <summary>
     /// OpenAI Model API Registry.
     /// </summary>
-    public static class OpenAIModelApiRegistry
+    public static class OpenAIModelApis
     {
         /// <summary>
         /// Reverse dictionary: Map API string → Enum.
@@ -87,10 +87,10 @@ namespace OpenAIApiClient.Registries
             };
 
         /// <summary>
-        /// Initializes static members of the <see cref="OpenAIModelApiRegistry"/> class.
+        /// Initializes static members of the <see cref="OpenAIModelApis"/> class.
         /// Static constructor to initialize the reverse mapping dictionary.
         /// </summary>
-        static OpenAIModelApiRegistry()
+        static OpenAIModelApis()
         {
             // Build ApiToEnumMap from EnumToApiMap ..
             foreach (KeyValuePair<OpenAIModel, string> kvp in EnumToApiMap)

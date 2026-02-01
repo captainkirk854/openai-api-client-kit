@@ -1,4 +1,4 @@
-﻿// <copyright file="SingleModelRoutingStrategyRegistry.cs" company="854 Things (tm)">
+﻿// <copyright file="SingleModelStrategies.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -10,17 +10,17 @@ namespace OpenAIApiClient.Tests.Registries.Routing
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Orchestration.Routing;
-    using testClass = OpenAIApiClient.Registries.Routing.SingleModelRoutingStrategyRegistry;
+    using testClass = OpenAIApiClient.Registries.Routing.SingleModelStrategies;
 
     [TestClass]
-    public class SingleModelRoutingStrategyRegistry
+    public class SingleModelStrategies
     {
         private IReadOnlyDictionary<OpenAIModel, ModelDescriptor>? modelRegistry;
 
         [TestInitialize]
         public void Setup()
         {
-            this.modelRegistry = new OpenAIApiClient.Registries.OpenAIModelRegistry().Registry;
+            this.modelRegistry = new OpenAIApiClient.Registries.OpenAIModels().Registry;
         }
 
         // ---------------------------------------------------------

@@ -1,4 +1,4 @@
-﻿// <copyright file="OpenAIModelRegistry.cs" company="854 Things (tm)">
+﻿// <copyright file="OpenAIModels.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -9,15 +9,15 @@ namespace OpenAIApiClient.Registries
     using OpenAIApiClient.Models.Registries;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="OpenAIModelRegistry"/> class.
+    /// Initializes a new instance of the <see cref="OpenAIModels"/> class.
     /// </summary>
-    public sealed class OpenAIModelRegistry
+    public sealed class OpenAIModels
     {
         // Dictionary to hold model descriptors ..
         private readonly Dictionary<OpenAIModel, ModelDescriptor> models;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OpenAIModelRegistry"/> class.
+        /// Initializes a new instance of the <see cref="OpenAIModels"/> class.
         /// </summary>
         /// <remarks>
         /// Model registry is built in two phases:
@@ -34,7 +34,7 @@ namespace OpenAIApiClient.Registries
         /// structure provided by OpenAI (https://openai.com/api/pricing/, https://platform.openai.com/docs/pricing, https://pricepertoken.com/pricing-page/provider/openai)
         /// This registry can be easily extended to include additional models as they are released by OpenAI.
         /// </remarks>
-        public OpenAIModelRegistry()
+        public OpenAIModels()
         {
             // Start building registry dictionary by initializing each model key with its descriptor "Capabilities" and "Pricing" values only ..
             this.models = new()
