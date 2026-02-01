@@ -70,7 +70,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 try
                 {
                     // Get response content ..
-                    string? content = await ChatClientHelpers.GetChatCompletionNonStreamingMessageContentAsync(client: client, request: request, cancelTokenSource: cts);
+                    string? content = await ChatClientResponseHandler.GetChatCompletionNonStreamingMessageContentAsync(client: client, request: request, cancelTokenSource: cts);
 
                     // Validate response format ..
                     if(!content.IsValidFormat(outputFormat: outputFormat))
@@ -99,7 +99,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 Console.WriteLine("Waiting for Streaming Response ..");
                 try
                 {
-                    (string?, int) response = await ChatClientHelpers.GetChatCompletionStreamingMessageContentAsync(client: client, request: request, cancelTokenSource: cts);
+                    (string?, int) response = await ChatClientResponseHandler.GetChatCompletionStreamingMessageContentAsync(client: client, request: request, cancelTokenSource: cts);
                     string content = response.Item1 ?? string.Empty;
                     int chunkCount = response.Item2;
 

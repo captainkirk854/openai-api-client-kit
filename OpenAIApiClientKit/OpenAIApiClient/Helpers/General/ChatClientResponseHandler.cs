@@ -1,4 +1,4 @@
-﻿// <copyright file="ChatClientHelpers.cs" company="854 Things (tm)">
+﻿// <copyright file="ChatClientResponseHandler.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -9,7 +9,7 @@ namespace OpenAIApiClient.Helpers.General
     using OpenAIApiClient.Models.Chat.Response.Completion;
     using OpenAIApiClient.Models.Chat.Response.Streaming;
 
-    public static class ChatClientHelpers
+    public static class ChatClientResponseHandler
     {
         /// <summary>
         /// Asynchronously retrieves the content of the first message from a chat completion response using the specified client and request.
