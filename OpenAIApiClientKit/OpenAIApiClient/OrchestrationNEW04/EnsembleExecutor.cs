@@ -4,13 +4,13 @@
 
 namespace OpenAIApiClient.OrchestrationNEW04
 {
-    public sealed class EnsembleExecutor(ModelExecutor executor) : IEnsembleExecutor
+    public sealed class EnsembleExecutor(SingleModelExecutor singleModelExecutor) : IEnsembleExecutor
     {
-        private readonly ModelExecutor executor = executor;
+        private readonly SingleModelExecutor singleModelExecutor = singleModelExecutor;
 
         public async Task<IReadOnlyList<ModelResponse>> ExecuteAsync(OrchestrationContext context, CancellationToken cancelToken)
         {
-            Task<ModelResponse>[] tasks = [.. context.ExecutionContext.Models.Select(model => this.executor.ExecuteAsync(model, context.PromptContext, cancelToken))];
+            Task<ModelResponse>[] tasks = [.. context.ExecutionContext.Models.Select(model => this.singleModelExecutor.ExecuteAsync(model, context.PromptContext, cancelToken))];
 
             return await Task.WhenAll(tasks);
         }

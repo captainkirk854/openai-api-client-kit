@@ -38,7 +38,7 @@ namespace OpenAIApiClient.OrchestrationNEW04
         /// <summary>
         /// Gets the single model request details if <see cref="UseEnsemble"/> is false..
         /// </summary>
-        public ModelRouterRequest? SingleModelRequest
+        public SingleModelRouterRequest? SingleModelRequest
         {
             get;
             init;

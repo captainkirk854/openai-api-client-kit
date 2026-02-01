@@ -8,5 +8,5 @@ namespace OpenAIApiClient.OrchestrationNEW04
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Routing.SingleModel;
 
-    public delegate SingleModelRouterResult SingleModelRoutingStrategyHandlerNEW(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, ModelRouterRequest request);
+    public delegate SingleModelRouterResult SingleModelRoutingStrategyHandlerNEW(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelRouterRequest request);
 }

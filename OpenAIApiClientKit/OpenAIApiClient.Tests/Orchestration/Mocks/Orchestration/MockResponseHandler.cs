@@ -2,7 +2,7 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Tests.Orchestration.Mocks
+namespace OpenAIApiClient.Tests.Orchestration.Mocks.Orchestration
 {
     using OpenAIApiClient.Interfaces.Orchestration;
 

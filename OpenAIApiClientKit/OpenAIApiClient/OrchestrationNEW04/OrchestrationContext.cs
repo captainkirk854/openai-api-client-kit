@@ -8,6 +8,9 @@ namespace OpenAIApiClient.OrchestrationNEW04
     using OpenAIApiClient.Helpers.General;
     using OpenAIApiClient.Models.Chat.Request;
 
+    /// <summary>
+    /// Defines the orchestration context for model requests.
+    /// </summary>
     public sealed class OrchestrationContext
     {
         public OrchestrationContext(string prompt, OutputFormat outputFormat, IExecutionContext executionContext, ClientRequestBuilder builder)

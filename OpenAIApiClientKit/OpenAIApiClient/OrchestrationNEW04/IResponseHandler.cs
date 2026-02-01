@@ -9,5 +9,7 @@ namespace OpenAIApiClient.OrchestrationNEW04
         string HandleSingle(ModelResponse modelResponse);
 
         string HandleEnsemble(IReadOnlyList<ModelResponse> modelResponses);
+
+        IReadOnlyList<ModelResponse> HandleResponses(IReadOnlyList<ModelResponse> modelResponses);
     }
 }

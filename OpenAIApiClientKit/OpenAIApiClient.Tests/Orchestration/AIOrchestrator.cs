@@ -1,173 +1,190 @@
-﻿//// <copyright file="AIOrchestrator.cs" company="854 Things (tm)">
-//// Copyright (c) 854 Things (tm). All rights reserved.
-//// </copyright>
+﻿// <copyright file="AIOrchestrator.cs" company="854 Things (tm)">
+// Copyright (c) 854 Things (tm). All rights reserved.
+// </copyright>
 
-//namespace OpenAIApiClient.Tests.Orchestration
-//{
-//    using OpenAIApiClient.Enums;
-//    using OpenAIApiClient.OrchestrationNEW01;
-//    using OpenAIApiClient.Registries;
-//    using OpenAIApiClient.Routing.Ensemble;
-//    using OpenAIApiClient.Routing.SingleModel;
-//    using OpenAIApiClient.Tests.Orchestration.Mocks;
-//    using testClass = OpenAIApiClient.OrchestrationNEW01.AIOrchestrator;
+namespace OpenAIApiClient.Tests.Orchestration
+{
+    using OpenAIApiClient.Enums;
+    using OpenAIApiClient.Helpers.General;
+    using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.OrchestrationNEW04;
+    using OpenAIApiClient.Tests.Orchestration.Mocks.OrchestrationNEW04;
+    using testClass = OpenAIApiClient.OrchestrationNEW04.AIOrchestrator;
 
-//    /// <summary>
-//    /// Tests for the AIOrchestrator class.
-//    /// </summary>
-//    [TestClass]
-//    public class AIOrchestrator
-//    {
-//        private SingleModelRouter? singleRouter;
-//        private EnsembleRouter? ensembleRouter;
-//        private MockModelExecutor? modelExecutor;
-//        private MockEnsembleExecutor? ensembleExecutor;
-//        private MockResponseHandler? responseHandler;
-//        private testClass? orchestrator;
+    /// <summary>
+    /// Tests for the AIOrchestrator class.
+    /// </summary>
+    [TestClass]
+    public class AIOrchestrator
+    {
+        private MockSingleModelRouter singleRouter = null!;
+        private MockEnsembleRouter ensembleRouter = null!;
+        private MockSingleModelExecutor singleExecutor = null!;
+        private MockEnsembleExecutor ensembleExecutor = null!;
+        private MockResponseHandler responseHandler = null!;
+        private ClientRequestBuilder requestBuilder = null!;
+        private OpenAIApiClient.OrchestrationNEW04.AIOrchestrator orchestrator = null!;
 
-//        [TestInitialize]
-//        public void Setup()
-//        {
-//            Dictionary<OpenAIModel, OpenAIApiClient.Models.Registries.ModelDescriptor> registry = new OpenAIModelRegistry().Registry;
+        private ModelDescriptor modelA = null!;
+        private ModelDescriptor modelB = null!;
 
-//            this.singleRouter = new SingleModelRouter(registry);
-//            this.ensembleRouter = new EnsembleRouter(registry);
+        [TestInitialize]
+        public void Setup()
+        {
+            this.modelA = CreateModelDescriptor(OpenAIModel.GPT4o);
+            this.modelB = CreateModelDescriptor(OpenAIModel.GPT4o_Mini);
 
-//            this.modelExecutor = new MockModelExecutor();
-//            this.ensembleExecutor = new MockEnsembleExecutor();
-//            this.responseHandler = new MockResponseHandler();
+            this.singleRouter = new MockSingleModelRouter();
+            this.ensembleRouter = new MockEnsembleRouter();
+            this.singleExecutor = new MockSingleModelExecutor();
+            this.ensembleExecutor = new MockEnsembleExecutor();
+            this.responseHandler = new MockResponseHandler();
+            this.requestBuilder = new ClientRequestBuilder();
 
-//            this.orchestrator = new testClass(
-//                this.singleRouter,
-//                this.ensembleRouter,
-//                this.modelExecutor,
-//                this.ensembleExecutor,
-//                this.responseHandler);
-//        }
+            this.orchestrator = new testClass(
+                this.singleRouter,
+                this.ensembleRouter,
+                this.singleExecutor,
+                this.ensembleExecutor,
+                this.requestBuilder,
+                this.responseHandler);
+        }
 
-//        // ---------------------------------------------------------
-//        // Single Model Routing Tests
-//        // ---------------------------------------------------------
-//        [TestMethod]
-//        public async Task ProcessAsync_ShouldUseSingleModelRouter_WhenUseEnsembleIsFalse()
-//        {
-//            OrchestrationContext context = new()
-//            {
-//                UseEnsemble = false,
-//                Prompt = "Hello world",
-//                SingleModelContext = new SingleModelContext
-//                {
-//                    Strategy = ModelRoutingStrategy.BestReasoning,
-//                },
-//            };
+        // ------------------------------------------------------------
+        // SINGLE MODEL TESTS
+        // ------------------------------------------------------------
+        [TestMethod]
+        public async Task ProcessAsync_UsesSingleModelRouter_WhenUseEnsembleFalse()
+        {
+            this.singleRouter.ReturnedModel = this.modelA;
+            this.singleExecutor.ResponseToReturn = new ModelResponse { Model = this.modelA, RawOutput = "ok", IsSuccessful = true };
+            this.responseHandler.ResponsesToReturn = [this.singleExecutor.ResponseToReturn];
 
-//            string result = await this.orchestrator!.ProcessAsync(context: context);
+            var request = new OrchestrationRequest
+            {
+                UseEnsemble = false,
+                Prompt = "Hello",
+                OutputFormat = OutputFormat.PlainText,
+                SingleModelRequest = new SingleModelRouterRequest { Strategy = ModelRoutingStrategy.BestReasoning },
+            };
 
-//            Assert.StartsWith("HandledSingle:", result);
-//            Assert.HasCount(1, this.modelExecutor!.Calls);
-//            Assert.AreEqual("Hello world", this.modelExecutor.Calls[0].prompt);
-//            Assert.IsNull(this.responseHandler!.LastEnsembleInput);
-//        }
+            var result = await this.orchestrator.ProcessAsync(request, CancellationToken.None);
 
-//        [TestMethod]
-//        public async Task ProcessAsync_ShouldReturnHandledSingleResponse()
-//        {
-//            OrchestrationContext context = new()
-//            {
-//                UseEnsemble = false,
-//                Prompt = "Test prompt",
-//                SingleModelContext = new SingleModelContext
-//                {
-//                    Strategy = ModelRoutingStrategy.LowestCost,
-//                },
-//            };
+            Assert.HasCount(1, result);
+            Assert.AreEqual(this.modelA, result[0].Model);
 
-//            string result = await this.orchestrator!.ProcessAsync(context: context);
+            Assert.IsNotNull(this.singleRouter.LastRequest);
+            Assert.IsNull(this.ensembleRouter.LastRequest);
 
-//            Assert.AreEqual($"HandledSingle:{this.responseHandler!.LastSingleInput}", result);
-//        }
+            Assert.IsNotNull(this.singleExecutor.LastCall);
+            Assert.AreEqual("Hello", this.singleExecutor.LastCall.Value.context.Prompt);
+        }
 
-//        // ---------------------------------------------------------
-//        // Ensemble Routing Tests
-//        // ---------------------------------------------------------
-//        [TestMethod]
-//        public async Task ProcessAsync_ShouldUseEnsembleRouter_WhenUseEnsembleIsTrue()
-//        {
-//            OrchestrationContext context = new()
-//            {
-//                UseEnsemble = true,
-//                Prompt = "Explain gravity",
-//                EnsembleContext = new EnsembleContext
-//                {
-//                    Strategy = EnsembleRoutingStrategy.Reasoning,
-//                },
-//            };
+        [TestMethod]
+        public async Task ProcessAsync_SingleModel_InvokesResponseHandler()
+        {
+            this.singleRouter.ReturnedModel = this.modelA;
 
-//            string result = await this.orchestrator!.ProcessAsync(context: context);
+            var modelResponse = new ModelResponse { Model = this.modelA, RawOutput = "done", IsSuccessful = true };
+            this.singleExecutor.ResponseToReturn = modelResponse;
 
-//            Assert.StartsWith("HandledEnsemble:", result);
-//            Assert.HasCount(1, this.ensembleExecutor!.Calls);
-//            Assert.AreEqual("Explain gravity", this.ensembleExecutor!.Calls[0].prompt);
-//            Assert.HasCount(3, this.ensembleExecutor!.Calls[0].models); // Reasoning ensemble size
-//        }
+            this.responseHandler.ResponsesToReturn = [modelResponse];
 
-//        [TestMethod]
-//        public async Task ProcessAsync_ShouldReturnHandledEnsembleResponse()
-//        {
-//            OrchestrationContext context = new()
-//            {
-//                UseEnsemble = true,
-//                Prompt = "Combine outputs",
-//                EnsembleContext = new EnsembleContext
-//                {
-//                    Strategy = EnsembleRoutingStrategy.Vision,
-//                },
-//            };
+            var request = new OrchestrationRequest
+            {
+                UseEnsemble = false,
+                Prompt = "Test",
+                OutputFormat = OutputFormat.PlainText,
+                SingleModelRequest = new SingleModelRouterRequest { Strategy = ModelRoutingStrategy.LowestCost },
+            };
 
-//            string result = await this.orchestrator!.ProcessAsync(context: context);
+            var result = await this.orchestrator.ProcessAsync(request, CancellationToken.None);
 
-//            Assert.AreEqual($"HandledEnsemble:{string.Join("|", this.responseHandler!.LastEnsembleInput!)}", result);
-//        }
+            Assert.AreEqual(this.responseHandler.ResponsesToReturn, result);
+            Assert.AreEqual(modelResponse, this.responseHandler.LastResponses![0]);
+        }
 
-//        // ---------------------------------------------------------
-//        // Routing Behavior Tests
-//        // ---------------------------------------------------------
-//        [TestMethod]
-//        public async Task ProcessAsync_ShouldNotCallSingleExecutor_WhenUsingEnsemble()
-//        {
-//            OrchestrationContext context = new()
-//            {
-//                UseEnsemble = true,
-//                Prompt = "Test",
-//                EnsembleContext = new EnsembleContext
-//                {
-//                    Strategy = EnsembleRoutingStrategy.CostOptimized,
-//                },
-//            };
+        // ------------------------------------------------------------
+        // ENSEMBLE TESTS
+        // ------------------------------------------------------------
+        [TestMethod]
+        public async Task ProcessAsync_UsesEnsembleRouter_WhenUseEnsembleTrue()
+        {
+            this.ensembleRouter.ReturnedModels = [this.modelA, this.modelB];
 
-//            _ = await this.orchestrator!.ProcessAsync(context: context);
+            var responses = new[]
+            {
+                new ModelResponse { Model = this.modelA, RawOutput = "A", IsSuccessful = true },
+                new ModelResponse { Model = this.modelB, RawOutput = "B", IsSuccessful = true },
+            };
 
-//            Assert.IsEmpty(this.modelExecutor!.Calls);
-//            Assert.HasCount(1, this.ensembleExecutor!.Calls);
-//        }
+            this.ensembleExecutor.ResponsesToReturn = responses;
+            this.responseHandler.ResponsesToReturn = responses;
 
-//        [TestMethod]
-//        public async Task ProcessAsync_ShouldNotCallEnsembleExecutor_WhenUsingSingleModel()
-//        {
-//            OrchestrationContext context = new()
-//            {
-//                UseEnsemble = false,
-//                Prompt = "Test",
-//                SingleModelContext = new SingleModelContext
-//                {
-//                    Strategy = ModelRoutingStrategy.HighestPerformance,
-//                },
-//            };
+            var request = new OrchestrationRequest
+            {
+                UseEnsemble = true,
+                Prompt = "Explain",
+                OutputFormat = OutputFormat.PlainText,
+                EnsembleRequest = new EnsembleRouterRequest { Strategy = EnsembleRoutingStrategy.Reasoning },
+            };
 
-//            await this.orchestrator!.ProcessAsync(context: context);
+            var result = await this.orchestrator.ProcessAsync(request, CancellationToken.None);
 
-//            Assert.HasCount(1, this.modelExecutor!.Calls);
-//            Assert.IsEmpty(this.ensembleExecutor!.Calls);
-//        }
-//    }
-//}
+            Assert.HasCount(2, result);
+            Assert.AreEqual(this.modelA, result[0].Model);
+            Assert.AreEqual(this.modelB, result[1].Model);
+
+            Assert.IsNotNull(this.ensembleRouter.LastRequest);
+            Assert.IsNull(this.singleRouter.LastRequest);
+
+            Assert.IsNotNull(this.ensembleExecutor.LastContext);
+            Assert.AreEqual("Explain", this.ensembleExecutor.LastContext!.Prompt);
+        }
+
+        [TestMethod]
+        public async Task ProcessAsync_Ensemble_InvokesResponseHandler()
+        {
+            this.ensembleRouter.ReturnedModels = [this.modelA, this.modelB];
+
+            var responses = new[]
+            {
+                new ModelResponse { Model = this.modelA, RawOutput = "A", IsSuccessful = true },
+                new ModelResponse { Model = this.modelB, RawOutput = "B", IsSuccessful = true },
+            };
+
+            this.ensembleExecutor.ResponsesToReturn = responses;
+            this.responseHandler.ResponsesToReturn = responses;
+
+            var request = new OrchestrationRequest
+            {
+                UseEnsemble = true,
+                Prompt = "Explain",
+                OutputFormat = OutputFormat.PlainText,
+                EnsembleRequest = new EnsembleRouterRequest { Strategy = EnsembleRoutingStrategy.Reasoning },
+            };
+
+            var result = await this.orchestrator.ProcessAsync(request, CancellationToken.None);
+
+            Assert.AreEqual(this.responseHandler.ResponsesToReturn, result);
+            Assert.AreEqual(responses[0], this.responseHandler.LastResponses![0]);
+            Assert.AreEqual(responses[1], this.responseHandler.LastResponses![1]);
+        }
+
+        /// <summary>
+        /// Creates a ModelDescriptor instance for the specified model name.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns see cref="ModelDescriptor">.</returns>
+        private static ModelDescriptor CreateModelDescriptor(OpenAIModel name)
+        {
+            var descriptor = (ModelDescriptor)Activator.CreateInstance(typeof(ModelDescriptor), nonPublic: true)!;
+
+            typeof(ModelDescriptor)
+                .GetProperty(nameof(ModelDescriptor.Name))!
+                .SetValue(descriptor, name);
+
+            return descriptor;
+        }
+    }
+}

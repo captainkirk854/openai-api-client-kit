@@ -7,6 +7,9 @@ namespace OpenAIApiClient.OrchestrationNEW04
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Chat.Request;
 
+    /// <summary>
+    /// Defines the context of a prompt being sent to the AI model.
+    /// </summary>
     public sealed class PromptContext
     {
         /// <summary>

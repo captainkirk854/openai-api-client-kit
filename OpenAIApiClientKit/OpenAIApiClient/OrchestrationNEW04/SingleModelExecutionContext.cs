@@ -8,6 +8,12 @@ namespace OpenAIApiClient.OrchestrationNEW04
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Registries;
 
+    /// <summary>
+    /// Defines the execution context for single model requests.
+    /// </summary>
+    /// <param name="prompt"></param>
+    /// <param name="outputFormat"></param>
+    /// <param name="model"></param>
     public sealed class SingleModelExecutionContext(string prompt, OutputFormat outputFormat, ModelDescriptor model) : IExecutionContext
     {
         /// <summary>

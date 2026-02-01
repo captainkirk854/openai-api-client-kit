@@ -99,6 +99,8 @@ namespace OpenAIApiClient.ConsoleApp
             // Get best model response for the prompt ..
             await Demos.BestModelResponseDemo.GetBestModelResponseAsync(client: client, prompt: prompt, cts: cts);
 
+            await Demos.BestModelResponseDemo.GetBestModelResponseAsyncNew(client: client, prompt: prompt, cts: cts);
+
             Console.WriteLine("Press Enter to continue..");
             Console.ReadLine();
         }
@@ -195,7 +197,7 @@ namespace OpenAIApiClient.ConsoleApp
         /// <returns>Task.</returns>
         private static async Task OrchestratorDemo(ChatClient client, CancellationTokenSource cts)
         {
-            string prompt = "Explain quantum tunneling in one paragraph.";
+            string prompt = "List the planets, dwarf planets and top 10 heaviest moons. List their names along with their masses and diameters in descending order of mass with the heaviest body first.";
             Console.WriteLine($"Using Prompt: {prompt}");
             Console.WriteLine();
 

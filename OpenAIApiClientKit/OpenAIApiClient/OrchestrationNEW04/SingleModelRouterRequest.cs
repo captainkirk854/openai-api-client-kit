@@ -1,4 +1,4 @@
-﻿// <copyright file="ModelRouterRequest.cs" company="854 Things (tm)">
+﻿// <copyright file="SingleModelRouterRequest.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -6,7 +6,10 @@ namespace OpenAIApiClient.OrchestrationNEW04
 {
     using OpenAIApiClient.Enums;
 
-    public sealed class ModelRouterRequest
+    /// <summary>
+    /// Defines a request to the single model router for selecting an appropriate model based on the specified criteria.
+    /// </summary>
+    public sealed class SingleModelRouterRequest
     {
         /// <summary>
         /// Gets the routing strategy to use (e.g., BestReasoning, LowestCost, Explicit).
@@ -18,7 +21,7 @@ namespace OpenAIApiClient.OrchestrationNEW04
         }
 
         /// <summary>
-        /// Gets the Optional explicit model override (used only when Strategy = Explicit).
+        /// Gets the Optional explicit model override (used only when <cref="ModelRoutingStrategy"/> = Explicit).
         /// </summary>
         public OpenAIModel? ExplicitModel
         {

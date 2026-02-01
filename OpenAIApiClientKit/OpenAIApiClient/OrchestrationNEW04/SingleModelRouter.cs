@@ -8,42 +8,36 @@ namespace OpenAIApiClient.OrchestrationNEW04
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Registries;
-    using OpenAIApiClient.Routing.SingleModel; /// this where this class needs to be eventually moved to.
+    using OpenAIApiClient.Routing.SingleModel; // this where this class needs to be eventually moved to.
 
     /// <summary>
     /// SingleRouter routes single model requests to the appropriate strategy based on the provided context.
     /// </summary>
     /// <param name="modelRegistry"></param>
-    public sealed class SingleModelRouter(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry)
+    public sealed class SingleModelRouter(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry) : ISingleModelRouter
     {
         private readonly IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry = modelRegistry;
 
         /// <summary>
         /// Routes a model context to the appropriate strategy and returns related model as part of SingleRouterResult.
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="request"></param>
         /// <returns cref ="SingleModelRouterResult"> containing the resolved model descriptor.</returns>
         /// <exception cref="InvalidOperationException">Thrown if the context does not specify an explicit model.</exception>
-        public SingleModelRouterResult Route(SingleModelContext context)
+        public SingleModelRouterResult Route(SingleModelRouterRequest request)
         {
-            // Get the strategy from the registry and invoke it ..
-            SingleModelRoutingStrategyHandler handler = SingleModelRoutingStrategyRegistry.Get(strategy: context.Strategy);
-            return handler(modelRegistry: this.modelRegistry, context);
-        }
-
-
-        public SingleModelRouterResult Route(ModelRouterRequest request)
-        {
-            // Get the strategy from the registry and invoke it ..
-            SingleModelContext context = new SingleModelContext 
-            { 
-                ExplicitModel = request.ExplicitModel, 
+            // Define the single model context from the request ..
+            SingleModelContext context = new()
+            {
+                ExplicitModel = request.ExplicitModel,
                 RequiredCapabilities = request.RequiredCapabilities,
                 Strategy = request.Strategy,
             };
 
-            // Get the strategy from the registry and invoke it ..
+            // Get the actual strategy handler definition to use as delegate ..
             SingleModelRoutingStrategyHandler handler = SingleModelRoutingStrategyRegistry.Get(strategy: context.Strategy);
+
+            // Invoke the handler to get the strategy ..
             return handler(modelRegistry: this.modelRegistry, request: context);
         }
     }

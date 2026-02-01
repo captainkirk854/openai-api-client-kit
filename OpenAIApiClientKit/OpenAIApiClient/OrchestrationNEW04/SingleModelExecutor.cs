@@ -1,13 +1,12 @@
-﻿// <copyright file="ModelExecutor.cs" company="854 Things (tm)">
+﻿// <copyright file="SingleModelExecutor.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.OrchestrationNEW03
+namespace OpenAIApiClient.OrchestrationNEW04
 {
     using System;
     using System.Diagnostics;
     using System.Threading.Tasks;
-    using OpenAIApiClient.Helpers.General;
     using OpenAIApiClient.Models.Chat.Request;
     using OpenAIApiClient.Models.Chat.Response.Completion;
     using OpenAIApiClient.Models.Registries;
@@ -16,7 +15,7 @@ namespace OpenAIApiClient.OrchestrationNEW03
     /// Executes OpenAI models using the provided ChatClient.
     /// </summary>
     /// <param name="client"></param>
-    public sealed class ModelExecutor(ChatClient client) : ISingleModelExecutor
+    public sealed class SingleModelExecutor(ChatClient client) : ISingleModelExecutor
     {
         /// <summary>
         /// Executes the given model with the provided prompt context.
@@ -27,13 +26,7 @@ namespace OpenAIApiClient.OrchestrationNEW03
         /// <returns>A task that represents the asynchronous operation. The task result contains the model response.</returns>
         public async Task<ModelResponse> ExecuteAsync(ModelDescriptor model, PromptContext context, CancellationToken cancelToken)
         {
-            ChatCompletionRequest request = new ClientRequestBuilder()
-                .WithModel(model.Name)
-                .AddSystemMessage(input: "You are a helpful assistant that answers concisely.")
-                .AddUserMessage(context.Prompt)
-                .UsingMaxTokens(input: 1000)
-                .SetOutputFormat((Enums.OutputFormat)context.OutputFormat!)
-                .Build();
+            ChatCompletionRequest request = context.Request;
 
             // Start timing ..
             Stopwatch sw = Stopwatch.StartNew();
@@ -47,14 +40,18 @@ namespace OpenAIApiClient.OrchestrationNEW03
                 sw.Stop();
 
                 // Return successful response ..
+                if (response == null || response.Choices.Count == 0)
+                {
+                    throw new InvalidOperationException("The response from the model was null or contained no choices.");
+                }
                 return new ModelResponse
                 {
                     Model = model,
-                    RawOutput = response!.Choices[0].Message.Content!,
+                    RawOutput = response.Choices[0].Message.Content!,
                     IsSuccessful = true,
                     Latency = sw.Elapsed,
-                    EstimatedCost = response!.Usage?.CalculateCost(pricing: model.Pricing!) ?? 0m,
-                    TotalTokens = response!.Usage?.TotalTokens ?? 0m,
+                    EstimatedCost = response.Usage?.CalculateCost(pricing: model.Pricing!) ?? 0m,
+                    TotalTokens = response.Usage?.TotalTokens ?? 0m,
                 };
             }
             catch (Exception ex)

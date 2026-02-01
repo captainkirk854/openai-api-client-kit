@@ -8,6 +8,6 @@ namespace OpenAIApiClient.OrchestrationNEW04
 
     public interface ISingleModelExecutor
     {
-        Task<ModelResponse> ExecuteAsync(ModelDescriptor model, PromptContext promptContext, CancellationToken cancelToken);
+        Task<ModelResponse> ExecuteAsync(ModelDescriptor model, PromptContext context, CancellationToken cancelToken);
     }
 }

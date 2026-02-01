@@ -6,6 +6,9 @@ namespace OpenAIApiClient.OrchestrationNEW04
 {
     using OpenAIApiClient.Enums;
 
+    /// <summary>
+    /// Defines a request to the ensemble router for selecting appropriate models based on the specified criteria.
+    /// </summary>
     public sealed class EnsembleRouterRequest
     {
         /// <summary>

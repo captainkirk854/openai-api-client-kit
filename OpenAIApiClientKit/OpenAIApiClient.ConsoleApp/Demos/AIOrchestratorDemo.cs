@@ -16,82 +16,103 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             Console.WriteLine("=== AI Orchestrator Demo ===");
             Console.WriteLine();
 
-            // ------------------------------------------------------------
-            // 1. Build the model registry (your combined model registry)
-            // ------------------------------------------------------------
+            // Initialise model registry ..
             OpenAIModelRegistry registry = new();
 
-            // ------------------------------------------------------------
-            // 2. Create routers
-            // ------------------------------------------------------------
-            var singleRouter = new SingleModelRouter(registry.Registry);
-            var ensembleRouter = new EnsembleRouter(registry.Registry);
+            // Initialise Model Routers which filter which model(s) to use ..
+            SingleModelRouter singleModelRouter = new(modelRegistry: registry.Registry);
+            EnsembleRouter ensembleRouter = new(modelRegistry: registry.Registry);
+
+            // Create the executor stack in which the ensemble executor uses the single-model executor ..
+            SingleModelExecutor singleModelExecutor = new(client: client);
+            EnsembleExecutor ensembleExecutor = new(singleModelExecutor: singleModelExecutor);
+
+            // Define a model response handler ..
+            DemoResponseHandler responseHandler = new();
+
+            // Initialise the request builder
+            ClientRequestBuilder requestBuilder = new();
+
+            // Create the orchestrator using all the components ..
+            AIOrchestrator orchestrator = new(singleModelRouter: singleModelRouter, ensembleRouter: ensembleRouter, singleModelExecutor: singleModelExecutor, ensembleExecutor: ensembleExecutor, requestBuilder: requestBuilder, responseHandler: responseHandler);
 
             // ------------------------------------------------------------
-            // 3. Create the executor stack
-            // ------------------------------------------------------------
-            var modelExecutor = new ModelExecutor(client);
-            var ensembleExecutor = new EnsembleExecutor(modelExecutor);
-
-            // ------------------------------------------------------------
-            // 4. Create the response handler
-            // ------------------------------------------------------------
-            var responseHandler = new DemoResponseHandler();
-
-            // ------------------------------------------------------------
-            // 5. Create the request builder
-            // ------------------------------------------------------------
-            var requestBuilder = new ClientRequestBuilder();
-
-            // ------------------------------------------------------------
-            // 6. Create the orchestrator
-            // ------------------------------------------------------------
-            var orchestrator = new AIOrchestrator(
-                singleRouter,
-                ensembleRouter,
-                modelExecutor,
-                ensembleExecutor,
-                responseHandler,
-                requestBuilder);
-
-            // ------------------------------------------------------------
-            // 7. Run a single-model request
+            // Run a single-model request
             // ------------------------------------------------------------
             Console.WriteLine(">>> Single Model Request");
-            var singleRequest = new OrchestrationRequest
+            OrchestrationRequest singleModelRequest = new()
             {
                 UseEnsemble = false,
                 Prompt = prompt,
-                OutputFormat = (int)Enums.OutputFormat.PlainText,
-                SingleModelRequest = new ModelRouterRequest
+                OutputFormat = OutputFormat.PlainText,
+                SingleModelRequest = new SingleModelRouterRequest
                 {
                     Strategy = ModelRoutingStrategy.BestReasoning,
                 },
             };
 
-            var singleResult = await orchestrator.ProcessAsync(singleRequest, cancelToken);
-            Console.WriteLine(singleResult);
-            Console.WriteLine();
+            _ = await orchestrator.ProcessAsync(singleModelRequest, cancelToken);
 
             // ------------------------------------------------------------
-            // 8. Run an ensemble request
+            // Run an explicitly defined single-model request
+            // ------------------------------------------------------------
+            Console.WriteLine(">>> Explicitly defined Single Model Request");
+            OrchestrationRequest singleExplicitlyDefinedModelRequest = new()
+            {
+                UseEnsemble = false,
+                Prompt = prompt,
+                OutputFormat = OutputFormat.PlainText,
+                SingleModelRequest = new SingleModelRouterRequest
+                {
+                    Strategy = ModelRoutingStrategy.Explicit,
+                    ExplicitModel = OpenAIModel.GPT4o_Mini,
+                },
+            };
+
+            _ = await orchestrator.ProcessAsync(singleExplicitlyDefinedModelRequest, cancelToken);
+
+            // ------------------------------------------------------------
+            // Run an ensemble request
             // ------------------------------------------------------------
             Console.WriteLine(">>> Ensemble Request");
-            var ensembleRequest = new OrchestrationRequest
+            OrchestrationRequest ensembleRequest = new()
             {
                 UseEnsemble = true,
                 Prompt = prompt,
-                OutputFormat = (int)Enums.OutputFormat.PlainText,
+                OutputFormat = OutputFormat.PlainText,
                 EnsembleRequest = new EnsembleRouterRequest
                 {
                     Strategy = EnsembleRoutingStrategy.Reasoning,
                 },
             };
 
-            var ensembleResult = await orchestrator.ProcessAsync(ensembleRequest, cancelToken);
-            Console.WriteLine(ensembleResult);
-            Console.WriteLine();
+            _ = await orchestrator.ProcessAsync(ensembleRequest, cancelToken);
 
+            // ------------------------------------------------------------
+            // Run a custom capability ensemble request
+            // ------------------------------------------------------------
+            Console.WriteLine(">>> Ensemble Custom Model Capability(s) Request");
+            OrchestrationRequest ensembleCustomRequest = new()
+            {
+                UseEnsemble = true,
+                Prompt = prompt,
+                OutputFormat = OutputFormat.Table,
+                EnsembleRequest = new EnsembleRouterRequest
+                {
+                    Strategy = EnsembleRoutingStrategy.Custom,
+                    RequiredCapabilities =
+                    [
+                        ModelCapability.Text,
+                        ModelCapability.Chat,
+                    ],
+                },
+            };
+
+            _ = await orchestrator.ProcessAsync(ensembleCustomRequest, cancelToken);
+
+            // ------------------------------------------------------------
+            // Complete
+            // ------------------------------------------------------------
             Console.WriteLine("=== Demo Complete ===");
         }
     }

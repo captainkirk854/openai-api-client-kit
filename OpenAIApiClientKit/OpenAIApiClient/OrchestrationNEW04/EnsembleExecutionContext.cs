@@ -8,6 +8,12 @@ namespace OpenAIApiClient.OrchestrationNEW04
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Registries;
 
+    /// <summary>
+    /// Defines the execution context for ensemble model requests.
+    /// </summary>
+    /// <param name="prompt"></param>
+    /// <param name="outputFormat"></param>
+    /// <param name="models"></param>
     public sealed class EnsembleExecutionContext(string prompt, OutputFormat outputFormat, IReadOnlyList<ModelDescriptor> models) : IExecutionContext
     {
         /// <summary>

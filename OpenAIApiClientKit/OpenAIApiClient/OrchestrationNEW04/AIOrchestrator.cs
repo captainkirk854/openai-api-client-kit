@@ -9,34 +9,60 @@ namespace OpenAIApiClient.OrchestrationNEW04
     using OpenAIApiClient.Routing.Ensemble;
     using OpenAIApiClient.Routing.SingleModel;
 
-    public sealed class AIOrchestrator(SingleModelRouter singleRouter, EnsembleRouter ensembleRouter, ModelExecutor executor, IEnsembleExecutor ensembleExecutor, IResponseHandler responseHandler, ClientRequestBuilder requestBuilder)
+    /// <summary>
+    /// Responsible for orchestrating model requests, routing them to the appropriate models,
+    /// executing the requests, and handling the responses.
+    /// </summary>
+    /// <param name="singleModelRouter">Single model router.</param>
+    /// <param name="ensembleRouter">Ensemble router.</param>
+    /// <param name="singleModelExecutor">Single model executor.</param>
+    /// <param name="ensembleExecutor">Ensemble model executor.</param>
+    /// <param name="requestBuilder">Client request builder.</param>
+    /// <param name="responseHandler">Response handler.</param>
+    public sealed class AIOrchestrator(ISingleModelRouter singleModelRouter, IEnsembleRouter ensembleRouter, ISingleModelExecutor singleModelExecutor, IEnsembleExecutor ensembleExecutor, ClientRequestBuilder requestBuilder, IResponseHandler responseHandler)
     {
-        private readonly SingleModelRouter singleRouter = singleRouter;
-        private readonly EnsembleRouter ensembleRouter = ensembleRouter;
-        private readonly ModelExecutor executor = executor;
+        private readonly ISingleModelRouter singleModelRouter = singleModelRouter;
+        private readonly IEnsembleRouter ensembleRouter = ensembleRouter;
+        private readonly ISingleModelExecutor singleModelExecutor = singleModelExecutor;
         private readonly IEnsembleExecutor ensembleExecutor = ensembleExecutor;
-        private readonly IResponseHandler responseHandler = responseHandler;
         private readonly ClientRequestBuilder requestBuilder = requestBuilder;
+        private readonly IResponseHandler responseHandler = responseHandler;
 
-        public async Task<string> ProcessAsync(OrchestrationRequest request, CancellationToken cancelToken)
+        /// <summary>
+        /// Process the orchestration request and return raw model responses.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="cancelToken"></param>
+        /// <returns>IReadOnlyList&lt;ModelResponse&gt;.</returns>
+        public async Task<IReadOnlyList<ModelResponse>> ProcessAsync(OrchestrationRequest request, CancellationToken cancelToken)
         {
-            IExecutionContext execContext =
-                request.UseEnsemble
-                    ? new EnsembleExecutionContext(prompt: request.Prompt, outputFormat: request.OutputFormat, models: this.ensembleRouter.Route(request: request.EnsembleRequest!).Models)
-                    : new SingleModelExecutionContext(prompt: request.Prompt, outputFormat: request.OutputFormat, model: this.singleRouter.Route(request: request.SingleModelRequest!).Model);
-
-            OrchestrationContext context = new(prompt: request.Prompt, outputFormat: request.OutputFormat, executionContext: execContext, builder: this.requestBuilder);
-
-            if (!context.IsEnsemble)
+            // Determine execution context based on request type ..
+            IExecutionContext executionContext;
+            if (request.UseEnsemble)
             {
-                ModelDescriptor model = context.ExecutionContext.Models[0];
-                ModelResponse response = await this.executor.ExecuteAsync(model, context.PromptContext, cancelToken);
-                return this.responseHandler.HandleSingle(response);
+                EnsembleRouterResult routerResult = this.ensembleRouter.Route(request: request.EnsembleRequest!);
+                executionContext = new EnsembleExecutionContext(prompt: request.Prompt, outputFormat: request.OutputFormat, models: routerResult.Models);
             }
             else
             {
-                IReadOnlyList<ModelResponse> responses = await this.ensembleExecutor.ExecuteAsync(context, cancelToken);
-                return this.responseHandler.HandleEnsemble(responses);
+                SingleModelRouterResult routerResult = this.singleModelRouter.Route(request: request.SingleModelRequest!);
+                executionContext = new SingleModelExecutionContext(prompt: request.Prompt, outputFormat: request.OutputFormat, model: routerResult.Model);
+            }
+
+            // Create orchestration context ..
+            OrchestrationContext context = new(prompt: request.Prompt, outputFormat: request.OutputFormat, executionContext: executionContext, builder: this.requestBuilder);
+
+            // Execute based on context type ..
+            if (context.IsEnsemble)
+            {
+                IReadOnlyList<ModelResponse> responses = await this.ensembleExecutor.ExecuteAsync(context: context, cancelToken: cancelToken);
+                return this.responseHandler.HandleResponses(modelResponses: responses);
+            }
+            else
+            {
+                ModelDescriptor model = context.ExecutionContext.Models[0];
+                ModelResponse response = await this.singleModelExecutor.ExecuteAsync(model: model, context: context.PromptContext, cancelToken: cancelToken);
+                return this.responseHandler.HandleResponses(modelResponses: ModelResponse.WrapSingleResponseAsList(modelResponse: response));
             }
         }
     }

@@ -8,5 +8,10 @@ namespace OpenAIApiClient.Delegates
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Routing.Ensemble;
 
+    /// <summary>
+    /// Ensemble routing strategy handler delegate which, when implemented, builds an ensemble of models.
+    /// </summary>
+    /// <param name="modelRegistry"></param>
+    /// <returns cref="EnsembleRouterResult">RouterResult.</returns>
     public delegate EnsembleRouterResult EnsembleRoutingStrategyHandler(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry);
 }
