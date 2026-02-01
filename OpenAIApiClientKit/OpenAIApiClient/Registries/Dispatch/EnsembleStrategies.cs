@@ -2,13 +2,12 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Registries.Routing
+namespace OpenAIApiClient.Registries.Dispatch
 {
     using OpenAIApiClient.Delegates;
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Enums.Routing;
     using OpenAIApiClient.Models.Registries;
-    using OpenAIApiClient.Orchestration.Routing;
+    using OpenAIApiClient.Orchestration.Dispatch;
 
     /// <summary>
     /// A (extendable) registry of ensemble routing strategies mapped to their implementations.
@@ -18,8 +17,8 @@ namespace OpenAIApiClient.Registries.Routing
         /// <summary>
         /// Dictionary mapping ensemble routing strategies to their corresponding strategy implementations and ultimately their associated models.
         /// </summary>
-        public static readonly IReadOnlyDictionary<EnsembleStrategy, EnsembleRoutingStrategyHandler> Strategies =
-            new Dictionary<EnsembleStrategy, EnsembleRoutingStrategyHandler>
+        public static readonly IReadOnlyDictionary<EnsembleStrategy, EnsembleStrategyHandler> Strategies =
+            new Dictionary<EnsembleStrategy, EnsembleStrategyHandler>
             {
                 [EnsembleStrategy.Reasoning] = BuildReasoningEnsemble,
                 [EnsembleStrategy.Vision] = BuildVisionEnsemble,
@@ -30,11 +29,11 @@ namespace OpenAIApiClient.Registries.Routing
         /// Gets the ensemble strategy for the specified routing strategy.
         /// </summary>
         /// <param name="strategy"></param>
-        /// <returns cref="EnsembleRoutingStrategyHandler">Strategy Handler.</returns>
+        /// <returns cref="EnsembleStrategyHandler">Strategy Handler.</returns>
         /// <exception cref="KeyNotFoundException">Thrown if strategy not registered.</exception>
-        public static EnsembleRoutingStrategyHandler Get(EnsembleStrategy strategy)
+        public static EnsembleStrategyHandler Get(EnsembleStrategy strategy)
         {
-            if (!Strategies.TryGetValue(strategy, out EnsembleRoutingStrategyHandler? handler))
+            if (!Strategies.TryGetValue(strategy, out EnsembleStrategyHandler? handler))
             {
                 throw new KeyNotFoundException($"No ensemble strategy registered for: {strategy}");
             }
@@ -52,7 +51,7 @@ namespace OpenAIApiClient.Registries.Routing
         /// </summary>
         /// <param name="registry"></param>
         /// <returns>An EnsembleRouterResult with selected reasoning, chat, and critic model descriptors.</returns>
-        private static EnsembleRouterResult BuildReasoningEnsemble(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> registry)
+        private static EnsembleDispatchResult BuildReasoningEnsemble(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> registry)
         {
             // Select the highest performing reasoning model ..
             ModelDescriptor reasoning = registry.Values
@@ -74,7 +73,7 @@ namespace OpenAIApiClient.Registries.Routing
                 .OrderBy(m => m.Pricing.InputTokenCost)
                 .First();
 
-            return new EnsembleRouterResult(models:
+            return new EnsembleDispatchResult(models:
              [
                 reasoning,
                 fast,
@@ -88,7 +87,7 @@ namespace OpenAIApiClient.Registries.Routing
         /// </summary>
         /// <param name="modelRegistry"></param>
         /// <returns>An EnsembleRouterResult with selected vision and chat model descriptors.</returns>
-        private static EnsembleRouterResult BuildVisionEnsemble(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry)
+        private static EnsembleDispatchResult BuildVisionEnsemble(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry)
         {
             // Select the highest performing vision model ..
             ModelDescriptor vision = modelRegistry.Values
@@ -103,7 +102,7 @@ namespace OpenAIApiClient.Registries.Routing
                 .OrderBy(m => m.Pricing.InputTokenCost)
                 .First();
 
-            return new EnsembleRouterResult(models:
+            return new EnsembleDispatchResult(models:
             [
                 vision,
                 fastText,
@@ -114,7 +113,7 @@ namespace OpenAIApiClient.Registries.Routing
         /// Creates an ensemble of models optimized for cost by selecting low-cost, chat-capable, and high-performance model descriptors from the registry.
         /// </summary>
         /// <returns>An EnsembleRouterResult containing the selected model descriptors.</returns>
-        private static EnsembleRouterResult BuildCostOptimizedEnsemble(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry)
+        private static EnsembleDispatchResult BuildCostOptimizedEnsemble(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry)
         {
             // Select the most cost-effective low-cost model ..
             ModelDescriptor low = modelRegistry.Values
@@ -136,7 +135,7 @@ namespace OpenAIApiClient.Registries.Routing
                 .OrderBy(m => m.Pricing.InputTokenCost)
                 .First();
 
-            return new EnsembleRouterResult(models:
+            return new EnsembleDispatchResult(models:
             [
                 low,
                 mid,

@@ -2,21 +2,20 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Registries.Routing
+namespace OpenAIApiClient.Registries.Dispatch
 {
     using OpenAIApiClient.Delegates;
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Enums.Routing;
     using OpenAIApiClient.Models.Registries;
-    using OpenAIApiClient.Orchestration.Routing;
+    using OpenAIApiClient.Orchestration.Dispatch;
 
     public static class SingleModelStrategies
     {
         /// <summary>
         /// Dictionary mapping routing strategies to their handler implementations.
         /// </summary>
-        public static readonly IReadOnlyDictionary<SingleModelStrategy, SingleModelRoutingStrategyHandler> Strategies =
-            new Dictionary<SingleModelStrategy, SingleModelRoutingStrategyHandler>
+        public static readonly IReadOnlyDictionary<SingleModelStrategy, SingleModelStrategyHandler> Strategies =
+            new Dictionary<SingleModelStrategy, SingleModelStrategyHandler>
             {
                 [SingleModelStrategy.Explicit] = RouteExplicit,
                 [SingleModelStrategy.LowestCost] = RouteLowestCost,
@@ -35,9 +34,9 @@ namespace OpenAIApiClient.Registries.Routing
         /// <param name="strategy"></param>
         /// <returns>ModelRoutingStrategyHandler.</returns>
         /// <exception cref="KeyNotFoundException">Thrown if the strategy has not been registered.</exception>
-        public static SingleModelRoutingStrategyHandler Get(SingleModelStrategy strategy)
+        public static SingleModelStrategyHandler Get(SingleModelStrategy strategy)
         {
-            if (!Strategies.TryGetValue(strategy, out SingleModelRoutingStrategyHandler? handler))
+            if (!Strategies.TryGetValue(strategy, out SingleModelStrategyHandler? handler))
             {
                 throw new KeyNotFoundException($"No routing strategy registered for {strategy}");
             }
@@ -56,14 +55,14 @@ namespace OpenAIApiClient.Registries.Routing
         /// <param name="request">The routing request containing the explicit model information.</param>
         /// <returns>A ModelRouterResult containing the resolved model descriptor.</returns>
         /// <exception cref="InvalidOperationException">Thrown if the request does not specify an explicit model.</exception>
-        private static SingleModelRouterResult RouteExplicit(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelRouterRequest request)
+        private static SingleModelDispatchResult RouteExplicit(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelDispatchRequest request)
         {
             if (request.ExplicitModel is null)
             {
                 throw new InvalidOperationException("Explicit routing requires an explicit model.");
             }
 
-            return new SingleModelRouterResult(modelRegistry[request.ExplicitModel.Value]);
+            return new SingleModelDispatchResult(modelRegistry[request.ExplicitModel.Value]);
         }
 
         /// <summary>
@@ -72,7 +71,7 @@ namespace OpenAIApiClient.Registries.Routing
         /// <param name="modelRegistry"></param>
         /// <param name="request">The routing request specifying required capabilities.</param>
         /// <returns>A ModelRouterResult containing the selected model descriptor.</returns>
-        private static SingleModelRouterResult RouteLowestCost(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelRouterRequest request)
+        private static SingleModelDispatchResult RouteLowestCost(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelDispatchRequest request)
         {
             IEnumerable<ModelDescriptor> candidates = FilterByCapabilities(modelRegistry, request.RequiredCapabilities);
 
@@ -81,7 +80,7 @@ namespace OpenAIApiClient.Registries.Routing
                 .ThenBy(c => c.Pricing.OutputTokenCost)
                 .First();
 
-            return new SingleModelRouterResult(descriptor);
+            return new SingleModelDispatchResult(descriptor);
         }
 
         /// <summary>
@@ -90,7 +89,7 @@ namespace OpenAIApiClient.Registries.Routing
         /// <param name="modelRegistry"></param>
         /// <param name="request">The model router request specifying required capabilities.</param>
         /// <returns>A ModelRouterResult containing the selected model descriptor.</returns>
-        private static SingleModelRouterResult RouteHighestPerformance(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelRouterRequest request)
+        private static SingleModelDispatchResult RouteHighestPerformance(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelDispatchRequest request)
         {
             IEnumerable<ModelDescriptor> candidates = FilterByCapabilities(modelRegistry, request.RequiredCapabilities);
 
@@ -98,7 +97,7 @@ namespace OpenAIApiClient.Registries.Routing
                 .Where(c => c.Capabilities.Contains(ModelCapability.HighPerformance)).FirstOrDefault()
                 ?? candidates.First();
 
-            return new SingleModelRouterResult(descriptor);
+            return new SingleModelDispatchResult(descriptor);
         }
 
         /// <summary>
@@ -107,14 +106,14 @@ namespace OpenAIApiClient.Registries.Routing
         /// <param name="modelRegistry"></param>
         /// <param name="request">The model router request specifying required capabilities.</param>
         /// <returns>A ModelRouterResult containing the selected model descriptor.</returns>
-        private static SingleModelRouterResult RouteBestReasoning(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelRouterRequest request)
+        private static SingleModelDispatchResult RouteBestReasoning(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelDispatchRequest request)
         {
             ModelDescriptor descriptor = modelRegistry.Values
                 .Where(m => m.Capabilities.Contains(ModelCapability.Reasoning))
                 .OrderByDescending(m => m.Capabilities.Contains(ModelCapability.HighPerformance))
                 .First();
 
-            return new SingleModelRouterResult(descriptor);
+            return new SingleModelDispatchResult(descriptor);
         }
 
         /// <summary>
@@ -123,14 +122,14 @@ namespace OpenAIApiClient.Registries.Routing
         /// <param name="modelRegistry"></param>
         /// <param name="request">The model router request specifying required capabilities.</param>
         /// <returns>A ModelRouterResult containing the selected model descriptor.</returns>
-        private static SingleModelRouterResult RouteBestVision(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelRouterRequest request)
+        private static SingleModelDispatchResult RouteBestVision(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelDispatchRequest request)
         {
             ModelDescriptor descriptor = modelRegistry.Values
                 .Where(m => m.Capabilities.Contains(ModelCapability.Vision))
                 .OrderByDescending(m => m.Capabilities.Contains(ModelCapability.HighPerformance))
                 .First();
 
-            return new SingleModelRouterResult(descriptor);
+            return new SingleModelDispatchResult(descriptor);
         }
 
         /// <summary>
@@ -139,14 +138,14 @@ namespace OpenAIApiClient.Registries.Routing
         /// <param name="modelRegistry"></param>
         /// <param name="request">The model router request specifying required capabilities.</param>
         /// <returns>A ModelRouterResult containing the selected model descriptor.</returns>
-        private static SingleModelRouterResult RouteBestAudioIn(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelRouterRequest request)
+        private static SingleModelDispatchResult RouteBestAudioIn(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelDispatchRequest request)
         {
             ModelDescriptor descriptor = modelRegistry.Values
                 .Where(m => m.Capabilities.Contains(ModelCapability.AudioIn))
                 .OrderBy(m => m.Pricing.InputTokenCost)
                 .First();
 
-            return new SingleModelRouterResult(descriptor);
+            return new SingleModelDispatchResult(descriptor);
         }
 
         /// <summary>
@@ -155,14 +154,14 @@ namespace OpenAIApiClient.Registries.Routing
         /// <param name="modelRegistry"></param>
         /// <param name="request">The model router request specifying required capabilities.</param>
         /// <returns>A ModelRouterResult containing the selected model descriptor.</returns>
-        private static SingleModelRouterResult RouteBestAudioOut(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelRouterRequest request)
+        private static SingleModelDispatchResult RouteBestAudioOut(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelDispatchRequest request)
         {
             ModelDescriptor descriptor = modelRegistry.Values
                 .Where(m => m.Capabilities.Contains(ModelCapability.AudioOut))
                 .OrderBy(m => m.Pricing.InputTokenCost)
                 .First();
 
-            return new SingleModelRouterResult(descriptor);
+            return new SingleModelDispatchResult(descriptor);
         }
 
         /// <summary>
@@ -171,14 +170,14 @@ namespace OpenAIApiClient.Registries.Routing
         /// <param name="modelRegistry"></param>
         /// <param name="request">The model router request specifying required capabilities.</param>
         /// <returns>A ModelRouterResult containing the selected model descriptor.</returns>
-        private static SingleModelRouterResult RouteEmbedding(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelRouterRequest request)
+        private static SingleModelDispatchResult RouteEmbedding(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelDispatchRequest request)
         {
             ModelDescriptor descriptor = modelRegistry.Values
                 .Where(m => m.Capabilities.Contains(ModelCapability.Embedding))
                 .OrderBy(m => m.Pricing.InputTokenCost)
                 .First();
 
-            return new SingleModelRouterResult(descriptor);
+            return new SingleModelDispatchResult(descriptor);
         }
 
         /// <summary>
@@ -187,14 +186,14 @@ namespace OpenAIApiClient.Registries.Routing
         /// <param name="modelRegistry"></param>
         /// <param name="request">The model router request specifying required capabilities.</param>
         /// <returns>A ModelRouterResult containing the selected model descriptor.</returns>
-        private static SingleModelRouterResult RouteModeration(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelRouterRequest request)
+        private static SingleModelDispatchResult RouteModeration(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelDispatchRequest request)
         {
             ModelDescriptor descriptor = modelRegistry.Values
                 .Where(m => m.Capabilities.Contains(ModelCapability.Moderation))
                 .OrderBy(m => m.Pricing.InputTokenCost)
                 .First();
 
-            return new SingleModelRouterResult(descriptor);
+            return new SingleModelDispatchResult(descriptor);
         }
 
         // -------------------------

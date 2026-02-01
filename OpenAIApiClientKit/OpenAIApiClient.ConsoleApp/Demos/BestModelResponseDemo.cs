@@ -5,11 +5,10 @@
 namespace OpenAIApiClient.ConsoleApp.Demos
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Enums.Routing;
     using OpenAIApiClient.Helpers.General;
     using OpenAIApiClient.Orchestration;
+    using OpenAIApiClient.Orchestration.Dispatch;
     using OpenAIApiClient.Orchestration.Execution;
-    using OpenAIApiClient.Orchestration.Routing;
     using OpenAIApiClient.Registries;
 
     /// <summary>
@@ -20,24 +19,29 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         public static async Task GetBestModelResponseAsync(ChatClient client, string prompt, CancellationTokenSource cts)
         {
             // Initialise model registry ..
-            OpenAIModels registry = new();
+            OpenAIModels models = new();
 
-            // Initialise Model Routers which filter which model(s) to use ..
-            SingleModelRouter singleModelRouter = new(modelRegistry: registry.Registry);
-            EnsembleRouter ensembleRouter = new(modelRegistry: registry.Registry);
+            // Initialise Dispatchers to select which model(s) to use ..
+            SingleModelDispatcher singleModelDispatcher = new(modelRegistry: models.Registry);
+            EnsembleDispatcher ensembleDispatcher = new(modelRegistry: models.Registry);
 
             // Create the executor stack in which the ensemble executor uses the single-model executor ..
             SingleModelExecutor singleModelExecutor = new(client: client);
             EnsembleExecutor ensembleExecutor = new(singleModelExecutor: singleModelExecutor);
 
             // Define a model response handler ..
-            DemoResponseHandler responseHandler = new();
+            ResponseHandlerDemo responseHandler = new();
 
             // Initialise the request builder
             ClientRequestBuilder requestBuilder = new();
 
             // Create the orchestrator using all the components ..
-            Orchestrator orchestrator = new(singleModelRouter: singleModelRouter, ensembleRouter: ensembleRouter, singleModelExecutor: singleModelExecutor, ensembleExecutor: ensembleExecutor, requestBuilder: requestBuilder, responseHandler: responseHandler);
+            Orchestrator orchestrator = new(singleModelDispatcher: singleModelDispatcher,
+                                            ensembleDispatcher: ensembleDispatcher,
+                                            singleModelExecutor: singleModelExecutor,
+                                            ensembleExecutor: ensembleExecutor,
+                                            requestBuilder: requestBuilder,
+                                            responseHandler: responseHandler);
 
             // Define prompt context including model requirements ..
             OrchestrationRequest ensembleRequest = new()
@@ -45,7 +49,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 UseEnsemble = true,
                 Prompt = prompt,
                 OutputFormat = OutputFormat.PlainText,
-                EnsembleRequest = new EnsembleRouterRequest
+                EnsembleRequest = new EnsembleDispatchRequest
                 {
                     Strategy = EnsembleStrategy.Custom,
                     RequiredCapabilities =
@@ -57,19 +61,19 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             };
 
             // Execute selected model(s) in asynchronous pipelines ..
-            IReadOnlyList<Orchestration.ModelResponse> responses = await orchestrator.ProcessAsync(request: ensembleRequest, cancelToken: cts.Token);
-            Orchestration.CollatedModelResponse final = Orchestration.ModelResponseSelector.SelectOptimal(responses: responses);
+            IReadOnlyList<ModelResponse> responses = await orchestrator.ProcessAsync(request: ensembleRequest, cancelToken: cts.Token);
+            CollatedModelResponse final = ModelResponseSelector.SelectOptimal(responses: responses);
 
             // Output computed best response information ..
             Console.WriteLine();
-            Console.WriteLine("=== BEST RESPONSE NEW ===");
+            Console.WriteLine("=== BEST RESPONSE ===");
             Console.WriteLine($"Model: {final.Name}");
             Console.WriteLine($"Output: {final.Content}");
 
             // Output all model response(s) for results comparison transparency ..
             Console.WriteLine();
             Console.WriteLine("=== SOURCE RESPONSE(S) ===");
-            foreach (Orchestration.ModelResponse response in final.SourceResponses)
+            foreach (ModelResponse response in final.SourceResponses)
             {
                 Console.WriteLine();
                 Console.WriteLine(new string('-', 80));

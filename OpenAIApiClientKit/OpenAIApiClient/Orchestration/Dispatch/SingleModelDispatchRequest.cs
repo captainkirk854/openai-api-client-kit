@@ -1,46 +1,36 @@
-﻿// <copyright file="EnsembleRouterRequest.cs" company="854 Things (tm)">
+﻿// <copyright file="SingleModelDispatchRequest.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Orchestration.Routing
+namespace OpenAIApiClient.Orchestration.Dispatch
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Enums.Routing;
 
     /// <summary>
-    /// Defines a request to the ensemble router for selecting appropriate models based on the specified criteria.
+    /// Defines a request to the single model router for selecting an appropriate model based on the specified criteria.
     /// </summary>
-    public sealed class EnsembleRouterRequest
+    public sealed class SingleModelDispatchRequest
     {
         /// <summary>
-        /// Gets the ensemble routing strategy (e.g., Reasoning, Vision, CostOptimized).
+        /// Gets the strategy to use (e.g., BestReasoning, LowestCost, Explicit).
         /// </summary>
-        public EnsembleStrategy Strategy
+        public SingleModelStrategy Strategy
         {
             get;
             init;
         }
 
         /// <summary>
-        /// Gets the Optional explicit list of models (used only for ExplicitEnsemble strategy).
+        /// Gets the Optional explicit model override (used only for <see cref="SingleModelStrategy.Explicit"/> strategy).
         /// </summary>
-        public IReadOnlyList<OpenAIModel>? ExplicitModels
+        public OpenAIModel? ExplicitModel
         {
             get;
             init;
         }
 
         /// <summary>
-        /// Gets the Optional desired number of model(s) to route to.
-        /// </summary>
-        public int? ModelCount
-        {
-            get;
-            init;
-        }
-
-        /// <summary>
-        /// Gets the Optional required capabilities for all models in the ensemble.
+        /// Gets the Optional required capabilities (e.g., Vision, AudioIn, Reasoning).
         /// </summary>
         public IReadOnlyList<ModelCapability>? RequiredCapabilities
         {
@@ -61,15 +51,6 @@ namespace OpenAIApiClient.Orchestration.Routing
         /// Gets the maximum acceptable cost for processing this prompt.
         /// </summary>
         public decimal? MaxCost
-        {
-            get;
-            init;
-        }
-
-        /// <summary>
-        /// Gets the Optional per-model weights (used for weighted ensembles).
-        /// </summary>
-        public IReadOnlyDictionary<OpenAIModel, double>? Weights
         {
             get;
             init;

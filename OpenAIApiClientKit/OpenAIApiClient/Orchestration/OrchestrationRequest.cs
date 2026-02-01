@@ -5,7 +5,7 @@
 namespace OpenAIApiClient.Orchestration
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Orchestration.Routing;
+    using OpenAIApiClient.Orchestration.Dispatch;
 
     public sealed class OrchestrationRequest
     {
@@ -39,7 +39,7 @@ namespace OpenAIApiClient.Orchestration
         /// <summary>
         /// Gets the single model request details if <see cref="UseEnsemble"/> is false..
         /// </summary>
-        public SingleModelRouterRequest? SingleModelRequest
+        public SingleModelDispatchRequest? SingleModelRequest
         {
             get;
             init;
@@ -48,7 +48,7 @@ namespace OpenAIApiClient.Orchestration
         /// <summary>
         /// Gets the ensemble model request details if <see cref="UseEnsemble"/> is true).
         /// </summary>
-        public EnsembleRouterRequest? EnsembleRequest
+        public EnsembleDispatchRequest? EnsembleRequest
         {
             get;
             init;

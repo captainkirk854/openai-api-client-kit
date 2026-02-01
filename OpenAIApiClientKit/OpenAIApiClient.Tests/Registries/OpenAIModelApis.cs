@@ -10,6 +10,9 @@ namespace OpenAIApiClient.Tests.Registries
     using OpenAIApiClient.Registries;
     using testClass = OpenAIApiClient.Registries;
 
+    /// <summary>
+    /// Tests for the <see cref="OpenAIModelApis"/> class.
+    /// </summary>
     [TestClass]
     public class OpenAIModelApis
     {

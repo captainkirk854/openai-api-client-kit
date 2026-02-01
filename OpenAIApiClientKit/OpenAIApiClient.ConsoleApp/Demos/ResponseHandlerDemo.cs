@@ -1,4 +1,4 @@
-﻿// <copyright file="DemoResponseHandler.cs" company="854 Things (tm)">
+﻿// <copyright file="ResponseHandlerDemo.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -9,9 +9,9 @@ namespace OpenAIApiClient.ConsoleApp.Demos
     using OpenAIApiClient.Orchestration;
 
     /// <summary>
-    /// Defines a demo response handler for processing model responses.
+    /// Defines a Demo <see cref="IResponseHandler"/> for processing <see cref="ModelResponse"/>.
     /// </summary>
-    public sealed class DemoResponseHandler : IResponseHandler
+    public sealed class ResponseHandlerDemo : IResponseHandler
     {
         /// <summary>
         /// Handles a single model response.

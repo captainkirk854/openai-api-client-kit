@@ -6,26 +6,26 @@ namespace OpenAIApiClient.Orchestration
 {
     using OpenAIApiClient.Helpers.General;
     using OpenAIApiClient.Interfaces.Orchestration;
+    using OpenAIApiClient.Interfaces.Orchestration.Dispatch;
     using OpenAIApiClient.Interfaces.Orchestration.Execution;
-    using OpenAIApiClient.Interfaces.Orchestration.Routing;
     using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Orchestration.Dispatch;
     using OpenAIApiClient.Orchestration.Execution;
-    using OpenAIApiClient.Orchestration.Routing;
 
     /// <summary>
     /// Responsible for orchestrating model requests, routing them to the appropriate models,
     /// executing the requests, and handling the responses.
     /// </summary>
-    /// <param name="singleModelRouter">Single model router.</param>
-    /// <param name="ensembleRouter">Ensemble router.</param>
+    /// <param name="singleModelDispatcher">Single model router.</param>
+    /// <param name="ensembleDispatcher">Ensemble router.</param>
     /// <param name="singleModelExecutor">Single model executor.</param>
     /// <param name="ensembleExecutor">Ensemble model executor.</param>
     /// <param name="requestBuilder">Client request builder.</param>
     /// <param name="responseHandler">Response handler.</param>
-    public sealed class Orchestrator(ISingleModelRouter singleModelRouter, IEnsembleRouter ensembleRouter, ISingleModelExecutor singleModelExecutor, IEnsembleExecutor ensembleExecutor, ClientRequestBuilder requestBuilder, IResponseHandler responseHandler)
+    public sealed class Orchestrator(ISingleModelDispatcher singleModelDispatcher, IEnsembleDispatcher ensembleDispatcher, ISingleModelExecutor singleModelExecutor, IEnsembleExecutor ensembleExecutor, ClientRequestBuilder requestBuilder, IResponseHandler responseHandler)
     {
-        private readonly ISingleModelRouter singleModelRouter = singleModelRouter;
-        private readonly IEnsembleRouter ensembleRouter = ensembleRouter;
+        private readonly ISingleModelDispatcher singleModelRouter = singleModelDispatcher;
+        private readonly IEnsembleDispatcher ensembleRouter = ensembleDispatcher;
         private readonly ISingleModelExecutor singleModelExecutor = singleModelExecutor;
         private readonly IEnsembleExecutor ensembleExecutor = ensembleExecutor;
         private readonly ClientRequestBuilder requestBuilder = requestBuilder;
@@ -43,12 +43,12 @@ namespace OpenAIApiClient.Orchestration
             IExecutionContext executionContext;
             if (request.UseEnsemble)
             {
-                EnsembleRouterResult routerResult = this.ensembleRouter.Route(request: request.EnsembleRequest!);
+                EnsembleDispatchResult routerResult = this.ensembleRouter.Evaluate(request: request.EnsembleRequest!);
                 executionContext = new EnsembleExecutionContext(prompt: request.Prompt, outputFormat: request.OutputFormat, models: routerResult.Models);
             }
             else
             {
-                SingleModelRouterResult routerResult = this.singleModelRouter.Route(request: request.SingleModelRequest!);
+                SingleModelDispatchResult routerResult = this.singleModelRouter.Evaluate(request: request.SingleModelRequest!);
                 executionContext = new SingleModelExecutionContext(prompt: request.Prompt, outputFormat: request.OutputFormat, model: routerResult.Model);
             }
 

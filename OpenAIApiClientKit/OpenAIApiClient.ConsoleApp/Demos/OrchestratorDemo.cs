@@ -1,18 +1,17 @@
-﻿// <copyright file="AIOrchestratorDemo.cs" company="854 Things (tm)">
+﻿// <copyright file="OrchestratorDemo.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
 namespace OpenAIApiClient.ConsoleApp.Demos
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Enums.Routing;
     using OpenAIApiClient.Helpers.General;
     using OpenAIApiClient.Orchestration;
+    using OpenAIApiClient.Orchestration.Dispatch;
     using OpenAIApiClient.Orchestration.Execution;
-    using OpenAIApiClient.Orchestration.Routing;
     using OpenAIApiClient.Registries;
 
-    public static class AIOrchestratorDemo
+    public static class OrchestratorDemo
     {
         public static async Task RunAsync(ChatClient client, string prompt, CancellationToken cancelToken = default)
         {
@@ -20,24 +19,29 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             Console.WriteLine();
 
             // Initialise model registry ..
-            OpenAIModels registry = new();
+            OpenAIModels models = new();
 
-            // Initialise Model Routers which filter which model(s) to use ..
-            SingleModelRouter singleModelRouter = new(modelRegistry: registry.Registry);
-            EnsembleRouter ensembleRouter = new(modelRegistry: registry.Registry);
+            // Initialise Dispatchers to select which model(s) to use ..
+            SingleModelDispatcher singleModelDispatcher = new(modelRegistry: models.Registry);
+            EnsembleDispatcher ensembleDispatcher = new(modelRegistry: models.Registry);
 
             // Create the executor stack in which the ensemble executor uses the single-model executor ..
             SingleModelExecutor singleModelExecutor = new(client: client);
             EnsembleExecutor ensembleExecutor = new(singleModelExecutor: singleModelExecutor);
 
             // Define a model response handler ..
-            DemoResponseHandler responseHandler = new();
+            ResponseHandlerDemo responseHandler = new();
 
             // Initialise the request builder
             ClientRequestBuilder requestBuilder = new();
 
             // Create the orchestrator using all the components ..
-            Orchestrator orchestrator = new(singleModelRouter: singleModelRouter, ensembleRouter: ensembleRouter, singleModelExecutor: singleModelExecutor, ensembleExecutor: ensembleExecutor, requestBuilder: requestBuilder, responseHandler: responseHandler);
+            Orchestrator orchestrator = new(singleModelDispatcher: singleModelDispatcher,
+                                            ensembleDispatcher: ensembleDispatcher,
+                                            singleModelExecutor: singleModelExecutor,
+                                            ensembleExecutor: ensembleExecutor,
+                                            requestBuilder: requestBuilder,
+                                            responseHandler: responseHandler);
 
             // ------------------------------------------------------------
             // Run a single-model request
@@ -48,7 +52,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 UseEnsemble = false,
                 Prompt = prompt,
                 OutputFormat = OutputFormat.PlainText,
-                SingleModelRequest = new SingleModelRouterRequest
+                SingleModelRequest = new SingleModelDispatchRequest
                 {
                     Strategy = SingleModelStrategy.BestReasoning,
                 },
@@ -65,7 +69,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 UseEnsemble = false,
                 Prompt = prompt,
                 OutputFormat = OutputFormat.PlainText,
-                SingleModelRequest = new SingleModelRouterRequest
+                SingleModelRequest = new SingleModelDispatchRequest
                 {
                     Strategy = SingleModelStrategy.Explicit,
                     ExplicitModel = OpenAIModel.GPT4o_Mini,
@@ -83,7 +87,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 UseEnsemble = true,
                 Prompt = prompt,
                 OutputFormat = OutputFormat.PlainText,
-                EnsembleRequest = new EnsembleRouterRequest
+                EnsembleRequest = new EnsembleDispatchRequest
                 {
                     Strategy = EnsembleStrategy.Reasoning,
                 },
@@ -100,7 +104,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 UseEnsemble = true,
                 Prompt = prompt,
                 OutputFormat = OutputFormat.Table,
-                EnsembleRequest = new EnsembleRouterRequest
+                EnsembleRequest = new EnsembleDispatchRequest
                 {
                     Strategy = EnsembleStrategy.Custom,
                     RequiredCapabilities =

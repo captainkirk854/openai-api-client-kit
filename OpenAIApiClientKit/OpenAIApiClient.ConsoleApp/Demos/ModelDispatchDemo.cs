@@ -1,27 +1,26 @@
-﻿// <copyright file="ModelRoutingDemo.cs" company="854 Things (tm)">
+﻿// <copyright file="ModelDispatchDemo.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
 namespace OpenAIApiClient.ConsoleApp.Demos
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Enums.Routing;
     using OpenAIApiClient.Models.Registries;
-    using OpenAIApiClient.Orchestration.Routing;
+    using OpenAIApiClient.Orchestration.Dispatch;
     using OpenAIApiClient.Registries;
 
     /// <summary>
-    /// Ensemble and Single Model Routing Demo.
+    /// Ensemble and Single Model Dispatch Selection Demo.
     /// </summary>
-    public static class ModelRoutingDemo
+    public static class ModelDispatchDemo
     {
         private static readonly OpenAIModels Models = new();
-        private static readonly SingleModelRouter SingleRouter = new(modelRegistry: Models.Registry);
-        private static readonly EnsembleRouter EnsembleRouter = new(modelRegistry: Models.Registry);
+        private static readonly SingleModelDispatcher SingleModelDispatcher = new(modelRegistry: Models.Registry);
+        private static readonly EnsembleDispatcher EnsembleDispatcher = new(modelRegistry: Models.Registry);
 
         public static void Run()
         {
-            Console.WriteLine("=== OpenAI Model Selection Plan Demo ===");
+            Console.WriteLine("=== Model Dispatch and Selection Demo ===");
             Console.WriteLine("Choose an option:");
             Console.WriteLine("1. Explicit Model Selection");
             Console.WriteLine("2. Best Reasoning Model");
@@ -38,35 +37,35 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             switch (choice)
             {
                 case "1":
-                    RunExplicitRouting();
+                    RunExplicitModelDispatch();
                     break;
 
                 case "2":
-                    RunBestReasoning();
+                    RunBestReasoningModelDispatch();
                     break;
 
                 case "3":
-                    RunLowestCostChat();
+                    RunLowestCostChatModelDispatch();
                     break;
 
                 case "4":
-                    RunBestVision();
+                    RunBestVisionModelDispatch();
                     break;
 
                 case "5":
-                    RunReasoningEnsemble();
+                    RunReasoningEnsembleModelDispatch();
                     break;
 
                 case "6":
-                    RunVisionEnsemble();
+                    RunVisionEnsembleModelDispatch();
                     break;
 
                 case "7":
-                    RunCostOptimizedEnsemble();
+                    RunCostOptimizedEnsembleModelDispatch();
                     break;
 
                 case "8":
-                    RunCustomEnsemble();
+                    RunCustomEnsembleModelDispatch();
                     break;
 
                 default:
@@ -76,13 +75,13 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         }
 
         // -------------------------
-        // Single Model Routing
+        // Single Model Dispatch
         // -------------------------
 
         /// <summary>
-        /// Run explicit model routing demo.
+        /// Run explicit model dispatch demo.
         /// </summary>
-        private static void RunExplicitRouting()
+        private static void RunExplicitModelDispatch()
         {
             Console.WriteLine("Enter model name (e.g., GPT4o, GPT5_2):");
             Console.WriteLine("Options: " + string.Join(", ", Enum.GetNames(typeof(OpenAIModel))));
@@ -94,7 +93,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 return;
             }
 
-            SingleModelRouterResult result = SingleRouter.Route(new SingleModelRouterRequest
+            SingleModelDispatchResult result = SingleModelDispatcher.Evaluate(new SingleModelDispatchRequest
             {
                 Strategy = SingleModelStrategy.Explicit,
                 ExplicitModel = model,
@@ -104,11 +103,11 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         }
 
         /// <summary>
-        /// Run best reasoning model routing demo.
+        /// Run best reasoning model dispatch demo.
         /// </summary>
-        private static void RunBestReasoning()
+        private static void RunBestReasoningModelDispatch()
         {
-            SingleModelRouterResult result = SingleRouter.Route(new SingleModelRouterRequest
+            SingleModelDispatchResult result = SingleModelDispatcher.Evaluate(new SingleModelDispatchRequest
             {
                 Strategy = SingleModelStrategy.BestReasoning,
             });
@@ -117,11 +116,11 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         }
 
         /// <summary>
-        /// Run lowest cost chat model routing demo.
+        /// Run lowest cost chat model dispatch demo.
         /// </summary>
-        private static void RunLowestCostChat()
+        private static void RunLowestCostChatModelDispatch()
         {
-            SingleModelRouterResult result = SingleRouter.Route(new SingleModelRouterRequest
+            SingleModelDispatchResult result = SingleModelDispatcher.Evaluate(new SingleModelDispatchRequest
             {
                 Strategy = SingleModelStrategy.LowestCost,
                 RequiredCapabilities = [ModelCapability.Chat],
@@ -131,11 +130,11 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         }
 
         /// <summary>
-        /// Run best vision model routing demo.
+        /// Run best vision model dispatch demo.
         /// </summary>
-        private static void RunBestVision()
+        private static void RunBestVisionModelDispatch()
         {
-            SingleModelRouterResult result = SingleRouter.Route(new SingleModelRouterRequest
+            SingleModelDispatchResult result = SingleModelDispatcher.Evaluate(new SingleModelDispatchRequest
             {
                 Strategy = SingleModelStrategy.BestVision,
             });
@@ -148,11 +147,11 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         // -------------------------
 
         /// <summary>
-        /// Run reasoning ensemble routing demo.
+        /// Run reasoning ensemble dispatch demo.
         /// </summary>
-        private static void RunReasoningEnsemble()
+        private static void RunReasoningEnsembleModelDispatch()
         {
-            EnsembleRouterResult result = EnsembleRouter.Route(new EnsembleRouterRequest
+            EnsembleDispatchResult result = EnsembleDispatcher.Evaluate(new EnsembleDispatchRequest
             {
                 Strategy = EnsembleStrategy.Reasoning,
             });
@@ -161,11 +160,11 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         }
 
         /// <summary>
-        /// Run vision ensemble routing demo.
+        /// Run vision ensemble dispatch demo.
         /// </summary>
-        private static void RunVisionEnsemble()
+        private static void RunVisionEnsembleModelDispatch()
         {
-            EnsembleRouterResult result = EnsembleRouter.Route(new EnsembleRouterRequest
+            EnsembleDispatchResult result = EnsembleDispatcher.Evaluate(new EnsembleDispatchRequest
             {
                 Strategy = EnsembleStrategy.Vision,
             });
@@ -174,11 +173,11 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         }
 
         /// <summary>
-        /// Run cost-optimized ensemble routing demo.
+        /// Run cost-optimized ensemble dispatch demo.
         /// </summary>
-        private static void RunCostOptimizedEnsemble()
+        private static void RunCostOptimizedEnsembleModelDispatch()
         {
-            EnsembleRouterResult result = EnsembleRouter.Route(new EnsembleRouterRequest
+            EnsembleDispatchResult result = EnsembleDispatcher.Evaluate(new EnsembleDispatchRequest
             {
                 Strategy = EnsembleStrategy.CostOptimized,
             });
@@ -187,18 +186,18 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         }
 
         /// <summary>
-        /// Run custom ensemble routing demo.
+        /// Run custom ensemble dispatch demo.
         /// </summary>
-        private static void RunCustomEnsemble()
+        private static void RunCustomEnsembleModelDispatch()
         {
-            Console.WriteLine("Enter required capabilities (comma-separated):");
+            Console.WriteLine("Enter required capability(s) (comma-separated):");
             Console.WriteLine("Options: " + string.Join(", ", Enum.GetNames(typeof(ModelCapability))));
 
             string? input = Console.ReadLine();
 
             if (string.IsNullOrWhiteSpace(input))
             {
-                Console.WriteLine("No capabilities entered.");
+                Console.WriteLine("No capability(s) entered.");
                 return;
             }
 
@@ -221,35 +220,34 @@ namespace OpenAIApiClient.ConsoleApp.Demos
 
             if (invalid.Count > 0)
             {
-                Console.WriteLine($"Invalid capabilities: {string.Join(", ", invalid)}");
+                Console.WriteLine($"Invalid capability(s): {string.Join(", ", invalid)}");
                 return;
             }
 
             if (parsed.Count == 0)
             {
-                Console.WriteLine("No valid capabilities provided.");
+                Console.WriteLine("No valid capability(s) provided.");
                 return;
             }
 
-            Console.WriteLine("What's the minimum number of required model(s)?");
+            Console.WriteLine("What's the minimum number of required model(s) to select?");
             string? countInput = Console.ReadLine();
-
             if (!int.TryParse(countInput, out int minRequiredCount) || minRequiredCount <= 0)
             {
-                Console.WriteLine("Invalid number.");
+                Console.WriteLine("Invalid number entered.");
                 return;
             }
 
-            // Validate that enough models exist BEFORE routing
+            // Validate that enough models exist BEFORE routing ..
             List<ModelDescriptor> matchingModels = [.. Models.Registry.Values.Where(m => parsed.All(c => m.Capabilities.Contains(c)))];
-
             if (matchingModels.Count < minRequiredCount)
             {
                 Console.WriteLine($"Only {matchingModels.Count} model(s) match those capabilities, but a minimum of {minRequiredCount} model(s) were requested.");
                 return;
             }
 
-            EnsembleRouterResult result = EnsembleRouter.Route(new EnsembleRouterRequest
+            // Proceed with evaluation of which models are selected ..
+            EnsembleDispatchResult result = EnsembleDispatcher.Evaluate(new EnsembleDispatchRequest
             {
                 Strategy = EnsembleStrategy.Custom,
                 ModelCount = minRequiredCount,
@@ -268,7 +266,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// </summary>
         /// <param name="title"></param>
         /// <param name="result"></param>
-        private static void PrintSingleResult(string title, SingleModelRouterResult result)
+        private static void PrintSingleResult(string title, SingleModelDispatchResult result)
         {
             Console.WriteLine($"\n=== {title} ===");
             Console.WriteLine($"Model:     {result.Model.Name}");
@@ -281,7 +279,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// </summary>
         /// <param name="title"></param>
         /// <param name="result"></param>
-        private static void PrintEnsembleResult(string title, EnsembleRouterResult result)
+        private static void PrintEnsembleResult(string title, EnsembleDispatchResult result)
         {
             Console.WriteLine($"\n=== {title} ===");
 

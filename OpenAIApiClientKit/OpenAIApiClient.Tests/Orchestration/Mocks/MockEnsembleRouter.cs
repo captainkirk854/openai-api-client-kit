@@ -4,11 +4,11 @@
 
 namespace OpenAIApiClient.Tests.Orchestration.Mocks
 {
-    using OpenAIApiClient.Interfaces.Orchestration.Routing;
+    using OpenAIApiClient.Interfaces.Orchestration.Dispatch;
     using OpenAIApiClient.Models.Registries;
-    using OpenAIApiClient.Orchestration.Routing;
+    using OpenAIApiClient.Orchestration.Dispatch;
 
-    public sealed class MockEnsembleRouter : IEnsembleRouter
+    public sealed class MockEnsembleRouter : IEnsembleDispatcher
     {
         /// <summary>
         /// Gets or sets the model descriptors to be returned by the router - only in mock for test verification purposes.
@@ -22,7 +22,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         /// <summary>
         /// Gets the last request received by the router  - only in mock for test verification purposes.
         /// </summary>
-        public EnsembleRouterRequest? LastRequest
+        public EnsembleDispatchRequest? LastRequest
         {
             get;
             private set;
@@ -32,11 +32,11 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         /// Routes the request and returns the result.
         /// </summary>
         /// <param name="request"></param>
-        /// <returns see cref="EnsembleRouterResult">.</returns>
-        public EnsembleRouterResult Route(EnsembleRouterRequest request)
+        /// <returns see cref="EnsembleDispatchResult">.</returns>
+        public EnsembleDispatchResult Evaluate(EnsembleDispatchRequest request)
         {
             this.LastRequest = request;
-            return new EnsembleRouterResult(this.ReturnedModels);
+            return new EnsembleDispatchResult(this.ReturnedModels);
         }
     }
 }

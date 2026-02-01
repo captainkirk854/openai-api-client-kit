@@ -311,10 +311,7 @@ $response = Invoke-GPT5Prompt -Prompt "Generate a JSON object with user details.
 ```
 
 
-
-
-
-### Option 2: Use the simple console app provided in the ```OpenAIApiClient.ConsoleApp``` project.
+### Option 3: Use the simple console app provided in the ```OpenAIApiClient.ConsoleApp``` project.
 
 ```powershell
 dotnet run --project .\OpenAIApiClient.ConsoleApp\OpenAIApiClient.ConsoleApp.csproj
@@ -467,10 +464,6 @@ public static readonly Dictionary<OutputFormat, FormatDescriptor> FormatRegistry
 ```
 
 
----
-
-
-
 # 🧭 Architectural Benefits
 This design provides:
 
@@ -498,6 +491,302 @@ This design provides:
 Cost estimation becomes a simple lookup + multiplication.
 
 
+# 🏗️ Architecture Overview
+This project implements a strategy‑driven orchestration framework for selecting and executing OpenAI models. The design emphasizes extensibility, determinism, and clean separation of concerns. At its core, the system is built around three major layers:
+- Dispatching Layer — selects the appropriate model(s)
+- Orchestration Layer — builds execution context and prompt context
+- Execution Layer — runs the selected model(s) and aggregates responses
+
+- The architecture is fully declarative: adding new models or strategies requires no changes to the orchestrator or dispatchers.
+
+## 🔍 Dispatching Layer
+The dispatching layer is responsible for deciding which OpenAI model(s) to use for a given request.
+It contains two symmetrical components:
+
+### Single Model Dispatcher
+Evaluates a ModelDispatcherRequest and selects one model using a strategy.
+
+Responsibilities
+- Consult the Single Model Strategy Registry
+- Apply the selected strategy handler
+- Return a single ModelDescriptor
+
+Example Strategies
+- Best reasoning model
+- Lowest cost model
+- Vision‑capable model
+- Explicit model selection
+
+### Ensemble Dispatcher
+Evaluates an EnsembleDispatcherRequest and selects multiple models.
+
+Responsibilities
+- Consult the Ensemble Strategy Registry
+- Apply the selected ensemble strategy handler
+- Return a list of ModelDescriptor objects
+
+Example Strategies
+- Reasoning ensemble
+- Cost‑optimized ensemble
+- Vision ensemble
+- Weighted ensemble
+- Explicit model list
+
+## 🧠 Strategy Registries
+Both dispatchers rely on strategy registries, which map:
+
+```
+Strategy → StrategyHandler
+```
+
+A strategy handler is a pure function:
+```
+(registry, request) → ModelDescriptor
+(registry, request) → List<ModelDescriptor>
+```
+This design allows new strategies to be added without modifying dispatcher code.
+
+Benefits
+- Declarative and extensible
+- Zero duplication
+- Deterministic model selection
+- Easy to test and mock
+
+## 🔧 Orchestration Layer
+The Orchestrator coordinates the entire flow:
+- Determines whether the request is single‑model or ensemble
+- Calls the appropriate dispatcher’s Evaluate method
+- Wraps the selected model(s) in an ExecutionContext
+- Builds a PromptContext containing a ChatCompletionRequest
+- Passes everything to the execution layer
+
+This layer is intentionally thin — it delegates all decision‑making to dispatchers and all execution to executors.
+
+## ⚙️ Execution Layer
+The execution layer runs the selected model(s):
+- ISingleModelExecutor
+- IEnsembleExecutor
+
+Single‑model execution is straightforward.
+Ensemble execution runs models in parallel, then aggregates results.
+
+All responses flow through an IResponseHandler, which formats or merges them into a final output
+
+## 🎯 Key Architectural Advantages
+- Strategy‑driven: All model selection logic is declarative and pluggable
+- Symmetrical design: Single and ensemble paths share the same structure
+- Extensible: Add new strategies or models without modifying core classes
+- Deterministic: Same request + registry → same model selection
+- Testable: Dispatchers, executors, and handlers are fully mockable
+- Future‑proof: Supports new model generations, capabilities, and pricing
+
+
+ 
+# 🚀 Strategy‑Driven Model Dispatching
+
+## The Single‑Model and Ensemble Dispatchers for OpenAI Model Selection
+This architecture has a robust, extensible, and deterministic model dispatching architecture. The system revolves around two key components:
+- Single Model Dispatcher
+- Ensemble Dispatcher
+
+- Both dispatchers use strategy registries to evaluate incoming requests and select the most appropriate OpenAI model(s) for execution.
+The result is a clean, declarative, and future‑proof orchestration pipeline.
+
+### 🧩 Core Architectural Concepts
+1. Dispatchers
+
+    Dispatchers have these responsibilities:
+    - They evaluate a request
+    - They select the appropriate model(s)
+    - They do not execute the models
+    - They rely on strategy handlers to make decisions
+
+2. Strategy Registries
+
+    Both dispatchers use a registry of strategies, where each strategy is a function that:
+    - Receives the model registry
+    - Receives the dispatcher request
+    - Returns:
+        - A single ModelDescriptor, or
+        - A list of ModelDescriptor objects
+    
+        - This enables a wide range of selection behaviors without modifying dispatcher code.
+
+#### Example Strategy Pattern
+```csharp
+ModelDispatchingStrategyRegistry.Register(
+    ModelDispatchingStrategy.BestReasoning,
+    (registry, request) =>
+        registry.Values
+            .Where(m => m.Capabilities.Contains(ModelCapability.Reasoning))
+            .OrderByDescending(m => m.Generation)
+            .First());
+```
+
+
+The dispatcher simply calls the registered handler.
+
+### 🧠 Single Model Dispatcher
+
+Purpose
+- Select one OpenAI model based on a strategy.
+
+Interface:
+
+    public interface ISingleModelDispatcher
+    {
+        SingleModelDispatcherResult Evaluate(ModelDispatcherRequest request);
+    }
+
+Implementation Highlights
+- Accepts a SingleModelDispatcherRequest
+- Looks up the correct strategy handler from the registry
+- Returns a SingleModelDispatcherResult containing the chosen ModelDescriptor
+
+Benefits
+- Clean separation of concerns
+- Deterministic model selection
+- Easy to mock in unit tests
+- Extensible without modifying dispatcher code
+
+### 🧠 Ensemble Dispatcher
+
+Purpose
+- Select multiple OpenAI models for ensemble execution.
+
+Interface:
+
+    public interface IEnsembleDispatcher
+    {
+        EnsembleDispatcherResult Evaluate(EnsembleDispatcherRequest request);
+    }
+
+Implementation Highlights
+- Accepts an EnsembleDispatcherRequest
+- Uses the EnsembleDispatchingStrategyRegistry
+- Returns a list of ModelDescriptor objects
+
+Supported Ensemble Strategies
+- Reasoning ensembles
+- Vision ensembles
+- Cost‑optimized ensembles
+- Explicit model lists
+- Weighted ensembles
+- Capability‑filtered ensembles
+Benefits
+- Parallel model execution
+- Flexible ensemble composition
+- Strategy‑driven, not hard‑coded
+- Perfect symmetry with the single‑model dispatcher
+
+## 🧱 Orchestrator Integration
+
+The Orchestrator coordinates the entire flow:
+- Determines whether the request is single‑model or ensemble
+- Calls the appropriate dispatcher’s Evaluate method
+- Wraps the result in an ExecutionContext
+- Builds a PromptContext containing a ChatCompletionRequest
+- Executes via:
+    - ISingleModelExecutor
+    - IEnsembleExecutor
+- Passes results to an IResponseHandler
+
+This creates a clean pipeline:
+Dispatcher → ExecutionContext → OrchestrationContext → Executor → ResponseHandler
+
+🧪 Unit Testing Enhancements
+ The test suite cotains:
+- Mocks dispatchers
+- Mocks executors
+- Verifies correct dispatcher selection
+- Ensures correct model selection
+- Confirms correct response handling
+- Uses reflection to construct ModelDescriptor safely
+
+This ensures the system is:
+- Deterministic
+- Predictable
+- Extensible
+- Fully testable
+
+# 🎯 Summary
+
+We have an extensible orchestration framework for OpenAI models, centered around:
+- Single Model Dispatcher
+- Ensemble Dispatcher
+- Strategy registries
+- Execution contexts
+- PromptContext with embedded ChatCompletionRequest
+- Clean orchestration pipeline
+- Comprehensive unit tests
+
+The dispatchers now serve as the decision‑making layer, selecting the best model(s) based on declarative strategies, while the orchestrator and executors handle execution and response processing.
+The result is a system that is:
+- Declarative
+- Strategy‑driven
+- Extensible
+- Testable
+- Architecturally symmetrical
+- Ready for production and future expansion
+
+
+# 📊 Orchestration Flowchart
+
+```
++--------------------------------------------------------------------+
+|                        OrchestrationRequest                        |
++--------------------------------------------------------------------+
+                                |
+                                v
+                       +----------------------+
+                       |     UseEnsemble?     |
+                       +----------------------+
+                         |                |
+                        No               Yes
+                         |                |
+                         v                v
++--------------------------------+   +--------------------------------+
+| SingleModelDispatcher.Evaluate |   | EnsembleDispatcher.Evaluate    |
++--------------------------------+   +--------------------------------+
+                         |                |
+                         v                v
++--------------------------------+   +--------------------------------+
+|   SingleModelExecutionContext  |   |  EnsembleExecutionContext      |
++--------------------------------+   +--------------------------------+
+                         |                |
+                         v                v
+
+====================================================================
+||                        ORCHESTRATION LAYER                     ||
+||                                                                ||
+||   +--------------------------------------------------------+   ||
+||   |                OrchestrationContext                    |   ||
+||   |                + PromptContext                         |   ||
+||   +--------------------------------------------------------+   ||
+====================================================================
+
+                         |                |
+                         v                v
++--------------------------------+   +--------------------------------+
+|   ISingleModelExecutor.Exec    |   |   IEnsembleExecutor.Exec       |
++--------------------------------+   +--------------------------------+
+                         |                |
+                         v                v
++--------------------------------+   +--------------------------------+
+|         ModelResponse           |   |      List<ModelResponse>      |
++--------------------------------+   +--------------------------------+
+                         \                /
+                          \              /
+                           v            v
+                     +--------------------------------+
+                     |   IResponseHandler.Respond     |
+                     +--------------------------------+
+                                |
+                                v
+                     +------------------------------+
+                     |          Final Output        |
+                     +------------------------------+
+```
 
 
 

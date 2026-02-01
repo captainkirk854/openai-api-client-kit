@@ -24,7 +24,7 @@ namespace OpenAIApiClient.ConsoleApp
             ChatClient client = new(apiKey: apiKey, maxRetries: 5, baseDelayMs: 1000);
 
             // Initialise a cancellation token with a timeout ..
-            using CancellationTokenSource cts = new(TimeSpan.FromSeconds(TimeoutInSeconds));
+            using CancellationTokenSource cts = new(delay: TimeSpan.FromSeconds(TimeoutInSeconds));
 
             // Main application loop ..
             while (true)
@@ -55,7 +55,7 @@ namespace OpenAIApiClient.ConsoleApp
                         break;
 
                     case "3":
-                        ModelRoutingDemo();
+                        ModelDispatchDemo();
                         break;
 
                     case "4":
@@ -143,10 +143,10 @@ namespace OpenAIApiClient.ConsoleApp
             };
 
             // Ask if creativity settings should be enabled ..
-            bool isDeterministic = SetBooleanPrompt(message: "Enable creativity settings?", setTrue: 'n', setFalse: 'y', setDefault: 'n');
+            bool isDeterministic = SetBooleanPrompt(message: "Enable Creativity Settings?", setTrue: 'n', setFalse: 'y', setDefault: 'n');
 
             // Prompt for output format ..
-            Console.WriteLine("Select output format:");
+            Console.WriteLine("Select Output Format:");
             Console.WriteLine("1. PlainText");
             Console.WriteLine("2. Markdown");
             Console.WriteLine("3. Html");
@@ -156,7 +156,7 @@ namespace OpenAIApiClient.ConsoleApp
             Console.WriteLine("7. Sql");
             Console.WriteLine("8. Tabular");
             Console.WriteLine("Press Enter to select default (PlainText).");
-            Console.Write("Enter choice (1-8) [default is 1]: ");
+            Console.Write("Enter Choice (1-8) [default=1]: ");
 
             // Read format choice ..
             string? formatInput = Console.ReadLine();
@@ -176,15 +176,21 @@ namespace OpenAIApiClient.ConsoleApp
             Console.WriteLine();
 
             // Process user prompt with additional options ..
-            await Demos.ModelPromptDemo.ProcessUserPromptAsync(client: client, isStreaming: isStreaming, userPrompt: userPrompt, isDeterministic: isDeterministic, outputFormat: outputFormatChoice, cts: cts, model: selectedModel);
+            await Demos.ModelPromptDemo.ProcessUserPromptAsync(client: client,
+                                                               isStreaming: isStreaming,
+                                                               userPrompt: userPrompt,
+                                                               isDeterministic: isDeterministic,
+                                                               outputFormat: outputFormatChoice,
+                                                               cts: cts,
+                                                               model: selectedModel);
         }
 
         /// <summary>
         /// A demo implementation to showcase model routing capabilities.
         /// </summary>
-        private static void ModelRoutingDemo()
+        private static void ModelDispatchDemo()
         {
-            Demos.ModelRoutingDemo.Run();
+            Demos.ModelDispatchDemo.Run();
         }
 
         /// <summary>
@@ -195,12 +201,15 @@ namespace OpenAIApiClient.ConsoleApp
         /// <returns>Task.</returns>
         private static async Task OrchestratorDemo(ChatClient client, CancellationTokenSource cts)
         {
-            string prompt = "List the planets, dwarf planets and top 10 heaviest moons. List their names along with their masses and diameters in descending order of mass with the heaviest body first.";
+            string prompt = @"
+                              List the planets, dwarf planets and top 10 heaviest moons.
+                              List their names along with their masses and diameters in descending order of mass 
+                              with the heaviest celestial body first.";
             Console.WriteLine($"Using Prompt: {prompt}");
             Console.WriteLine();
 
             // Run AI Orchestrator demo ..
-            await Demos.AIOrchestratorDemo.RunAsync(client: client, prompt: prompt, cancelToken: cts.Token);
+            await Demos.OrchestratorDemo.RunAsync(client: client, prompt: prompt, cancelToken: cts.Token);
 
             Console.WriteLine("Press Enter to continue..");
             Console.ReadLine();

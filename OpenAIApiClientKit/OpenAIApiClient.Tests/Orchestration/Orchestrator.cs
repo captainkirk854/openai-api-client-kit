@@ -5,16 +5,15 @@
 namespace OpenAIApiClient.Tests.Orchestration
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Enums.Routing;
     using OpenAIApiClient.Helpers.General;
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Orchestration;
-    using OpenAIApiClient.Orchestration.Routing;
+    using OpenAIApiClient.Orchestration.Dispatch;
     using OpenAIApiClient.Tests.Orchestration.Mocks;
     using testClass = OpenAIApiClient.Orchestration.Orchestrator;
 
     /// <summary>
-    /// Tests for the AIOrchestrator class.
+    /// Tests for the <see cref="Orchestrator"/> class.
     /// </summary>
     [TestClass]
     public class Orchestrator
@@ -43,8 +42,8 @@ namespace OpenAIApiClient.Tests.Orchestration
             this.mockResponseHandler = new MockResponseHandler();
             this.requestBuilder = new ClientRequestBuilder();
 
-            this.orchestrator = new testClass(singleModelRouter: this.mockSingleModelRouter,
-                                              ensembleRouter: this.mockEnsembleRouter,
+            this.orchestrator = new testClass(singleModelDispatcher: this.mockSingleModelRouter,
+                                              ensembleDispatcher: this.mockEnsembleRouter,
                                               singleModelExecutor: this.mockSingleExecutor,
                                               ensembleExecutor: this.mockEnsembleExecutor,
                                               requestBuilder: this.requestBuilder,
@@ -67,7 +66,7 @@ namespace OpenAIApiClient.Tests.Orchestration
                 UseEnsemble = false,
                 Prompt = "Hello",
                 OutputFormat = OutputFormat.PlainText,
-                SingleModelRequest = new SingleModelRouterRequest { Strategy = SingleModelStrategy.BestReasoning },
+                SingleModelRequest = new SingleModelDispatchRequest { Strategy = SingleModelStrategy.BestReasoning },
             };
 
             // Act
@@ -105,7 +104,7 @@ namespace OpenAIApiClient.Tests.Orchestration
                 UseEnsemble = false,
                 Prompt = "Test",
                 OutputFormat = OutputFormat.PlainText,
-                SingleModelRequest = new SingleModelRouterRequest
+                SingleModelRequest = new SingleModelDispatchRequest
                                      {
                                         Strategy = SingleModelStrategy.LowestCost,
                                      },
@@ -151,7 +150,7 @@ namespace OpenAIApiClient.Tests.Orchestration
                 UseEnsemble = true,
                 Prompt = prompt,
                 OutputFormat = OutputFormat.PlainText,
-                EnsembleRequest = new EnsembleRouterRequest { Strategy = EnsembleStrategy.Reasoning },
+                EnsembleRequest = new EnsembleDispatchRequest { Strategy = EnsembleStrategy.Reasoning },
             };
 
             // Act
@@ -198,7 +197,7 @@ namespace OpenAIApiClient.Tests.Orchestration
                 UseEnsemble = true,
                 Prompt = prompt,
                 OutputFormat = OutputFormat.PlainText,
-                EnsembleRequest = new EnsembleRouterRequest { Strategy = EnsembleStrategy.Reasoning },
+                EnsembleRequest = new EnsembleDispatchRequest { Strategy = EnsembleStrategy.Reasoning },
             };
 
             // Act

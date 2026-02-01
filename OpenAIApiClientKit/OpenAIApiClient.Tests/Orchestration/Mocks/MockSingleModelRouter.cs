@@ -4,11 +4,11 @@
 
 namespace OpenAIApiClient.Tests.Orchestration.Mocks
 {
-    using OpenAIApiClient.Interfaces.Orchestration.Routing;
+    using OpenAIApiClient.Interfaces.Orchestration.Dispatch;
     using OpenAIApiClient.Models.Registries;
-    using OpenAIApiClient.Orchestration.Routing;
+    using OpenAIApiClient.Orchestration.Dispatch;
 
-    public sealed class MockSingleModelRouter : ISingleModelRouter
+    public sealed class MockSingleModelRouter : ISingleModelDispatcher
     {
         /// <summary>
         /// Gets or sets the model descriptor to be returned by the router - only in mock for test verification purposes.
@@ -22,7 +22,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         /// <summary>
         /// Gets the last request received by the router - only in mock for test verification purposes.
         /// </summary>
-        public SingleModelRouterRequest? LastRequest
+        public SingleModelDispatchRequest? LastRequest
         {
             get;
             private set;
@@ -32,11 +32,11 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         /// Routes the request to a model.
         /// </summary>
         /// <param name="request"></param>
-        /// <returns see cref="SingleModelRouterResult">.</returns>
-        public SingleModelRouterResult Route(SingleModelRouterRequest request)
+        /// <returns see cref="SingleModelDispatchResult">.</returns>
+        public SingleModelDispatchResult Evaluate(SingleModelDispatchRequest request)
         {
             this.LastRequest = request;
-            return new SingleModelRouterResult(this.ReturnedModel);
+            return new SingleModelDispatchResult(this.ReturnedModel);
         }
     }
 }

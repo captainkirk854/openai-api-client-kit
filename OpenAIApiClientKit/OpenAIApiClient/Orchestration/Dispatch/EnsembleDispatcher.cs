@@ -1,31 +1,29 @@
-﻿// <copyright file="EnsembleRouter.cs" company="854 Things (tm)">
+﻿// <copyright file="EnsembleDispatcher.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Orchestration.Routing
+namespace OpenAIApiClient.Orchestration.Dispatch
 {
     using OpenAIApiClient.Delegates;
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Enums.Routing;
-    using OpenAIApiClient.Interfaces.Orchestration.Routing;
+    using OpenAIApiClient.Interfaces.Orchestration.Dispatch;
     using OpenAIApiClient.Models.Registries;
-    using OpenAIApiClient.Registries.Routing;
+    using OpenAIApiClient.Registries.Dispatch;
 
     /// <summary>
-    /// EnsembleRouter routes ensemble requests to the appropriate strategy based on the provided context.
+    /// <see cref="EnsembleDispatcher"/> provides intentional, criteria‑based delegation to select the correct model(s) based on the provided request.
     /// </summary>
     /// <param name="modelRegistry"></param>
-    public sealed class EnsembleRouter(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry) : IEnsembleRouter
+    public sealed class EnsembleDispatcher(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry) : IEnsembleDispatcher
     {
         private readonly IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry = modelRegistry;
 
         /// <summary>
-        /// Routes an ensemble request to the appropriate set of models
-        /// based on the ensemble routing strategy.
+        /// Evaluates a request to select the appropriate set of model descriptor(s).
         /// </summary>
-        /// <param name="request">The ensemble router request containing the routing strategy.</param>
-        /// <returns see cref="EnsembleRouterResult"> containing the selected models.</returns>
-        public EnsembleRouterResult Route(EnsembleRouterRequest request)
+        /// <param name="request">The ensemble dispatch request containing strategy and constraints.</param>
+        /// <returns see cref="EnsembleDispatchResult">Selected model descriptor(s).</returns>
+        public EnsembleDispatchResult Evaluate(EnsembleDispatchRequest request)
         {
             ArgumentNullException.ThrowIfNull(request);
 
@@ -35,20 +33,20 @@ namespace OpenAIApiClient.Orchestration.Routing
                 return this.BuildCustomEnsemble(request: request);
             }
 
-            // Get the actual strategy handler definition to use as delegate ..
-            EnsembleRoutingStrategyHandler handler = EnsembleStrategies.Get(strategy: request.Strategy);
+            // Get handler definition to use as delegate method ..
+            EnsembleStrategyHandler handler = EnsembleStrategies.Get(strategy: request.Strategy);
 
-            // Invoke the handler to get the strategy ..
+            // Invoke the handler to get the result containing the selected models ..
             return handler(modelRegistry: this.modelRegistry);
         }
 
         /// <summary>
         /// Creates a custom ensemble of models that match the required capabilities specified in the request.
         /// </summary>
-        /// <param name="request">The ensemble router request containing the required capabilities.</param>
-        /// <returns>An EnsembleRouterResult containing the selected models.</returns>
+        /// <param name="request">The ensemble dispatch request containing the required capabilities.</param>
+        /// <returns see cref="EnsembleDispatchResult">Selected model descriptor(s).</returns>
         /// <exception cref="InvalidOperationException">Thrown if no required capabilities are specified or if no models match the requested capabilities.</exception>
-        private EnsembleRouterResult BuildCustomEnsemble(EnsembleRouterRequest request)
+        private EnsembleDispatchResult BuildCustomEnsemble(EnsembleDispatchRequest request)
         {
             if (request.RequiredCapabilities is null || request.RequiredCapabilities.Count == 0)
             {
@@ -64,7 +62,7 @@ namespace OpenAIApiClient.Orchestration.Routing
                 throw new InvalidOperationException("No model(s) match the requested capabilities.");
             }
 
-            return new EnsembleRouterResult(models: models);
+            return new EnsembleDispatchResult(models: models);
         }
     }
 }
