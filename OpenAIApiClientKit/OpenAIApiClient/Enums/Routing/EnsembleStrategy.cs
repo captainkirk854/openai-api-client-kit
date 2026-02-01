@@ -1,10 +1,10 @@
-﻿// <copyright file="EnsembleRoutingStrategy.cs" company="854 Things (tm)">
+﻿// <copyright file="EnsembleStrategy.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Enums
+namespace OpenAIApiClient.Enums.Routing
 {
-    public enum EnsembleRoutingStrategy
+    public enum EnsembleStrategy
     {
         Reasoning,
         Vision,

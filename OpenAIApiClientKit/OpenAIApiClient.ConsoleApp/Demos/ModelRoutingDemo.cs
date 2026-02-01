@@ -5,6 +5,7 @@
 namespace OpenAIApiClient.ConsoleApp.Demos
 {
     using OpenAIApiClient.Enums;
+    using OpenAIApiClient.Enums.Routing;
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Orchestration.Routing;
     using OpenAIApiClient.Registries;
@@ -14,15 +15,15 @@ namespace OpenAIApiClient.ConsoleApp.Demos
     /// </summary>
     public static class ModelRoutingDemo
     {
-        private static readonly OpenAIModels ModelRegistry = new();
-        private static readonly SingleModelRouter SingleRouter = new(modelRegistry: ModelRegistry.Registry);
-        private static readonly EnsembleRouter EnsembleRouter = new(modelRegistry: ModelRegistry.Registry);
+        private static readonly OpenAIModels Models = new();
+        private static readonly SingleModelRouter SingleRouter = new(modelRegistry: Models.Registry);
+        private static readonly EnsembleRouter EnsembleRouter = new(modelRegistry: Models.Registry);
 
         public static void Run()
         {
-            Console.WriteLine("=== OpenAI Model Routing Demo ===");
+            Console.WriteLine("=== OpenAI Model Selection Plan Demo ===");
             Console.WriteLine("Choose an option:");
-            Console.WriteLine("1. Explicit Model Routing");
+            Console.WriteLine("1. Explicit Model Selection");
             Console.WriteLine("2. Best Reasoning Model");
             Console.WriteLine("3. Lowest Cost Chat Model");
             Console.WriteLine("4. Best Vision Model");
@@ -95,7 +96,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
 
             SingleModelRouterResult result = SingleRouter.Route(new SingleModelRouterRequest
             {
-                Strategy = ModelRoutingStrategy.Explicit,
+                Strategy = SingleModelStrategy.Explicit,
                 ExplicitModel = model,
             });
 
@@ -109,7 +110,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         {
             SingleModelRouterResult result = SingleRouter.Route(new SingleModelRouterRequest
             {
-                Strategy = ModelRoutingStrategy.BestReasoning,
+                Strategy = SingleModelStrategy.BestReasoning,
             });
 
             PrintSingleResult("Best Reasoning Model", result);
@@ -122,7 +123,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         {
             SingleModelRouterResult result = SingleRouter.Route(new SingleModelRouterRequest
             {
-                Strategy = ModelRoutingStrategy.LowestCost,
+                Strategy = SingleModelStrategy.LowestCost,
                 RequiredCapabilities = [ModelCapability.Chat],
             });
 
@@ -136,7 +137,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         {
             SingleModelRouterResult result = SingleRouter.Route(new SingleModelRouterRequest
             {
-                Strategy = ModelRoutingStrategy.BestVision,
+                Strategy = SingleModelStrategy.BestVision,
             });
 
             PrintSingleResult("Best Vision Model", result);
@@ -153,7 +154,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         {
             EnsembleRouterResult result = EnsembleRouter.Route(new EnsembleRouterRequest
             {
-                Strategy = EnsembleRoutingStrategy.Reasoning,
+                Strategy = EnsembleStrategy.Reasoning,
             });
 
             PrintEnsembleResult("Reasoning Ensemble", result);
@@ -166,7 +167,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         {
             EnsembleRouterResult result = EnsembleRouter.Route(new EnsembleRouterRequest
             {
-                Strategy = EnsembleRoutingStrategy.Vision,
+                Strategy = EnsembleStrategy.Vision,
             });
 
             PrintEnsembleResult("Vision Ensemble", result);
@@ -179,7 +180,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         {
             EnsembleRouterResult result = EnsembleRouter.Route(new EnsembleRouterRequest
             {
-                Strategy = EnsembleRoutingStrategy.CostOptimized,
+                Strategy = EnsembleStrategy.CostOptimized,
             });
 
             PrintEnsembleResult("Cost-Optimized Ensemble", result);
@@ -240,7 +241,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             }
 
             // Validate that enough models exist BEFORE routing
-            List<ModelDescriptor> matchingModels = [.. ModelRegistry.Registry.Values.Where(m => parsed.All(c => m.Capabilities.Contains(c)))];
+            List<ModelDescriptor> matchingModels = [.. Models.Registry.Values.Where(m => parsed.All(c => m.Capabilities.Contains(c)))];
 
             if (matchingModels.Count < minRequiredCount)
             {
@@ -250,7 +251,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
 
             EnsembleRouterResult result = EnsembleRouter.Route(new EnsembleRouterRequest
             {
-                Strategy = EnsembleRoutingStrategy.Custom,
+                Strategy = EnsembleStrategy.Custom,
                 ModelCount = minRequiredCount,
                 RequiredCapabilities = parsed,
             });

@@ -5,6 +5,7 @@
 namespace OpenAIApiClient.Orchestration.Routing
 {
     using OpenAIApiClient.Enums;
+    using OpenAIApiClient.Enums.Routing;
 
     /// <summary>
     /// Defines a request to the ensemble router for selecting appropriate models based on the specified criteria.
@@ -14,7 +15,7 @@ namespace OpenAIApiClient.Orchestration.Routing
         /// <summary>
         /// Gets the ensemble routing strategy (e.g., Reasoning, Vision, CostOptimized).
         /// </summary>
-        public EnsembleRoutingStrategy Strategy
+        public EnsembleStrategy Strategy
         {
             get;
             init;

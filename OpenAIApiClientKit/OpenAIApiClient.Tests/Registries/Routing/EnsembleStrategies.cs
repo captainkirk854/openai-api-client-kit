@@ -8,6 +8,7 @@ namespace OpenAIApiClient.Tests.Registries.Routing
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using OpenAIApiClient.Delegates;
     using OpenAIApiClient.Enums;
+    using OpenAIApiClient.Enums.Routing;
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Orchestration.Routing;
     using testClass = OpenAIApiClient.Registries.Routing.EnsembleStrategies;
@@ -29,14 +30,14 @@ namespace OpenAIApiClient.Tests.Registries.Routing
         [TestMethod]
         public void Registry_ShouldContainAllExpectedStrategies()
         {
-            EnsembleRoutingStrategy[] expected =
+            EnsembleStrategy[] expected =
             [
-                EnsembleRoutingStrategy.Reasoning,
-                EnsembleRoutingStrategy.Vision,
-                EnsembleRoutingStrategy.CostOptimized,
+                EnsembleStrategy.Reasoning,
+                EnsembleStrategy.Vision,
+                EnsembleStrategy.CostOptimized,
             ];
 
-            foreach (EnsembleRoutingStrategy strategy in expected)
+            foreach (EnsembleStrategy strategy in expected)
             {
                 Assert.IsTrue(testClass.Strategies.ContainsKey(strategy), $"Strategy {strategy} should be registered.");
             }
@@ -45,7 +46,7 @@ namespace OpenAIApiClient.Tests.Registries.Routing
         [TestMethod]
         public void Get_ShouldReturnStrategyDelegate()
         {
-            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleRoutingStrategy.Reasoning);
+            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleStrategy.Reasoning);
             Assert.IsNotNull(strategy);
         }
 
@@ -55,7 +56,7 @@ namespace OpenAIApiClient.Tests.Registries.Routing
             try
             {
                 // Fake strategy not in registry
-                testClass.Get((EnsembleRoutingStrategy)999);
+                testClass.Get((EnsembleStrategy)999);
                 Assert.Fail("Expected KeyNotFoundException was not thrown.");
             }
             catch (KeyNotFoundException)
@@ -70,7 +71,7 @@ namespace OpenAIApiClient.Tests.Registries.Routing
         [TestMethod]
         public void ReasoningEnsemble_ShouldReturnThreeModels()
         {
-            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleRoutingStrategy.Reasoning);
+            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleStrategy.Reasoning);
             EnsembleRouterResult result = strategy(modelRegistry: this.modelRegistry!);
             Assert.HasCount(3, result.Models);
         }
@@ -78,7 +79,7 @@ namespace OpenAIApiClient.Tests.Registries.Routing
         [TestMethod]
         public void ReasoningEnsemble_ShouldContainAReasoningModel()
         {
-            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleRoutingStrategy.Reasoning);
+            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleStrategy.Reasoning);
             EnsembleRouterResult result = strategy(modelRegistry: this.modelRegistry!);
 
             Assert.IsTrue(result.Models.Any(m => m.Capabilities.Contains(ModelCapability.Reasoning)), "Reasoning ensemble must include at least one reasoning model.");
@@ -87,7 +88,7 @@ namespace OpenAIApiClient.Tests.Registries.Routing
         [TestMethod]
         public void ReasoningEnsemble_ShouldContainAFastChatModel()
         {
-            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleRoutingStrategy.Reasoning);
+            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleStrategy.Reasoning);
             EnsembleRouterResult result = strategy(modelRegistry: this.modelRegistry!);
 
             Assert.IsTrue(result.Models.Any(m => m.Capabilities.Contains(ModelCapability.Chat)), "Reasoning ensemble must include a fast chat model.");
@@ -99,7 +100,7 @@ namespace OpenAIApiClient.Tests.Registries.Routing
         [TestMethod]
         public void VisionEnsemble_ShouldReturnTwoModels()
         {
-            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleRoutingStrategy.Vision);
+            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleStrategy.Vision);
             EnsembleRouterResult result = strategy(modelRegistry: this.modelRegistry!);
 
             Assert.HasCount(2, result.Models);
@@ -108,7 +109,7 @@ namespace OpenAIApiClient.Tests.Registries.Routing
         [TestMethod]
         public void VisionEnsemble_ShouldContainVisionModel()
         {
-            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleRoutingStrategy.Vision);
+            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleStrategy.Vision);
             EnsembleRouterResult result = strategy(modelRegistry: this.modelRegistry!);
 
             Assert.IsTrue(result.Models.Any(m => m.Capabilities.Contains(ModelCapability.Vision)), "Vision ensemble must include a vision-capable model.");
@@ -117,7 +118,7 @@ namespace OpenAIApiClient.Tests.Registries.Routing
         [TestMethod]
         public void VisionEnsemble_ShouldContainFastChatModel()
         {
-            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleRoutingStrategy.Vision);
+            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleStrategy.Vision);
             EnsembleRouterResult result = strategy(modelRegistry: this.modelRegistry!);
 
             Assert.IsTrue(result.Models.Any(m => m.Capabilities.Contains(ModelCapability.Chat)), "Vision ensemble must include a fast chat model.");
@@ -129,7 +130,7 @@ namespace OpenAIApiClient.Tests.Registries.Routing
         [TestMethod]
         public void CostOptimizedEnsemble_ShouldReturnThreeModels()
         {
-            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleRoutingStrategy.CostOptimized);
+            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleStrategy.CostOptimized);
             EnsembleRouterResult result = strategy(modelRegistry: this.modelRegistry!);
 
             Assert.HasCount(3, result.Models);
@@ -138,7 +139,7 @@ namespace OpenAIApiClient.Tests.Registries.Routing
         [TestMethod]
         public void CostOptimizedEnsemble_ShouldContainLowCostModel()
         {
-            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleRoutingStrategy.CostOptimized);
+            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleStrategy.CostOptimized);
             EnsembleRouterResult result = strategy(modelRegistry: this.modelRegistry!);
 
             Assert.IsTrue(result.Models.Any(m => m.Capabilities.Contains(ModelCapability.LowCost)), "Cost-optimized ensemble must include a low-cost model.");
@@ -147,7 +148,7 @@ namespace OpenAIApiClient.Tests.Registries.Routing
         [TestMethod]
         public void CostOptimizedEnsemble_ShouldContainHighPerformanceModel()
         {
-            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleRoutingStrategy.CostOptimized);
+            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleStrategy.CostOptimized);
             EnsembleRouterResult result = strategy(modelRegistry: this.modelRegistry!);
 
             Assert.IsTrue(result.Models.Any(m => m.Capabilities.Contains(ModelCapability.HighPerformance)), "Cost-optimized ensemble must include a high-performance model.");
@@ -159,7 +160,7 @@ namespace OpenAIApiClient.Tests.Registries.Routing
         [TestMethod]
         public void ReasoningEnsemble_FirstModelShouldBeHighPerformanceReasoning()
         {
-            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleRoutingStrategy.Reasoning);
+            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleStrategy.Reasoning);
             EnsembleRouterResult result = strategy(modelRegistry: this.modelRegistry!);
 
             ModelDescriptor first = result.Models[0];
@@ -171,7 +172,7 @@ namespace OpenAIApiClient.Tests.Registries.Routing
         [TestMethod]
         public void VisionEnsemble_FirstModelShouldBeHighPerformanceVision()
         {
-            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleRoutingStrategy.Vision);
+            EnsembleRoutingStrategyHandler strategy = testClass.Get(EnsembleStrategy.Vision);
             EnsembleRouterResult result = strategy(modelRegistry: this.modelRegistry!);
 
             ModelDescriptor first = result.Models[0];

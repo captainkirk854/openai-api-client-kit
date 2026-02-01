@@ -5,6 +5,7 @@
 namespace OpenAIApiClient.Tests.Orchestration
 {
     using OpenAIApiClient.Enums;
+    using OpenAIApiClient.Enums.Routing;
     using OpenAIApiClient.Helpers.General;
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Orchestration;
@@ -66,7 +67,7 @@ namespace OpenAIApiClient.Tests.Orchestration
                 UseEnsemble = false,
                 Prompt = "Hello",
                 OutputFormat = OutputFormat.PlainText,
-                SingleModelRequest = new SingleModelRouterRequest { Strategy = ModelRoutingStrategy.BestReasoning },
+                SingleModelRequest = new SingleModelRouterRequest { Strategy = SingleModelStrategy.BestReasoning },
             };
 
             // Act
@@ -106,7 +107,7 @@ namespace OpenAIApiClient.Tests.Orchestration
                 OutputFormat = OutputFormat.PlainText,
                 SingleModelRequest = new SingleModelRouterRequest
                                      {
-                                        Strategy = ModelRoutingStrategy.LowestCost,
+                                        Strategy = SingleModelStrategy.LowestCost,
                                      },
             };
 
@@ -150,7 +151,7 @@ namespace OpenAIApiClient.Tests.Orchestration
                 UseEnsemble = true,
                 Prompt = prompt,
                 OutputFormat = OutputFormat.PlainText,
-                EnsembleRequest = new EnsembleRouterRequest { Strategy = EnsembleRoutingStrategy.Reasoning },
+                EnsembleRequest = new EnsembleRouterRequest { Strategy = EnsembleStrategy.Reasoning },
             };
 
             // Act
@@ -197,7 +198,7 @@ namespace OpenAIApiClient.Tests.Orchestration
                 UseEnsemble = true,
                 Prompt = prompt,
                 OutputFormat = OutputFormat.PlainText,
-                EnsembleRequest = new EnsembleRouterRequest { Strategy = EnsembleRoutingStrategy.Reasoning },
+                EnsembleRequest = new EnsembleRouterRequest { Strategy = EnsembleStrategy.Reasoning },
             };
 
             // Act

@@ -6,6 +6,7 @@ namespace OpenAIApiClient.Registries.Routing
 {
     using OpenAIApiClient.Delegates;
     using OpenAIApiClient.Enums;
+    using OpenAIApiClient.Enums.Routing;
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Orchestration.Routing;
 
@@ -14,18 +15,18 @@ namespace OpenAIApiClient.Registries.Routing
         /// <summary>
         /// Dictionary mapping routing strategies to their handler implementations.
         /// </summary>
-        public static readonly IReadOnlyDictionary<ModelRoutingStrategy, SingleModelRoutingStrategyHandler> Strategies =
-            new Dictionary<ModelRoutingStrategy, SingleModelRoutingStrategyHandler>
+        public static readonly IReadOnlyDictionary<SingleModelStrategy, SingleModelRoutingStrategyHandler> Strategies =
+            new Dictionary<SingleModelStrategy, SingleModelRoutingStrategyHandler>
             {
-                [ModelRoutingStrategy.Explicit] = RouteExplicit,
-                [ModelRoutingStrategy.LowestCost] = RouteLowestCost,
-                [ModelRoutingStrategy.HighestPerformance] = RouteHighestPerformance,
-                [ModelRoutingStrategy.BestReasoning] = RouteBestReasoning,
-                [ModelRoutingStrategy.BestVision] = RouteBestVision,
-                [ModelRoutingStrategy.BestAudioIn] = RouteBestAudioIn,
-                [ModelRoutingStrategy.BestAudioOut] = RouteBestAudioOut,
-                [ModelRoutingStrategy.Embedding] = RouteEmbedding,
-                [ModelRoutingStrategy.Moderation] = RouteModeration,
+                [SingleModelStrategy.Explicit] = RouteExplicit,
+                [SingleModelStrategy.LowestCost] = RouteLowestCost,
+                [SingleModelStrategy.HighestPerformance] = RouteHighestPerformance,
+                [SingleModelStrategy.BestReasoning] = RouteBestReasoning,
+                [SingleModelStrategy.BestVision] = RouteBestVision,
+                [SingleModelStrategy.BestAudioIn] = RouteBestAudioIn,
+                [SingleModelStrategy.BestAudioOut] = RouteBestAudioOut,
+                [SingleModelStrategy.Embedding] = RouteEmbedding,
+                [SingleModelStrategy.Moderation] = RouteModeration,
             };
 
         /// <summary>
@@ -34,7 +35,7 @@ namespace OpenAIApiClient.Registries.Routing
         /// <param name="strategy"></param>
         /// <returns>ModelRoutingStrategyHandler.</returns>
         /// <exception cref="KeyNotFoundException">Thrown if the strategy has not been registered.</exception>
-        public static SingleModelRoutingStrategyHandler Get(ModelRoutingStrategy strategy)
+        public static SingleModelRoutingStrategyHandler Get(SingleModelStrategy strategy)
         {
             if (!Strategies.TryGetValue(strategy, out SingleModelRoutingStrategyHandler? handler))
             {

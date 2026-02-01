@@ -6,6 +6,7 @@ namespace OpenAIApiClient.Registries.Routing
 {
     using OpenAIApiClient.Delegates;
     using OpenAIApiClient.Enums;
+    using OpenAIApiClient.Enums.Routing;
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Orchestration.Routing;
 
@@ -17,12 +18,12 @@ namespace OpenAIApiClient.Registries.Routing
         /// <summary>
         /// Dictionary mapping ensemble routing strategies to their corresponding strategy implementations and ultimately their associated models.
         /// </summary>
-        public static readonly IReadOnlyDictionary<EnsembleRoutingStrategy, EnsembleRoutingStrategyHandler> Strategies =
-            new Dictionary<EnsembleRoutingStrategy, EnsembleRoutingStrategyHandler>
+        public static readonly IReadOnlyDictionary<EnsembleStrategy, EnsembleRoutingStrategyHandler> Strategies =
+            new Dictionary<EnsembleStrategy, EnsembleRoutingStrategyHandler>
             {
-                [EnsembleRoutingStrategy.Reasoning] = BuildReasoningEnsemble,
-                [EnsembleRoutingStrategy.Vision] = BuildVisionEnsemble,
-                [EnsembleRoutingStrategy.CostOptimized] = BuildCostOptimizedEnsemble,
+                [EnsembleStrategy.Reasoning] = BuildReasoningEnsemble,
+                [EnsembleStrategy.Vision] = BuildVisionEnsemble,
+                [EnsembleStrategy.CostOptimized] = BuildCostOptimizedEnsemble,
             };
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace OpenAIApiClient.Registries.Routing
         /// <param name="strategy"></param>
         /// <returns cref="EnsembleRoutingStrategyHandler">Strategy Handler.</returns>
         /// <exception cref="KeyNotFoundException">Thrown if strategy not registered.</exception>
-        public static EnsembleRoutingStrategyHandler Get(EnsembleRoutingStrategy strategy)
+        public static EnsembleRoutingStrategyHandler Get(EnsembleStrategy strategy)
         {
             if (!Strategies.TryGetValue(strategy, out EnsembleRoutingStrategyHandler? handler))
             {

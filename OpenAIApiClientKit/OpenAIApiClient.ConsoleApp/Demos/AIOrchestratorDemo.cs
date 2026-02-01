@@ -5,6 +5,7 @@
 namespace OpenAIApiClient.ConsoleApp.Demos
 {
     using OpenAIApiClient.Enums;
+    using OpenAIApiClient.Enums.Routing;
     using OpenAIApiClient.Helpers.General;
     using OpenAIApiClient.Orchestration;
     using OpenAIApiClient.Orchestration.Execution;
@@ -49,7 +50,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 OutputFormat = OutputFormat.PlainText,
                 SingleModelRequest = new SingleModelRouterRequest
                 {
-                    Strategy = ModelRoutingStrategy.BestReasoning,
+                    Strategy = SingleModelStrategy.BestReasoning,
                 },
             };
 
@@ -66,7 +67,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 OutputFormat = OutputFormat.PlainText,
                 SingleModelRequest = new SingleModelRouterRequest
                 {
-                    Strategy = ModelRoutingStrategy.Explicit,
+                    Strategy = SingleModelStrategy.Explicit,
                     ExplicitModel = OpenAIModel.GPT4o_Mini,
                 },
             };
@@ -84,7 +85,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 OutputFormat = OutputFormat.PlainText,
                 EnsembleRequest = new EnsembleRouterRequest
                 {
-                    Strategy = EnsembleRoutingStrategy.Reasoning,
+                    Strategy = EnsembleStrategy.Reasoning,
                 },
             };
 
@@ -101,7 +102,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 OutputFormat = OutputFormat.Table,
                 EnsembleRequest = new EnsembleRouterRequest
                 {
-                    Strategy = EnsembleRoutingStrategy.Custom,
+                    Strategy = EnsembleStrategy.Custom,
                     RequiredCapabilities =
                     [
                         ModelCapability.Text,

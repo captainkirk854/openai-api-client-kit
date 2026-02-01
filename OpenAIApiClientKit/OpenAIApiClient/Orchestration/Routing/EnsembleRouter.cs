@@ -6,6 +6,7 @@ namespace OpenAIApiClient.Orchestration.Routing
 {
     using OpenAIApiClient.Delegates;
     using OpenAIApiClient.Enums;
+    using OpenAIApiClient.Enums.Routing;
     using OpenAIApiClient.Interfaces.Orchestration.Routing;
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Registries.Routing;
@@ -29,7 +30,7 @@ namespace OpenAIApiClient.Orchestration.Routing
             ArgumentNullException.ThrowIfNull(request);
 
             // Special case for the 'Custom' strategy ..
-            if (request.Strategy == EnsembleRoutingStrategy.Custom)
+            if (request.Strategy == EnsembleStrategy.Custom)
             {
                 return this.BuildCustomEnsemble(request: request);
             }

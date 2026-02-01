@@ -5,6 +5,7 @@
 namespace OpenAIApiClient.Orchestration.Routing
 {
     using OpenAIApiClient.Enums;
+    using OpenAIApiClient.Enums.Routing;
 
     /// <summary>
     /// Defines a request to the single model router for selecting an appropriate model based on the specified criteria.
@@ -14,7 +15,7 @@ namespace OpenAIApiClient.Orchestration.Routing
         /// <summary>
         /// Gets the routing strategy to use (e.g., BestReasoning, LowestCost, Explicit).
         /// </summary>
-        public ModelRoutingStrategy Strategy
+        public SingleModelStrategy Strategy
         {
             get;
             init;

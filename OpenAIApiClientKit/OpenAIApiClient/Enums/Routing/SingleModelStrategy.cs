@@ -1,10 +1,10 @@
-﻿// <copyright file="ModelRoutingStrategy.cs" company="854 Things (tm)">
+﻿// <copyright file="SingleModelStrategy.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Enums
+namespace OpenAIApiClient.Enums.Routing
 {
-    public enum ModelRoutingStrategy
+    public enum SingleModelStrategy
     {
         LowestCost,
         HighestPerformance,
