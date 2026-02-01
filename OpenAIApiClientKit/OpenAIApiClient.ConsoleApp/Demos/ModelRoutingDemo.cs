@@ -6,9 +6,8 @@ namespace OpenAIApiClient.ConsoleApp.Demos
 {
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Orchestration.Routing;
     using OpenAIApiClient.Registries;
-    using OpenAIApiClient.Routing.Ensemble;
-    using OpenAIApiClient.Routing.SingleModel;
 
     /// <summary>
     /// Ensemble and Single Model Routing Demo.
@@ -94,7 +93,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 return;
             }
 
-            SingleModelRouterResult result = SingleRouter.Route(new SingleModelContext
+            SingleModelRouterResult result = SingleRouter.Route(new SingleModelRouterRequest
             {
                 Strategy = ModelRoutingStrategy.Explicit,
                 ExplicitModel = model,
@@ -108,7 +107,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// </summary>
         private static void RunBestReasoning()
         {
-            SingleModelRouterResult result = SingleRouter.Route(new SingleModelContext
+            SingleModelRouterResult result = SingleRouter.Route(new SingleModelRouterRequest
             {
                 Strategy = ModelRoutingStrategy.BestReasoning,
             });
@@ -121,7 +120,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// </summary>
         private static void RunLowestCostChat()
         {
-            SingleModelRouterResult result = SingleRouter.Route(new SingleModelContext
+            SingleModelRouterResult result = SingleRouter.Route(new SingleModelRouterRequest
             {
                 Strategy = ModelRoutingStrategy.LowestCost,
                 RequiredCapabilities = [ModelCapability.Chat],
@@ -135,7 +134,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// </summary>
         private static void RunBestVision()
         {
-            SingleModelRouterResult result = SingleRouter.Route(new SingleModelContext
+            SingleModelRouterResult result = SingleRouter.Route(new SingleModelRouterRequest
             {
                 Strategy = ModelRoutingStrategy.BestVision,
             });
@@ -152,7 +151,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// </summary>
         private static void RunReasoningEnsemble()
         {
-            EnsembleRouterResult result = EnsembleRouter.Route(new EnsembleContext
+            EnsembleRouterResult result = EnsembleRouter.Route(new EnsembleRouterRequest
             {
                 Strategy = EnsembleRoutingStrategy.Reasoning,
             });
@@ -165,7 +164,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// </summary>
         private static void RunVisionEnsemble()
         {
-            EnsembleRouterResult result = EnsembleRouter.Route(new EnsembleContext
+            EnsembleRouterResult result = EnsembleRouter.Route(new EnsembleRouterRequest
             {
                 Strategy = EnsembleRoutingStrategy.Vision,
             });
@@ -178,7 +177,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// </summary>
         private static void RunCostOptimizedEnsemble()
         {
-            EnsembleRouterResult result = EnsembleRouter.Route(new EnsembleContext
+            EnsembleRouterResult result = EnsembleRouter.Route(new EnsembleRouterRequest
             {
                 Strategy = EnsembleRoutingStrategy.CostOptimized,
             });
@@ -207,7 +206,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             List<ModelCapability> parsed = [];
             List<string> invalid = [];
 
-            foreach (var part in rawParts)
+            foreach (string part in rawParts)
             {
                 if (Enum.TryParse(part, ignoreCase: true, out ModelCapability cap))
                 {
@@ -231,10 +230,10 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 return;
             }
 
-            Console.WriteLine("How many models do you want?");
-            var countInput = Console.ReadLine();
+            Console.WriteLine("What's the minimum number of required model(s)?");
+            string? countInput = Console.ReadLine();
 
-            if (!int.TryParse(countInput, out var count) || count <= 0)
+            if (!int.TryParse(countInput, out int minRequiredCount) || minRequiredCount <= 0)
             {
                 Console.WriteLine("Invalid number.");
                 return;
@@ -243,16 +242,16 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             // Validate that enough models exist BEFORE routing
             List<ModelDescriptor> matchingModels = [.. ModelRegistry.Registry.Values.Where(m => parsed.All(c => m.Capabilities.Contains(c)))];
 
-            if (matchingModels.Count < count)
+            if (matchingModels.Count < minRequiredCount)
             {
-                Console.WriteLine($"Only {matchingModels.Count} models match those capabilities, but {count} were requested.");
+                Console.WriteLine($"Only {matchingModels.Count} model(s) match those capabilities, but a minimum of {minRequiredCount} model(s) were requested.");
                 return;
             }
 
-            EnsembleRouterResult result = EnsembleRouter.Route(new EnsembleContext
+            EnsembleRouterResult result = EnsembleRouter.Route(new EnsembleRouterRequest
             {
                 Strategy = EnsembleRoutingStrategy.Custom,
-                ModelCount = count,
+                ModelCount = minRequiredCount,
                 RequiredCapabilities = parsed,
             });
 

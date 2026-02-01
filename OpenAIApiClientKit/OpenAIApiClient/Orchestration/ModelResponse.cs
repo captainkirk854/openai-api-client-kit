@@ -4,8 +4,12 @@
 
 namespace OpenAIApiClient.Orchestration
 {
+    using System.Collections.Generic;
     using OpenAIApiClient.Models.Registries;
 
+    /// <summary>
+    /// Model response details.
+    /// </summary>
     public sealed class ModelResponse
     {
         /// <summary>
@@ -69,6 +73,16 @@ namespace OpenAIApiClient.Orchestration
         {
             get;
             init;
+        }
+
+        /// <summary>
+        /// Wraps a single ModelResponse into a list.
+        /// </summary>
+        /// <param name="modelResponse"></param>
+        /// <returns>a list containing the single ModelResponse.</returns>
+        internal static IReadOnlyList<ModelResponse> WrapSingleResponseAsList(ModelResponse modelResponse)
+        {
+            return [modelResponse];
         }
     }
 }

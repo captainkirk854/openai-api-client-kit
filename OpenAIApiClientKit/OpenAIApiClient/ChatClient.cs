@@ -18,9 +18,7 @@ namespace OpenAIApiClient
     /// </summary>
     public class ChatClient
     {
-        // ---------------------------------------------------------------------
         // String Constants (centralised for maintainability)
-        // ---------------------------------------------------------------------
         private const string BaseOpenAIApiUrl = "https://api.openai.com/v1/";
         private const string AuthSchema = "Bearer";
         private const string MediaTypeJson = "application/json";
@@ -29,9 +27,7 @@ namespace OpenAIApiClient
         private const string ServerSentEventDoneMarker = "[DONE]";
         private const string RetryAfterResponseHeader = "Retry-After";
 
-        // ---------------------------------------------------------------------
         // Client Fields
-        // ---------------------------------------------------------------------
         private readonly HttpClient httpClient;
         private readonly JsonSerializerOptions jsonOptions;
         private readonly int maxRetries;

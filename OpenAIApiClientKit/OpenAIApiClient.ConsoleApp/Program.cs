@@ -99,8 +99,6 @@ namespace OpenAIApiClient.ConsoleApp
             // Get best model response for the prompt ..
             await Demos.BestModelResponseDemo.GetBestModelResponseAsync(client: client, prompt: prompt, cts: cts);
 
-            await Demos.BestModelResponseDemo.GetBestModelResponseAsyncNew(client: client, prompt: prompt, cts: cts);
-
             Console.WriteLine("Press Enter to continue..");
             Console.ReadLine();
         }

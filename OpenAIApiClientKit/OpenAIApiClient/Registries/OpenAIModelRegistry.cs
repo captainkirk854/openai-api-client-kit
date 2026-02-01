@@ -31,7 +31,7 @@ namespace OpenAIApiClient.Registries
         ///   - Resultant registry is immutable and validated.
         /// Pricing values are placeholders and should be updated with actual costs as per OpenAI's pricing documentation. The costs are represented in
         /// USD per 1 token (e.g. an input token cost set to: 0.0000015m = $0.0000015 ), so they may need to be adjusted based on the specific pricing
-        /// structure provided by OpenAI (https://openai.com/api/pricing/, https://platform.openai.com/docs/pricing)
+        /// structure provided by OpenAI (https://openai.com/api/pricing/, https://platform.openai.com/docs/pricing, https://pricepertoken.com/pricing-page/provider/openai)
         /// This registry can be easily extended to include additional models as they are released by OpenAI.
         /// </remarks>
         public OpenAIModelRegistry()

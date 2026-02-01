@@ -5,7 +5,11 @@
 namespace OpenAIApiClient.Orchestration
 {
     using OpenAIApiClient.Enums;
+    using OpenAIApiClient.Models.Chat.Request;
 
+    /// <summary>
+    /// Defines the context of a prompt being sent to the AI model.
+    /// </summary>
     public sealed class PromptContext
     {
         /// <summary>
@@ -18,15 +22,6 @@ namespace OpenAIApiClient.Orchestration
         } = string.Empty;
 
         /// <summary>
-        /// Gets the set of capabilities required from the model to process this prompt.
-        /// </summary>
-        public IReadOnlySet<ModelCapability> RequiredCapabilities
-        {
-            get;
-            init;
-        } = new HashSet<ModelCapability>();
-
-        /// <summary>
         /// Gets the desired output format.
         /// </summary>
         public OutputFormat? OutputFormat
@@ -36,30 +31,12 @@ namespace OpenAIApiClient.Orchestration
         }
 
         /// <summary>
-        /// Gets the maximum acceptable latency for processing this prompt.
+        /// Gets the chat completion request details.
         /// </summary>
-        public TimeSpan? MaxLatency
+        public ChatCompletionRequest Request
         {
             get;
             init;
-        }
-
-        /// <summary>
-        /// Gets the maximum acceptable cost for processing this prompt.
-        /// </summary>
-        public decimal? MaxCost
-        {
-            get;
-            init;
-        }
-
-        /// <summary>
-        /// Gets additional metadata associated with the prompt.
-        /// </summary>
-        public IDictionary<string, object> Metadata
-        {
-            get;
-            init;
-        } = new Dictionary<string, object>();
+        } = default!;
     }
 }

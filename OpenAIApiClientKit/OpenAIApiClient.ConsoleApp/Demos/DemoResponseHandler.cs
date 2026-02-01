@@ -5,7 +5,8 @@
 namespace OpenAIApiClient.ConsoleApp.Demos
 {
     using System.Text;
-    using OpenAIApiClient.OrchestrationNEW04;
+    using OpenAIApiClient.Interfaces.Orchestration;
+    using OpenAIApiClient.Orchestration;
 
     /// <summary>
     /// Defines a demo response handler for processing model responses.

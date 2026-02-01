@@ -6,7 +6,7 @@ namespace OpenAIApiClient.Delegates
 {
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Registries;
-    using OpenAIApiClient.Routing.Ensemble;
+    using OpenAIApiClient.Orchestration.Routing;
 
     /// <summary>
     /// Ensemble routing strategy handler delegate which, when implemented, builds an ensemble of models.

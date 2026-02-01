@@ -6,7 +6,7 @@ namespace OpenAIApiClient.Delegates
 {
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Registries;
-    using OpenAIApiClient.Routing.SingleModel;
+    using OpenAIApiClient.Orchestration.Routing;
 
-    public delegate SingleModelRouterResult SingleModelRoutingStrategyHandler(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelContext request);
+    public delegate SingleModelRouterResult SingleModelRoutingStrategyHandler(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelRouterRequest request);
 }

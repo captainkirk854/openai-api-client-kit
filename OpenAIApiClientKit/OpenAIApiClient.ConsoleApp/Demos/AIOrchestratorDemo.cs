@@ -6,7 +6,9 @@ namespace OpenAIApiClient.ConsoleApp.Demos
 {
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Helpers.General;
-    using OpenAIApiClient.OrchestrationNEW04;
+    using OpenAIApiClient.Orchestration;
+    using OpenAIApiClient.Orchestration.Execution;
+    using OpenAIApiClient.Orchestration.Routing;
     using OpenAIApiClient.Registries;
 
     public static class AIOrchestratorDemo
@@ -34,7 +36,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             ClientRequestBuilder requestBuilder = new();
 
             // Create the orchestrator using all the components ..
-            AIOrchestrator orchestrator = new(singleModelRouter: singleModelRouter, ensembleRouter: ensembleRouter, singleModelExecutor: singleModelExecutor, ensembleExecutor: ensembleExecutor, requestBuilder: requestBuilder, responseHandler: responseHandler);
+            Orchestrator orchestrator = new(singleModelRouter: singleModelRouter, ensembleRouter: ensembleRouter, singleModelExecutor: singleModelExecutor, ensembleExecutor: ensembleExecutor, requestBuilder: requestBuilder, responseHandler: responseHandler);
 
             // ------------------------------------------------------------
             // Run a single-model request
