@@ -37,8 +37,8 @@ namespace OpenAIApiClient.ConsoleApp
                 Console.WriteLine("Which demo would you like to run?");
                 Console.WriteLine("1. Model Prompt Demo");
                 Console.WriteLine("2. Best Model Response Demo");
-                Console.WriteLine("3. Model Routing Demo");
-                Console.WriteLine("4. AI Orchestration Demo");
+                Console.WriteLine("3. Model Strategy Dispatch Demo");
+                Console.WriteLine("4. Orchestration Demo");
 
                 Console.Write("Enter choice (1-4): ");
                 string? demoChoice = Console.ReadLine();

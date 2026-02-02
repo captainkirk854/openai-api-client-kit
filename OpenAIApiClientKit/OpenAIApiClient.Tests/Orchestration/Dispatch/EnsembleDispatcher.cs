@@ -9,16 +9,17 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Orchestration.Dispatch;
     using OpenAIApiClient.Registries.Dispatch;
+    using testClass = OpenAIApiClient.Orchestration.Dispatch.EnsembleDispatcher;
 
     [TestClass]
-    public sealed class EnsembleDispatcherTests
+    public sealed class EnsembleDispatcher
     {
         [TestMethod]
         public void Evaluate_Throws_WhenRequestIsNull()
         {
             // Arrange
             Dictionary<OpenAIModel, ModelDescriptor> registry = [];
-            EnsembleDispatcher dispatcher = new(registry);
+            testClass dispatcher = new(registry);
 
             // Act & Assert
             try
@@ -49,7 +50,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
             EnsembleStrategies.Register(strategy: EnsembleStrategy.Reasoning, handler: _ => expected); // EnsembleStrategies.Register(strategy: EnsembleStrategy.Reasoning, handler: (IReadOnlyDictionary<OpenAIModel, ModelDescriptor> _) => expected);
 
             // Create the dispatcher ..
-            EnsembleDispatcher dispatcher = new(registry);
+            testClass dispatcher = new(registry);
 
             // Define the request ..
             EnsembleDispatchRequest request = new()
@@ -86,7 +87,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
             };
 
             // Create the dispatcher ..
-            EnsembleDispatcher dispatcher = new(registry);
+            testClass dispatcher = new(registry);
 
             // Define the request ..
             EnsembleDispatchRequest request = new()
@@ -110,7 +111,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
         {
             // Arrange
             Dictionary<OpenAIModel, ModelDescriptor> registry = [];
-            EnsembleDispatcher dispatcher = new(registry);
+            testClass dispatcher = new(registry);
 
             EnsembleDispatchRequest request = new()
             {
@@ -142,7 +143,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
             };
 
             // Create the dispatcher ..
-            EnsembleDispatcher dispatcher = new(registry);
+            testClass dispatcher = new(registry);
 
             // Define the request ..
             EnsembleDispatchRequest request = new()
