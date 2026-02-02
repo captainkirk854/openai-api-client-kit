@@ -9,6 +9,10 @@ namespace OpenAIApiClient.Registries.Dispatch
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Orchestration.Dispatch;
 
+    /// <summary>
+    /// Registry for single‑model dispatching strategies.
+    /// Maps a <see cref="SingleModelStrategy"/> to its corresponding handler delegate.
+    /// </summary>
     public static class SingleModelStrategies
     {
         /// <summary>
@@ -29,11 +33,28 @@ namespace OpenAIApiClient.Registries.Dispatch
             };
 
         /// <summary>
-        /// Fetches the routing strategy handler for the specified strategy.
+        /// An internal registry storing custom single model strategy handlers.
         /// </summary>
-        /// <param name="strategy"></param>
-        /// <returns>ModelRoutingStrategyHandler.</returns>
-        /// <exception cref="KeyNotFoundException">Thrown if the strategy has not been registered.</exception>
+        private static readonly Dictionary<SingleModelStrategy, SingleModelStrategyHandler> InternalRegistry = [];
+
+        /// <summary>
+        /// Registers or replaces a strategy handler for the given single‑model strategy.
+        /// </summary>
+        /// <param name="strategy">The strategy key.</param>
+        /// <param name="handler">The handler delegate to register.</param>
+        public static void Register(SingleModelStrategy strategy, SingleModelStrategyHandler handler)
+        {
+            ArgumentNullException.ThrowIfNull(handler);
+
+            InternalRegistry[strategy] = handler;
+        }
+
+        /// <summary>
+        /// Retrieves the handler for the given strategy.
+        /// </summary>
+        /// <param name="strategy">The strategy to retrieve.</param>
+        /// <returns cref="SingleModelStrategyHandler">The registered handler.</returns>
+        /// <exception cref="KeyNotFoundException">Thrown if no handler is registered for the strategy.</exception>
         public static SingleModelStrategyHandler Get(SingleModelStrategy strategy)
         {
             if (!Strategies.TryGetValue(strategy, out SingleModelStrategyHandler? handler))

@@ -10,7 +10,8 @@ namespace OpenAIApiClient.Registries.Dispatch
     using OpenAIApiClient.Orchestration.Dispatch;
 
     /// <summary>
-    /// A (extendable) registry of ensemble routing strategies mapped to their implementations.
+    /// Registry for Ensemble dispatching strategies.
+    /// Maps an <see cref="EnsembleStrategy"/> to its corresponding handler delegate.
     /// </summary>
     public static class EnsembleStrategies
     {
@@ -26,11 +27,28 @@ namespace OpenAIApiClient.Registries.Dispatch
             };
 
         /// <summary>
-        /// Gets the ensemble strategy for the specified routing strategy.
+        /// An internal registry storing custom ensemble strategy handlers.
         /// </summary>
-        /// <param name="strategy"></param>
-        /// <returns cref="EnsembleStrategyHandler">Strategy Handler.</returns>
-        /// <exception cref="KeyNotFoundException">Thrown if strategy not registered.</exception>
+        private static readonly Dictionary<EnsembleStrategy, EnsembleStrategyHandler> InternalRegistry = [];
+
+        /// <summary>
+        /// Registers or replaces a strategy handler for the given ensemble strategy.
+        /// Allows unit test code to register fake handlers.
+        /// </summary>
+        /// <param name="strategy">The strategy key.</param>
+        /// <param name="handler">The handler delegate to register.</param>
+        public static void Register(EnsembleStrategy strategy, EnsembleStrategyHandler handler)
+        {
+            ArgumentNullException.ThrowIfNull(handler);
+            InternalRegistry[strategy] = handler;
+        }
+
+        /// <summary>
+        /// Retrieves the handler for the given strategy.
+        /// </summary>
+        /// <param name="strategy">The strategy to retrieve.</param>
+        /// <returns cref="EnsembleStrategyHandler">The registered handler.</returns>
+        /// <exception cref="KeyNotFoundException">Thrown if no handler is registered for the strategy.</exception>
         public static EnsembleStrategyHandler Get(EnsembleStrategy strategy)
         {
             if (!Strategies.TryGetValue(strategy, out EnsembleStrategyHandler? handler))
@@ -54,24 +72,24 @@ namespace OpenAIApiClient.Registries.Dispatch
         private static EnsembleDispatchResult BuildReasoningEnsemble(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> registry)
         {
             // Select the highest performing reasoning model ..
-            ModelDescriptor reasoning = registry.Values
+            ModelDescriptor? reasoning = registry.Values
                 .Where(m => m.Capabilities.Contains(ModelCapability.Reasoning))
                 .OrderByDescending(m => m.Capabilities.Contains(ModelCapability.HighPerformance))
-                .First();
+                .FirstOrDefault() ?? throw new InvalidOperationException("No Reasoning-capable model found in the registry.");
 
             // .. a fast chat model that is also not the selected reasoning model ..
-            ModelDescriptor fast = registry.Values
+            ModelDescriptor? fast = registry.Values
                 .Where(m => m.Capabilities.Contains(ModelCapability.Chat))
                 .Where(m => m.Name != reasoning.Name)
                 .OrderBy(m => m.Pricing.InputTokenCost)
-                .First();
+                .FirstOrDefault() ?? throw new InvalidOperationException("No Chat-capable model found in the registry.");
 
             // .. and a cost-effective critic model that is neither the reasoning nor the fast model ..
-            ModelDescriptor critic = registry.Values
-                .Where(m => m.Capabilities.Contains(ModelCapability.Reasoning))
+            ModelDescriptor? critic = registry.Values
+                .Where(m => m.Capabilities.Contains(ModelCapability.Critic))
                 .Where(m => m.Name != fast.Name && m.Name != reasoning.Name)
                 .OrderBy(m => m.Pricing.InputTokenCost)
-                .First();
+                .FirstOrDefault() ?? throw new InvalidOperationException("No Critic-capable model found in the registry.");
 
             return new EnsembleDispatchResult(models:
              [
@@ -90,17 +108,17 @@ namespace OpenAIApiClient.Registries.Dispatch
         private static EnsembleDispatchResult BuildVisionEnsemble(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry)
         {
             // Select the highest performing vision model ..
-            ModelDescriptor vision = modelRegistry.Values
+            ModelDescriptor? vision = modelRegistry.Values
                 .Where(m => m.Capabilities.Contains(ModelCapability.Vision))
                 .OrderByDescending(m => m.Capabilities.Contains(ModelCapability.HighPerformance))
-                .First();
+                .FirstOrDefault() ?? throw new InvalidOperationException("No Vision-capable model found in the registry.");
 
             // .. and the most cost-effective chat model that is not the selected vision model ..
-            ModelDescriptor fastText = modelRegistry.Values
+            ModelDescriptor? fastText = modelRegistry.Values
                 .Where(m => m.Capabilities.Contains(ModelCapability.Chat))
                 .Where(m => m.Name != vision.Name)
                 .OrderBy(m => m.Pricing.InputTokenCost)
-                .First();
+                .FirstOrDefault() ?? throw new InvalidOperationException("No Chat-capable model found in the registry.");
 
             return new EnsembleDispatchResult(models:
             [
@@ -116,24 +134,24 @@ namespace OpenAIApiClient.Registries.Dispatch
         private static EnsembleDispatchResult BuildCostOptimizedEnsemble(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry)
         {
             // Select the most cost-effective low-cost model ..
-            ModelDescriptor low = modelRegistry.Values
+            ModelDescriptor? low = modelRegistry.Values
                 .Where(m => m.Capabilities.Contains(ModelCapability.LowCost))
                 .OrderBy(m => m.Pricing.InputTokenCost)
-                .First();
+                .FirstOrDefault() ?? throw new InvalidOperationException("No LowCost-capable model found in the registry.");
 
             // .. a mid-tier chat model that is not the selected low-cost model ..
-            ModelDescriptor mid = modelRegistry.Values
+            ModelDescriptor? mid = modelRegistry.Values
                 .Where(m => m.Capabilities.Contains(ModelCapability.Chat))
                 .Where(m => m.Name != low.Name)
                 .OrderBy(m => m.Pricing.InputTokenCost)
-                .First();
+                .FirstOrDefault() ?? throw new InvalidOperationException("No Chat-capable model found in the registry.");
 
             // .. and a high-performance model that is neither the low-cost nor the mid-tier chat model ..
-            ModelDescriptor high = modelRegistry.Values
+            ModelDescriptor? high = modelRegistry.Values
                 .Where(m => m.Capabilities.Contains(ModelCapability.HighPerformance))
                 .Where(m => m.Name != low.Name && m.Name != mid.Name)
                 .OrderBy(m => m.Pricing.InputTokenCost)
-                .First();
+                .FirstOrDefault() ?? throw new InvalidOperationException("No HighPerformance-capable model found in the registry.");
 
             return new EnsembleDispatchResult(models:
             [
