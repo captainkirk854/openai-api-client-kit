@@ -26,19 +26,14 @@ namespace OpenAIApiClient.Orchestration.Dispatch
         /// <exception cref="InvalidOperationException">Thrown if the context does not specify an explicit model.</exception>
         public SingleModelDispatchResult Evaluate(SingleModelDispatchRequest request)
         {
-            // Define the single model context from the request ..
-            SingleModelDispatchRequest context = new()
-            {
-                ExplicitModel = request.ExplicitModel,
-                RequiredCapabilities = request.RequiredCapabilities,
-                Strategy = request.Strategy,
-            };
+            // Validate input ..
+            ArgumentNullException.ThrowIfNull(request);
 
             // Get the actual strategy handler definition to use as delegate ..
-            SingleModelStrategyHandler handler = SingleModelStrategies.Get(strategy: context.Strategy);
+            SingleModelStrategyHandler handler = SingleModelStrategies.Get(strategy: request.Strategy);
 
             // Invoke the handler to get the result containing the selected model ..
-            return handler(modelRegistry: this.modelRegistry, request: context);
+            return handler(modelRegistry: this.modelRegistry, request: request);
         }
     }
 }

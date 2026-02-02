@@ -25,6 +25,7 @@ namespace OpenAIApiClient.Orchestration.Dispatch
         /// <returns see cref="EnsembleDispatchResult">Selected model descriptor(s).</returns>
         public EnsembleDispatchResult Evaluate(EnsembleDispatchRequest request)
         {
+            // Validate input ..
             ArgumentNullException.ThrowIfNull(request);
 
             // Special case for the 'Custom' strategy ..

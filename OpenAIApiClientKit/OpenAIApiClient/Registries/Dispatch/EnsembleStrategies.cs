@@ -16,20 +16,20 @@ namespace OpenAIApiClient.Registries.Dispatch
     public static class EnsembleStrategies
     {
         /// <summary>
-        /// Dictionary mapping ensemble routing strategies to their corresponding strategy implementations and ultimately their associated models.
+        /// Dictionary mapping ensemble-model dispatch strategies to their specific delegate handler implementations.
         /// </summary>
-        public static readonly IReadOnlyDictionary<EnsembleStrategy, EnsembleStrategyHandler> Strategies =
+        public static readonly IReadOnlyDictionary<EnsembleStrategy, EnsembleStrategyHandler> DefaultHandlerStrategies =
             new Dictionary<EnsembleStrategy, EnsembleStrategyHandler>
             {
                 [EnsembleStrategy.Reasoning] = BuildReasoningEnsemble,
                 [EnsembleStrategy.Vision] = BuildVisionEnsemble,
-                [EnsembleStrategy.CostOptimized] = BuildCostOptimizedEnsemble,
+                [EnsembleStrategy.CostOptimized] = BuildCostOptimisedEnsemble,
             };
 
         /// <summary>
         /// An internal registry storing custom ensemble strategy handlers.
         /// </summary>
-        private static readonly Dictionary<EnsembleStrategy, EnsembleStrategyHandler> InternalRegistry = [];
+        private static readonly Dictionary<EnsembleStrategy, EnsembleStrategyHandler> CustomHandlerStrategies = [];
 
         /// <summary>
         /// Registers or replaces a strategy handler for the given ensemble strategy.
@@ -37,26 +37,44 @@ namespace OpenAIApiClient.Registries.Dispatch
         /// </summary>
         /// <param name="strategy">The strategy key.</param>
         /// <param name="handler">The handler delegate to register.</param>
-        public static void Register(EnsembleStrategy strategy, EnsembleStrategyHandler handler)
+        public static void RegisterCustomHandler(EnsembleStrategy strategy, EnsembleStrategyHandler handler)
         {
             ArgumentNullException.ThrowIfNull(handler);
-            InternalRegistry[strategy] = handler;
+
+            // Register handler for strategy in custom registry ..
+            CustomHandlerStrategies[strategy] = handler;
         }
 
         /// <summary>
-        /// Retrieves the handler for the given strategy.
+        /// Retrieves the handler for a given strategy.
         /// </summary>
         /// <param name="strategy">The strategy to retrieve.</param>
         /// <returns cref="EnsembleStrategyHandler">The registered handler.</returns>
         /// <exception cref="KeyNotFoundException">Thrown if no handler is registered for the strategy.</exception>
         public static EnsembleStrategyHandler Get(EnsembleStrategy strategy)
         {
-            if (!Strategies.TryGetValue(strategy, out EnsembleStrategyHandler? handler))
+            // 1. Override and use Custom strategy handler if found for strategy ..
+            if (CustomHandlerStrategies.TryGetValue(strategy, out EnsembleStrategyHandler? customHandler))
             {
-                throw new KeyNotFoundException($"No ensemble strategy registered for: {strategy}");
+                return customHandler;
             }
 
-            return handler;
+            // 2. Otherwise use Default strategy handler if found for strategy ..
+            if (DefaultHandlerStrategies.TryGetValue(strategy, out EnsembleStrategyHandler? defaultHandler))
+            {
+                return defaultHandler;
+            }
+
+            throw new KeyNotFoundException($"No ensemble strategy handler registered for: {strategy}");
+        }
+
+        /// <summary>
+        /// Clears all custom strategy overrides.
+        /// Useful for unit tests to ensure isolation.
+        /// </summary>
+        public static void ClearCustomHandlers()
+        {
+            CustomHandlerStrategies.Clear();
         }
 
         // -------------------------
@@ -68,7 +86,7 @@ namespace OpenAIApiClient.Registries.Dispatch
         /// fast chat, and cost-effective critic model descriptors from the registry.
         /// </summary>
         /// <param name="registry"></param>
-        /// <returns>An EnsembleRouterResult with selected reasoning, chat, and critic model descriptors.</returns>
+        /// <returns cref="EnsembleDispatchResult"> with selected reasoning, chat, and critic model descriptors.</returns>
         private static EnsembleDispatchResult BuildReasoningEnsemble(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> registry)
         {
             // Select the highest performing reasoning model ..
@@ -104,7 +122,7 @@ namespace OpenAIApiClient.Registries.Dispatch
         /// model from the registry.
         /// </summary>
         /// <param name="modelRegistry"></param>
-        /// <returns>An EnsembleRouterResult with selected vision and chat model descriptors.</returns>
+        /// <returns cref="EnsembleDispatchResult"> with selected vision and chat model descriptors.</returns>
         private static EnsembleDispatchResult BuildVisionEnsemble(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry)
         {
             // Select the highest performing vision model ..
@@ -130,8 +148,8 @@ namespace OpenAIApiClient.Registries.Dispatch
         /// <summary>
         /// Creates an ensemble of models optimized for cost by selecting low-cost, chat-capable, and high-performance model descriptors from the registry.
         /// </summary>
-        /// <returns>An EnsembleRouterResult containing the selected model descriptors.</returns>
-        private static EnsembleDispatchResult BuildCostOptimizedEnsemble(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry)
+        /// <returns cref="EnsembleDispatchResult"> with selected cost-optimised, chat-capable, and high-performance model descriptors.</returns>
+        private static EnsembleDispatchResult BuildCostOptimisedEnsemble(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry)
         {
             // Select the most cost-effective low-cost model ..
             ModelDescriptor? low = modelRegistry.Values

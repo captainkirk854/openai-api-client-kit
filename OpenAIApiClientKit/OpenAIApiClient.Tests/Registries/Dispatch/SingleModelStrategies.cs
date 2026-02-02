@@ -47,7 +47,7 @@ namespace OpenAIApiClient.Tests.Registries.Dispatch
 
             foreach (SingleModelStrategy strategy in expected)
             {
-                Assert.IsTrue(testClass.Strategies.ContainsKey(strategy), $"Strategy {strategy} should be registered.");
+                Assert.IsTrue(testClass.DefaultHandlerStrategies.ContainsKey(strategy), $"Strategy {strategy} should be registered.");
             }
         }
 
@@ -68,7 +68,7 @@ namespace OpenAIApiClient.Tests.Registries.Dispatch
             }
             catch (KeyNotFoundException ex)
             {
-                Assert.Contains("No routing strategy registered", ex.Message);
+                Assert.Contains("No single model strategy handler registered for:", ex.Message);
             }
         }
 

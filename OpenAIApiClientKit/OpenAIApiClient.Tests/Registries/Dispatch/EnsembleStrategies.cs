@@ -41,7 +41,7 @@ namespace OpenAIApiClient.Tests.Registries.Dispatch
 
             foreach (EnsembleStrategy strategy in expected)
             {
-                Assert.IsTrue(testClass.Strategies.ContainsKey(strategy), $"Strategy {strategy} should be registered.");
+                Assert.IsTrue(testClass.DefaultHandlerStrategies.ContainsKey(strategy), $"Strategy {strategy} should be registered.");
             }
         }
 

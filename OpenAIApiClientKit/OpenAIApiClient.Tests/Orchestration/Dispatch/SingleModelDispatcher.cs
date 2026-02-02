@@ -1,4 +1,4 @@
-﻿// <copyright file="EnsembleDispatcher.cs" company="854 Things (tm)">
+﻿// <copyright file="SingleModelDispatcher.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -9,10 +9,10 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Orchestration.Dispatch;
     using OpenAIApiClient.Registries.Dispatch;
-    using testClass = OpenAIApiClient.Orchestration.Dispatch.EnsembleDispatcher;
+    using testClass = OpenAIApiClient.Orchestration.Dispatch.SingleModelDispatcher;
 
     [TestClass]
-    public sealed class EnsembleDispatcher
+    public sealed class SingleModelDispatcher
     {
         [TestInitialize]
         public void Init()
@@ -50,7 +50,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
         }
 
         [TestMethod]
-        public void Evaluate_UsesStrategyHandler_ForCustomStrategy()
+        public void Evaluate_UsesRegisteredStrategyHandler()
         {
             // Arrange
             OpenAIModel modelToUse = OpenAIModel.GPT4o;
@@ -59,129 +59,153 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
             // Create a model descriptor for testing
             ModelDescriptor model = CreateDescriptor(model: modelToUse, cost: 1.0m, capabilities: capabilities);
 
-            // Create a registry with a single model ..
+            // Create a registry with the model
             Dictionary<OpenAIModel, ModelDescriptor> registry = new()
             {
                 { modelToUse, model },
             };
 
-            // Register a custom handler for the Reasoning strategy ..
-            EnsembleDispatchResult expected = new(models: [model]);
-            EnsembleStrategies.RegisterCustomHandler(strategy: EnsembleStrategy.Reasoning, handler: _ => expected); // EnsembleStrategies.Register(strategy: EnsembleStrategy.Reasoning, handler: (IReadOnlyDictionary<OpenAIModel, ModelDescriptor> _) => expected);
+            // Create the expected result
+            SingleModelDispatchResult expected = new(model);
+
+            // Register a custom strategy handler
+            SingleModelStrategies.RegisterCustomHandler(strategy: SingleModelStrategy.BestReasoning, handler: (_, _) => expected);
 
             // Create the dispatcher ..
             testClass dispatcher = new(registry);
 
             // Define the request ..
-            EnsembleDispatchRequest request = new()
+            SingleModelDispatchRequest request = new()
             {
-                Strategy = EnsembleStrategy.Custom,
+                Strategy = SingleModelStrategy.BestReasoning,
+            };
+
+            // Act
+            SingleModelDispatchResult result = dispatcher.Evaluate(request);
+
+            // Assert
+            Assert.AreSame(expected, result);
+        }
+
+        [TestMethod]
+        public void Evaluate_PassesCorrectContextToHandler()
+        {
+            // Arrange
+            OpenAIModel modelToUse = OpenAIModel.GPT4o;
+            IReadOnlyList<ModelCapability> capabilities = [ModelCapability.Chat];
+            SingleModelStrategy strategy = SingleModelStrategy.LowestCost;
+
+            // Create a model descriptor for testing
+            ModelDescriptor model = CreateDescriptor(modelToUse, 1.0m, capabilities);
+
+            // Create a registry with the model
+            Dictionary<OpenAIModel, ModelDescriptor> registry = new()
+            {
+                { modelToUse, model },
+            };
+
+            // Initialise ..
+            SingleModelDispatchRequest? capturedContext = null;
+
+            // Register a custom strategy handler
+            SingleModelStrategies.RegisterCustomHandler(strategy: strategy, handler:
+                (_, req) =>
+                {
+                    capturedContext = req;
+                    return new SingleModelDispatchResult(model: model);
+                });
+
+            // Create the dispatcher ..
+            testClass dispatcher = new(registry);
+
+            SingleModelDispatchRequest request = new()
+            {
+                Strategy = strategy,
+                ExplicitModel = modelToUse,
                 RequiredCapabilities = capabilities,
-                ExplicitModels = [modelToUse],
             };
 
             // Act
-            EnsembleDispatchResult result = dispatcher.Evaluate(request);
+            dispatcher.Evaluate(request);
 
             // Assert
-            Assert.HasCount(1, result.Models);
-            Assert.AreSame(expected.Models[0], result.Models[0]);
+            Assert.IsNotNull(capturedContext);
+            Assert.AreEqual(modelToUse, capturedContext!.ExplicitModel);
+            Assert.AreEqual(strategy, capturedContext.Strategy);
+            Assert.IsTrue(capturedContext.RequiredCapabilities!.Contains(ModelCapability.Chat));
         }
 
         [TestMethod]
-        public void Evaluate_CustomStrategy_ReturnsModelsMatchingCapabilities()
+        public void Evaluate_Throws_WhenStrategyNotRegistered()
         {
             // Arrange
+            OpenAIModel modelToUse = OpenAIModel.GPT4o;
+            IReadOnlyList<ModelCapability> capabilities = [ModelCapability.Reasoning];
 
-            // Create model descriptors ..
-            ModelDescriptor m1 = CreateDescriptor(OpenAIModel.GPT4o, 1.0m, [ModelCapability.Reasoning, ModelCapability.Vision]);
-            ModelDescriptor m2 = CreateDescriptor(OpenAIModel.GPT4o_Mini, 0.5m, [ModelCapability.Reasoning]);
-            ModelDescriptor m3 = CreateDescriptor(OpenAIModel.GPT4_Turbo, 2.0m, [ModelCapability.Vision]);
+            // Create a model descriptor for testing
+            ModelDescriptor model = CreateDescriptor(modelToUse, 1.0m, capabilities);
 
-            // Create a registry with the models ..
+            // Create a registry with the model
             Dictionary<OpenAIModel, ModelDescriptor> registry = new()
             {
-                { OpenAIModel.GPT4o, m1 },
-                { OpenAIModel.GPT4o_Mini, m2 },
-                { OpenAIModel.GPT4_Turbo, m3 },
+                { modelToUse, model },
             };
 
             // Create the dispatcher ..
             testClass dispatcher = new(registry);
 
-            // Define the request ..
-            EnsembleDispatchRequest request = new()
+            SingleModelDispatchRequest request = new()
             {
-                Strategy = EnsembleStrategy.Custom,
-                RequiredCapabilities = [ModelCapability.Reasoning],
+                Strategy = (SingleModelStrategy)999, // use an undefined and unregistered strategy
             };
 
-            // Act
-            EnsembleDispatchResult result = dispatcher.Evaluate(request);
-
-            // Assert
-            Assert.HasCount(2, result.Models);
-            Assert.IsTrue(result.Models.Any(m => m.Name == m1.Name), "Expected model m1 was not found in the result set.");
-            Assert.IsTrue(result.Models.Any(m => m.Name == m2.Name), "Expected model m2 was not found in the result set.");
-            Assert.AreEqual(m2, result.Models[0]);
-        }
-
-        [TestMethod]
-        public void Evaluate_CustomStrategy_Throws_WhenNoCapabilitiesProvided()
-        {
-            // Arrange
-            Dictionary<OpenAIModel, ModelDescriptor> registry = [];
-            testClass dispatcher = new(registry);
-
-            EnsembleDispatchRequest request = new()
-            {
-                Strategy = EnsembleStrategy.Custom,
-                RequiredCapabilities = [],
-            };
-
-            // Act & Assert
+            // Act and assert ..
             try
             {
                 dispatcher.Evaluate(request);
-                Assert.Fail("Expected InvalidOperationException was not thrown.");
+                Assert.Fail("Expected KeyNotFoundException was not thrown.");
             }
-            catch (InvalidOperationException)
+            catch (KeyNotFoundException)
             {
                 // success
             }
         }
 
         [TestMethod]
-        public void Evaluate_CustomStrategy_Throws_WhenNoModelsMatch()
+        public void Evaluate_ReturnsHandlerResult()
         {
             // Arrange
-            ModelDescriptor m1 = CreateDescriptor(OpenAIModel.GPT4o, 1.0m, [ModelCapability.Reasoning]);
+            OpenAIModel modelToUse = OpenAIModel.GPT4o_Mini;
+            IReadOnlyList<ModelCapability> capabilities = [ModelCapability.Chat];
+            SingleModelStrategy strategy = SingleModelStrategy.HighestPerformance;
 
+            // Create a model descriptor for testing
+            ModelDescriptor model = CreateDescriptor(modelToUse, 1.0m, capabilities);
+
+            // Create a registry with the model
             Dictionary<OpenAIModel, ModelDescriptor> registry = new()
             {
-                { OpenAIModel.GPT4o, m1 },
+                { modelToUse, model },
             };
+
+            SingleModelDispatchResult expected = new(model);
+
+            // Register a custom strategy handler
+            SingleModelStrategies.RegisterCustomHandler(strategy: strategy, handler: (_, _) => expected); // lambda expression is implicitly type: (_, _) => expected
 
             // Create the dispatcher ..
             testClass dispatcher = new(registry);
 
-            // Define the request ..
-            EnsembleDispatchRequest request = new()
+            SingleModelDispatchRequest request = new()
             {
-                Strategy = EnsembleStrategy.Custom,
-                RequiredCapabilities = [ModelCapability.Vision],
+                Strategy = strategy,
             };
 
-            // Act & Assert
-            try
-            {
-                dispatcher.Evaluate(request);
-                Assert.Fail("Expected InvalidOperationException was not thrown.");
-            }
-            catch (InvalidOperationException)
-            {
-                // success
-            }
+            // Act
+            SingleModelDispatchResult result = dispatcher.Evaluate(request);
+
+            // Assert
+            Assert.AreSame(expected, result);
         }
 
         /// <summary>

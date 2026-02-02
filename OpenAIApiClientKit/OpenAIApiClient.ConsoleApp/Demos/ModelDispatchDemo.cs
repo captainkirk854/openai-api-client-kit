@@ -23,13 +23,13 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             Console.WriteLine("=== Model Dispatch and Selection Demo ===");
             Console.WriteLine("Choose an option:");
             Console.WriteLine("1. Explicit Model Selection");
-            Console.WriteLine("2. Best Reasoning Model");
-            Console.WriteLine("3. Lowest Cost Chat Model");
-            Console.WriteLine("4. Best Vision Model");
-            Console.WriteLine("5. Reasoning Ensemble");
-            Console.WriteLine("6. Vision Ensemble");
-            Console.WriteLine("7. Cost-Optimized Ensemble");
-            Console.WriteLine("8. Custom Ensemble");
+            Console.WriteLine("2. Find Best Reasoning Model");
+            Console.WriteLine("3. Find Lowest Cost Chat Model");
+            Console.WriteLine("4. Find Best Vision Model");
+            Console.WriteLine("5. Build Reasoning Ensemble");
+            Console.WriteLine("6. Build Vision Ensemble");
+            Console.WriteLine("7. Build Cost-Optimized Ensemble");
+            Console.WriteLine("8. Build Custom Ensemble");
             Console.Write("Enter choice: ");
 
             string? choice = Console.ReadLine();
