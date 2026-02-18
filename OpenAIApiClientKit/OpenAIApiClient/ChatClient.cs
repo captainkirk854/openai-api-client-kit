@@ -27,9 +27,16 @@ namespace OpenAIApiClient
         private const string ServerSentEventDoneMarker = "[DONE]";
         private const string RetryAfterResponseHeader = "Retry-After";
 
+        // Json Serialiser options ..
+        private static readonly JsonSerializerOptions DefaultJsonOptions =
+        new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = false,
+        };
+
         // Client Fields
         private readonly HttpClient httpClient;
-        private readonly JsonSerializerOptions jsonOptions;
         private readonly int maxRetries;
         private readonly TimeSpan baseDelay;
 
@@ -52,13 +59,15 @@ namespace OpenAIApiClient
             // Configure base API endpoint and authentication
             this.httpClient.BaseAddress = new Uri(BaseOpenAIApiUrl);
             this.httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme: AuthSchema, parameter: apiKey);
+        }
 
-            // Configure JSON serializer options
-            this.jsonOptions = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                WriteIndented = false,
-            };
+        /// <summary>
+        /// Gets or sets HttpContent.
+        /// </summary>
+        private StringContent? HttpContent
+        {
+            get;
+            set;
         }
 
         /// <summary>
@@ -69,24 +78,22 @@ namespace OpenAIApiClient
         /// <returns>The chat completion response.</returns>
         public async Task<ChatCompletionResponse?> CreateChatCompletionAsync(ChatCompletionRequest request, CancellationToken cancelToken = default)
         {
+            // Do not use streaming option ..
             request.Stream = false;
 
-            // Serialize request payload ..
-            string json = JsonSerializer.Serialize(value: request, options: this.jsonOptions);
-
-            // Prepare HTTP content ..
-            HttpContent httpContent = new StringContent(content: json, encoding: Encoding.UTF8, mediaType: MediaTypeJson);
+            // Serialise request payload convert it to Http content string ..
+            this.HttpContent = ConvertToHttpString(request: request);
 
             // Execute with retry logic ..
             return await this.ExecuteWithRetryAsync(
                 operation: async () =>
                 {
-                    HttpResponseMessage response = await this.httpClient.PostAsync(requestUri: ChatCompletionsEndpoint, content: httpContent, cancellationToken: cancelToken);
+                    HttpResponseMessage response = await this.httpClient.PostAsync(requestUri: ChatCompletionsEndpoint, content: this.HttpContent, cancellationToken: cancelToken);
                     response.EnsureSuccessStatusCode();
 
                     string body = await response.Content.ReadAsStringAsync(cancellationToken: cancelToken);
 
-                    return JsonSerializer.Deserialize<ChatCompletionResponse>(json: body, options: this.jsonOptions);
+                    return JsonSerializer.Deserialize<ChatCompletionResponse>(json: body, options: DefaultJsonOptions);
                 },
                 cancellationToken: cancelToken);
         }
@@ -99,19 +106,29 @@ namespace OpenAIApiClient
         /// <returns>An asynchronous stream of chat completion chunks.</returns>
         public async IAsyncEnumerable<ChatCompletionChunk> CreateChatCompletionStreamAsync(ChatCompletionRequest request, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancelToken = default)
         {
+            // Use streaming option ..
             request.Stream = true;
 
-            // Serialize request payload
-            string json = JsonSerializer.Serialize(value: request, options: this.jsonOptions);
-
-            // Prepare HTTP content
-            StringContent httpContent = new(content: json, encoding: Encoding.UTF8, mediaType: MediaTypeJson);
+            // Serialise request payload convert it to Http content string ..
+            this.HttpContent = ConvertToHttpString(request: request);
 
             // Wrap streaming in retry logic
-            await foreach (ChatCompletionChunk chunk in this.ExecuteStreamingWithRetryAsync(operation: () => this.SendStreamingRequestAsync(httpContent, cancelToken), cancellationToken: cancelToken))
+            await foreach (ChatCompletionChunk chunk in this.ExecuteStreamingWithRetryAsync(operation: () => this.SendStreamingRequestAsync(httpContent: this.HttpContent, cancellationToken: cancelToken), cancellationToken: cancelToken))
             {
                 yield return chunk;
             }
+        }
+
+        /// <summary>
+        /// Convert Request to Json Http String.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns see cref="StringContent">.</returns>
+        private static StringContent ConvertToHttpString(ChatCompletionRequest request)
+        {
+            // Prepare and return HTTP content ..
+            string json = JsonSerializer.Serialize(value: request, options: DefaultJsonOptions);
+            return new StringContent(content: json, encoding: Encoding.UTF8, mediaType: MediaTypeJson);
         }
 
         /// <summary>
@@ -299,7 +316,7 @@ namespace OpenAIApiClient
                 }
 
                 // Deserialize streamed chunk
-                ChatCompletionChunk? chunk = JsonSerializer.Deserialize<ChatCompletionChunk>(json: payload, options: this.jsonOptions);
+                ChatCompletionChunk? chunk = JsonSerializer.Deserialize<ChatCompletionChunk>(json: payload, options: DefaultJsonOptions);
                 if (chunk != null)
                 {
                     yield return chunk;

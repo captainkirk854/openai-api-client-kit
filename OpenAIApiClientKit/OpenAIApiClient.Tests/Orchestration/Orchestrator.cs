@@ -18,12 +18,12 @@ namespace OpenAIApiClient.Tests.Orchestration
     [TestClass]
     public class Orchestrator
     {
+        private ClientRequestBuilder requestBuilder = null!;
         private MockSingleModelRouter mockSingleModelRouter = null!;
         private MockEnsembleRouter mockEnsembleRouter = null!;
         private MockSingleModelExecutor mockSingleExecutor = null!;
         private MockEnsembleExecutor mockEnsembleExecutor = null!;
         private MockResponseHandler mockResponseHandler = null!;
-        private ClientRequestBuilder requestBuilder = null!;
         private testClass orchestrator = null!;
 
         private ModelDescriptor modelA = null!;
@@ -35,18 +35,18 @@ namespace OpenAIApiClient.Tests.Orchestration
             this.modelA = CreateModelDescriptor(OpenAIModel.GPT4o);
             this.modelB = CreateModelDescriptor(OpenAIModel.GPT4o_Mini);
 
+            this.requestBuilder = new ClientRequestBuilder();
             this.mockSingleModelRouter = new MockSingleModelRouter();
             this.mockEnsembleRouter = new MockEnsembleRouter();
             this.mockSingleExecutor = new MockSingleModelExecutor();
             this.mockEnsembleExecutor = new MockEnsembleExecutor();
             this.mockResponseHandler = new MockResponseHandler();
-            this.requestBuilder = new ClientRequestBuilder();
 
-            this.orchestrator = new testClass(singleModelDispatcher: this.mockSingleModelRouter,
+            this.orchestrator = new testClass(requestBuilder: this.requestBuilder,
+                                              singleModelDispatcher: this.mockSingleModelRouter,
                                               ensembleDispatcher: this.mockEnsembleRouter,
                                               singleModelExecutor: this.mockSingleExecutor,
                                               ensembleExecutor: this.mockEnsembleExecutor,
-                                              requestBuilder: this.requestBuilder,
                                               responseHandler: this.mockResponseHandler);
         }
 
@@ -60,11 +60,12 @@ namespace OpenAIApiClient.Tests.Orchestration
             this.mockSingleModelRouter.ReturnedModel = this.modelA;
             this.mockSingleExecutor.ResponseToReturn = new ModelResponse { Model = this.modelA, RawOutput = "ok", IsSuccessful = true };
             this.mockResponseHandler.ResponsesToReturn = [this.mockSingleExecutor.ResponseToReturn];
+            string prompt = "Hello";
 
             OrchestrationRequest request = new()
             {
                 UseEnsemble = false,
-                Prompt = "Hello",
+                Prompt = prompt,
                 OutputFormat = OutputFormat.PlainText,
                 SingleModelRequest = new SingleModelDispatchRequest { Strategy = SingleModelStrategy.BestReasoning },
             };
@@ -80,7 +81,7 @@ namespace OpenAIApiClient.Tests.Orchestration
             Assert.IsNull(this.mockEnsembleRouter.LastRequest);
 
             Assert.IsNotNull(this.mockSingleExecutor.LastCall);
-            Assert.AreEqual("Hello", this.mockSingleExecutor.LastCall.Value.context.Prompt);
+            Assert.IsTrue(this.mockSingleExecutor.LastCall.Value.request.Messages.Any(m => m.Content == prompt));
         }
 
         [TestMethod]

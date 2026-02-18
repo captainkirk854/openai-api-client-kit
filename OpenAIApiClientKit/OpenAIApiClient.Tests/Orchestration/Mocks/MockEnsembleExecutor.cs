@@ -4,15 +4,16 @@
 
 namespace OpenAIApiClient.Tests.Orchestration.Mocks
 {
+    using OpenAIApiClient.Helpers.General;
     using OpenAIApiClient.Interfaces.Orchestration.Execution;
     using OpenAIApiClient.Orchestration;
 
     public sealed class MockEnsembleExecutor : IEnsembleExecutor
     {
         /// <summary>
-        /// Gets the last orchestration context passed to the executor - only in mock class for test verification purposes.
+        /// Gets the last execution context passed to the executor - only in mock class for test verification purposes.
         /// </summary>
-        public OrchestrationContext? LastContext
+        public IExecutionContext? LastContext
         {
             get;
             private set;
@@ -27,7 +28,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
             set;
         } = default!;
 
-        public Task<IReadOnlyList<ModelResponse>> ExecuteAsync(OrchestrationContext context, CancellationToken token)
+        public Task<IReadOnlyList<ModelResponse>> ExecuteAsync(ClientRequestBuilder requestBuilder, IExecutionContext context, CancellationToken cancelToken)
         {
             this.LastContext = context;
             return Task.FromResult(this.ResponsesToReturn);

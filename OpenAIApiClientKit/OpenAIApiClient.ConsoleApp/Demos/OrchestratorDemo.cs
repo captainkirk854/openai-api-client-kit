@@ -21,6 +21,9 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             // Initialise model registry ..
             OpenAIModels models = new();
 
+            // Initialise base definition for request builder ..
+            ClientRequestBuilder requestBuilder = new ClientRequestBuilder().WithDefaults();
+
             // Initialise Dispatchers to select which model(s) to use ..
             SingleModelDispatcher singleModelDispatcher = new(modelRegistry: models.Registry);
             EnsembleDispatcher ensembleDispatcher = new(modelRegistry: models.Registry);
@@ -30,18 +33,15 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             EnsembleExecutor ensembleExecutor = new(singleModelExecutor: singleModelExecutor);
 
             // Define a model response handler ..
-            ResponseHandlerDemo responseHandler = new();
-
-            // Initialise the request builder
-            ClientRequestBuilder requestBuilder = new();
+            ResponseHandlerDemo responseHandlerDemo = new();
 
             // Create the orchestrator using all the components ..
-            Orchestrator orchestrator = new(singleModelDispatcher: singleModelDispatcher,
+            Orchestrator orchestrator = new(requestBuilder: requestBuilder,
+                                            singleModelDispatcher: singleModelDispatcher,
                                             ensembleDispatcher: ensembleDispatcher,
                                             singleModelExecutor: singleModelExecutor,
                                             ensembleExecutor: ensembleExecutor,
-                                            requestBuilder: requestBuilder,
-                                            responseHandler: responseHandler);
+                                            responseHandler: responseHandlerDemo);
 
             // ------------------------------------------------------------
             // Run a single-model request

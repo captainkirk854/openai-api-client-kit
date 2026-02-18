@@ -10,7 +10,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
     using OpenAIApiClient.Registries;
 
     /// <summary>
-    /// Ensemble and Single Model Dispatch Selection Demo.
+    /// Single and Ensemble Model Dispatch Selection Demo.
     /// </summary>
     public static class ModelDispatchDemo
     {
@@ -99,7 +99,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 ExplicitModel = model,
             });
 
-            PrintSingleResult("Explicit Routing", result);
+            PrintSingleResult("Dispatch Result using Explicit Strategy and Model", result);
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 Strategy = SingleModelStrategy.BestReasoning,
             });
 
-            PrintSingleResult("Best Reasoning Model", result);
+            PrintSingleResult("Dispatch Result for: Best Reasoning Model", result);
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 RequiredCapabilities = [ModelCapability.Chat],
             });
 
-            PrintSingleResult("Lowest Cost Chat Model", result);
+            PrintSingleResult("Dispatch Result for: Lowest Cost Chat Model", result);
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 Strategy = SingleModelStrategy.BestVision,
             });
 
-            PrintSingleResult("Best Vision Model", result);
+            PrintSingleResult("Dispatch Result for: Best Vision Model", result);
         }
 
         // -------------------------
@@ -156,7 +156,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 Strategy = EnsembleStrategy.Reasoning,
             });
 
-            PrintEnsembleResult("Reasoning Ensemble", result);
+            PrintEnsembleResult("Dispatch Result for: Reasoning Model Ensemble", result);
         }
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 Strategy = EnsembleStrategy.Vision,
             });
 
-            PrintEnsembleResult("Vision Ensemble", result);
+            PrintEnsembleResult("Dispatch Result for: Vision Model Ensemble", result);
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 Strategy = EnsembleStrategy.CostOptimized,
             });
 
-            PrintEnsembleResult("Cost-Optimized Ensemble", result);
+            PrintEnsembleResult("Dispatch Result for: Cost-Optimized Model Ensemble", result);
         }
 
         /// <summary>

@@ -21,13 +21,13 @@ namespace OpenAIApiClient.Orchestration.Execution
         /// <summary>
         /// Executes the given model with the provided prompt context.
         /// </summary>
-        /// <param name="model">The model descriptor.</param>
-        /// <param name="context">The prompt context.</param>
+        /// <param name="request">Chat Completion request.</param>
         /// <param name="cancelToken">Cancellation token.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains the model response.</returns>
-        public async Task<ModelResponse> ExecuteAsync(ModelDescriptor model, PromptContext context, CancellationToken cancelToken)
+        public async Task<ModelResponse> ExecuteAsync(ChatCompletionRequest request, CancellationToken cancelToken)
         {
-            ChatCompletionRequest request = context.Request;
+            // Initialise ..
+            ModelDescriptor model = request.ModelDescriptor;
 
             // Start timing ..
             Stopwatch sw = Stopwatch.StartNew();
@@ -43,7 +43,7 @@ namespace OpenAIApiClient.Orchestration.Execution
                 // Return successful response ..
                 if (response == null || response.Choices.Count == 0)
                 {
-                    throw new InvalidOperationException("The response from the model was null or contained no choices.");
+                    throw new InvalidOperationException("The response from the model was null or contained no response choices.");
                 }
                 return new ModelResponse
                 {
@@ -64,7 +64,6 @@ namespace OpenAIApiClient.Orchestration.Execution
                 return new ModelResponse
                 {
                     Model = model,
-                    RawOutput = string.Empty,
                     IsSuccessful = false,
                     ErrorMessage = ex.Message,
                     Latency = sw.Elapsed,

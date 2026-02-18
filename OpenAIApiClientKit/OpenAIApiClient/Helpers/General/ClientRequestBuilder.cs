@@ -42,10 +42,10 @@ namespace OpenAIApiClient.Helpers.General
     /// </remarks>
     public class ClientRequestBuilder
     {
+        // Initialise ..
         private readonly List<ChatMessage> messages = [];
         private readonly List<ChatMessage> developerMessages = []; // Optional developer messages (for Messages API compatibility)
         private readonly List<ToolCall> toolCalls = []; // Optional tool calls
-
         private string model = string.Empty;
 
         // Optional parameters ..
@@ -280,6 +280,38 @@ namespace OpenAIApiClient.Helpers.General
 
             return this;
         }
+
+        // -----------------------------
+        // Helper Method(s)
+        // -----------------------------
+
+        /// <summary>
+        /// Helper method to quick-set defaults.
+        /// </summary>
+        /// <returns>The current <see cref="ClientRequestBuilder"/> instance, enabling method chaining.</returns>
+        public ClientRequestBuilder WithDefaults()
+        {
+            return this
+                .AddSystemMessage("You are a helpful assistant that answers concisely.")
+                .UsingMaxTokens(1000);
+        }
+
+        /// <summary>
+        /// Helper method to quick-set model prompt and output format.
+        /// </summary>
+        /// <param name="prompt"></param>
+        /// <param name="format"></param>
+        /// <returns>The current <see cref="ClientRequestBuilder"/> instance, enabling method chaining.</returns>
+        public ClientRequestBuilder SetPromptAndFormat(string prompt, OutputFormat format)
+        {
+            return this
+                .AddUserMessage(input: prompt)
+                .SetOutputFormat(input: format);
+        }
+
+        // -----------------------------
+        // ChatCompletionRequest Builder Method
+        // -----------------------------
 
         /// <summary>
         /// Constructs a new instance of <see cref="ChatCompletionRequest"/> using the current builder settings.

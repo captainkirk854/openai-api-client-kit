@@ -5,6 +5,7 @@
 namespace OpenAIApiClient.Tests.Orchestration.Mocks
 {
     using OpenAIApiClient.Interfaces.Orchestration.Execution;
+    using OpenAIApiClient.Models.Chat.Request;
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Orchestration;
 
@@ -13,7 +14,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         /// <summary>
         /// Gets the last call made to the executor - only in mock for test verification purposes.
         /// </summary>
-        public (ModelDescriptor model, PromptContext context)? LastCall
+        public (ModelDescriptor model, ChatCompletionRequest request)? LastCall
         {
             get;
             private set;
@@ -31,13 +32,12 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         /// <summary>
         /// Executes the model with the given prompt context.
         /// </summary>
-        /// <param name="model"></param>
-        /// <param name="context"></param>
+        /// <param name="request"></param>
         /// <param name="token"></param>
         /// <returns see cref="ModelResponse">.</returns>
-        public Task<ModelResponse> ExecuteAsync(ModelDescriptor model, PromptContext context, CancellationToken token)
+        public Task<ModelResponse> ExecuteAsync(ChatCompletionRequest request, CancellationToken token)
         {
-            this.LastCall = (model, context);
+            this.LastCall = (request.ModelDescriptor, request);
             return Task.FromResult(this.ResponseToReturn);
         }
     }

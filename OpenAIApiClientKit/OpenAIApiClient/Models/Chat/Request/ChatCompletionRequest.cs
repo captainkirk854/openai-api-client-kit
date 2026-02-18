@@ -5,7 +5,10 @@
 namespace OpenAIApiClient.Models.Chat.Request
 {
     using System.Text.Json.Serialization;
+    using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Chat.Common;
+    using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Registries;
 
     public class ChatCompletionRequest
     {
@@ -102,6 +105,31 @@ namespace OpenAIApiClient.Models.Chat.Request
         {
             get;
             set;
+        }
+
+        /// <summary>
+        /// Gets OpenAIModel from model string (not to be deserialized).
+        /// </summary>
+        [JsonIgnore]
+        public OpenAIModel OpenAIModel
+        {
+            get
+            {
+                return OpenAIModelApis.FromApiString(apiModelId: this.Model);
+            }
+        }
+
+        /// <summary>
+        /// Gets ModelDescriptor for OpenAI model (not to be deserialized).
+        /// </summary>
+        [JsonIgnore]
+        public ModelDescriptor ModelDescriptor
+        {
+            get
+            {
+                OpenAIModels models = new();
+                return models.Get(model: this.OpenAIModel);
+            }
         }
     }
 }

@@ -4,11 +4,11 @@
 
 namespace OpenAIApiClient.Interfaces.Orchestration.Execution
 {
-    using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Models.Chat.Request;
     using OpenAIApiClient.Orchestration;
 
     public interface ISingleModelExecutor
     {
-        Task<ModelResponse> ExecuteAsync(ModelDescriptor model, PromptContext context, CancellationToken cancelToken);
+        Task<ModelResponse> ExecuteAsync(ChatCompletionRequest request, CancellationToken cancelToken);
     }
 }

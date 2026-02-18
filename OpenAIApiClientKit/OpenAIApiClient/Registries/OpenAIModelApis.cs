@@ -128,7 +128,7 @@ namespace OpenAIApiClient.Registries
                 return model;
             }
 
-            throw new ArgumentException($"Unknown API Model ID: {apiModelId}", nameof(apiModelId));
+            throw new ArgumentException($"Unknown API Model ID: [{apiModelId}]", nameof(apiModelId));
         }
 
         /// <summary>
