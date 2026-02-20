@@ -24,7 +24,7 @@ namespace OpenAIApiClient.Orchestration.Execution
         /// <param name="request">Chat Completion request.</param>
         /// <param name="cancelToken">Cancellation token.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains the model response.</returns>
-        public async Task<ModelResponse> ExecuteAsync(ChatCompletionRequest request, CancellationToken cancelToken)
+        public async Task<AIModelResponse> ExecuteAsync(ChatCompletionRequest request, CancellationToken cancelToken)
         {
             // Initialise ..
             ModelDescriptor model = request.ModelDescriptor;
@@ -45,7 +45,7 @@ namespace OpenAIApiClient.Orchestration.Execution
                 {
                     throw new InvalidOperationException("The response from the model was null or contained no response choices.");
                 }
-                return new ModelResponse
+                return new AIModelResponse
                 {
                     Model = model,
                     RawOutput = response.Choices[0].Message.Content!,
@@ -61,7 +61,7 @@ namespace OpenAIApiClient.Orchestration.Execution
                 sw.Stop();
 
                 // Return failed response ..
-                return new ModelResponse
+                return new AIModelResponse
                 {
                     Model = model,
                     IsSuccessful = false,

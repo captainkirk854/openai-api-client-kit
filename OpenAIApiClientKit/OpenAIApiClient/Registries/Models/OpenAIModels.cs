@@ -2,16 +2,38 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Registries
+namespace OpenAIApiClient.Registries.Models
 {
     using OpenAIApiClient.Enums;
+    using OpenAIApiClient.Interfaces.Registries;
     using OpenAIApiClient.Models.Chat.Response.Completion;
     using OpenAIApiClient.Models.Registries;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="OpenAIModels"/> class.
+    /// Provides a registry of available OpenAI models and their descriptors, including capabilities and pricing information.
     /// </summary>
-    public sealed class OpenAIModels
+    /// <remarks>Model registry is built in two phases:
+    ///
+    /// 1. Initialize each model key with its descriptor "Capabilities" and "Pricing" values only.
+    /// 2. Finalise registry by using dictionary key value to auto-inject the "yet-to-be-set" Model property value for each model descriptor.
+    ///
+    /// Registry design benefits:
+    /// - No repeated Model property assignments in descriptor as dictionary key is single source of truth
+    /// - No risk of mismatched keys
+    /// - Adding a new model is a single line
+    /// - The descriptor always knows its own model.
+    /// - Resultant registry is immutable and validated.
+    ///
+    /// Pricing values are placeholders and should be updated with actual costs as per OpenAI's pricing documentation.
+    /// The costs are represented in USD per 1 token (e.g. an input token cost set to: 0.0000015m = $0.0000015 ), so they may need to be
+    /// adjusted based on the specific pricing structure provided by OpenAI:
+    /// https://openai.com/api/pricing/
+    /// https://platform.openai.com/docs/pricing
+    /// https://pricepertoken.com/pricing-page/provider/openai
+    ///
+    /// This registry can be easily extended to include additional models as they are released by OpenAI.
+    /// </remarks>
+    public sealed class OpenAIModels : IAIModelRegistry
     {
         // Dictionary to hold model descriptors ..
         private readonly Dictionary<OpenAIModel, ModelDescriptor> models;
@@ -449,12 +471,21 @@ namespace OpenAIApiClient.Registries
         /// <summary>
         /// Gets the complete model registry dictionary ..
         /// </summary>
-        public Dictionary<OpenAIModel, ModelDescriptor> Registry => this.models;
+        /// <returns see cref="Dictionary(OpenAIModel, ModelDescriptor)">.</returns>
+        public Dictionary<OpenAIModel, ModelDescriptor> GetRegistry() => this.models;
 
         /// <summary>
         /// Gets all registered model descriptors ..
         /// </summary>
-        public IEnumerable<ModelDescriptor> All => this.models.Values;
+        /// <returns see cref="IEnumerable(ModelDescriptor)">.</returns>
+        public IEnumerable<ModelDescriptor> GetAll() => this.models.Values;
+
+        /// <summary>
+        /// Gets the model descriptor for a specified model by its unique name, or null if not found.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns see cref="ModelDescriptor">.</returns>
+        public ModelDescriptor? GetByName(string name) => this.models.Values.Where(m => m.Name.ToApiString() == name).FirstOrDefault();
 
         /// <summary>
         /// Gets the model descriptor for a specified model ..
@@ -462,5 +493,15 @@ namespace OpenAIApiClient.Registries
         /// <param name="model"></param>
         /// <returns><see cref="ModelDescriptor"/>.</returns>
         public ModelDescriptor Get(OpenAIModel model) => this.models[model];
+
+        /// <summary>
+        /// Returns all models that satisfy a capability predicate.
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns see cref="IEnumerable(ModelDescriptor)">.</returns>
+        public IEnumerable<ModelDescriptor> Find(Func<ModelDescriptor, bool> predicate)
+        {
+            return this.models.Values.Where(predicate);
+        }
     }
 }

@@ -9,6 +9,6 @@ namespace OpenAIApiClient.Interfaces.Orchestration.Execution
 
     public interface ISingleModelExecutor
     {
-        Task<ModelResponse> ExecuteAsync(ChatCompletionRequest request, CancellationToken cancelToken);
+        Task<AIModelResponse> ExecuteAsync(ChatCompletionRequest request, CancellationToken cancelToken);
     }
 }

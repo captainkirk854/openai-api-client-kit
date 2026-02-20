@@ -789,6 +789,106 @@ The result is a system that is:
 ```
 
 
+# Fluent Orchestrator Builder
+The Fluent Orchestrator Builder provides a clean, expressive, and extensible way to construct an AI orchestration pipeline. It combines a fluent configuration API with modular sub‑factories to keep the system flexible, testable, and easy to reason about.
+
+## Purpose
+The builder exists to:
+- Offer a single, fluent entry point for configuring orchestration
+- Allow easy overrides of internal components (registries, builders, dispatchers, executors)
+- Keep construction logic modular through small, focused sub‑factories
+- Maintain deterministic, registry‑driven orchestration
+- Support test isolation and dependency injection
+
+## Key Features
+### Fluent API
+The builder exposes a chainable configuration surface, the fullest possible example of which 
+looks like this, where every component is overridden:
+
+```
+var orchestrator = new OrchestratorBuilder()
+                       .WithClient(<ChatClient> client)
+                       .WithResponseHandler(<IResponseHandler> handler)
+                       .WithModelRegistry(<IAIModelRegistry> customRegistry)
+                       .WithRequestBuilder(<ClientRequestBuilder> customRequestBuilder)
+                       .WithSingleModelDispatcher(<ISingleModelDispatcher> customSingleModelDispatcher)
+                       .WithSingleModelExecutor(<ISingleModelExecutor> customSingleModelExecutor);
+                       .WithEnsembleDispatcher(<IEnsembleDispatcher> customEnsembleDispatcher)
+                       .WithEnsembleExecutor(<IEnsembleExecutor> customEnsembleExecutor);
+                       .Build();
+```
+
+The minimum configuration is as simple as the following, with the other options being defaulted internally:
+
+```
+var orchestrator = new OrchestratorBuilder()
+                       .WithClient(client)
+                       .WithResponseHandler(handler)
+                       .Build();
+```
+
+This makes orchestration setup readable and intuitive.
+
+### Sub‑Factories
+The builder delegates construction of internal components to dedicated factories:
+- ModelRegistryFactory
+- DispatcherFactory
+- ExecutorFactory
+- RequestBuilderFactory
+Each factory encapsulates a single responsibility, keeping the builder clean and the system modular.
+
+### Default‑with‑Override Pattern
+The builder provides sensible defaults for all components:
+- Default model registry
+- Default request builder
+- Default dispatchers
+- Default executors
+
+Users can override any component without affecting the rest of the pipeline.
+
+## Build Process
+The builder orchestrates the following steps:
+- Resolve the model registry
+- Use caller‑provided registry or default factory
+- Resolve the request builder
+- Use caller‑provided builder or default factory
+- Create dispatchers
+- Single‑model dispatcher
+- Ensemble dispatcher
+- Create executors
+- Single‑model executor
+- Ensemble executor
+- Assemble the orchestrator
+- Inject all components
+- Return a fully configured instance
+
+## Benefits
+### Readable and expressive
+The fluent API makes orchestration configuration easy to understand at a glance.
+
+### Modular and maintainable
+Sub‑factories isolate construction logic and reduce duplication.
+
+### Highly testable
+Each subsystem can be mocked or replaced independently.
+
+### Override‑friendly
+Users can plug in custom registries, request builders, dispatchers, or executors.
+
+### Deterministic
+The builder ensures consistent wiring of all components.
+
+### Extensible
+New factories or configuration steps can be added without breaking the API.
+
+## When to Use
+The Fluent Orchestrator Builder is ideal when:
+- You want a single, expressive entry point for orchestration setup
+- You need customizable orchestration profiles
+- You value architectural symmetry and clarity
+- You want to support multiple model registries or request builders
+- You require clean test isolation
+
 
 # 📄 License
 MIT License — free to use, modify, and distribute.

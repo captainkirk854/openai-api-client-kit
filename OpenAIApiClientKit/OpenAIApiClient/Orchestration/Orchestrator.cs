@@ -31,8 +31,8 @@ namespace OpenAIApiClient.Orchestration
                                      IResponseHandler responseHandler)
     {
         private readonly ClientRequestBuilder requestBuilder = requestBuilder;
-        private readonly ISingleModelDispatcher singleModelRouter = singleModelDispatcher;
-        private readonly IEnsembleDispatcher ensembleRouter = ensembleDispatcher;
+        private readonly ISingleModelDispatcher singleModelDispatcher = singleModelDispatcher;
+        private readonly IEnsembleDispatcher ensembleDispatcher = ensembleDispatcher;
         private readonly ISingleModelExecutor singleModelExecutor = singleModelExecutor;
         private readonly IEnsembleExecutor ensembleExecutor = ensembleExecutor;
         private readonly IResponseHandler responseHandler = responseHandler;
@@ -43,7 +43,7 @@ namespace OpenAIApiClient.Orchestration
         /// <param name="request"></param>
         /// <param name="cancelToken"></param>
         /// <returns>IReadOnlyList&lt;ModelResponse&gt;.</returns>
-        public async Task<IReadOnlyList<ModelResponse>> ProcessAsync(OrchestrationRequest request, CancellationToken cancelToken)
+        public async Task<IReadOnlyList<AIModelResponse>> ProcessAsync(OrchestrationRequest request, CancellationToken cancelToken)
         {
             // Append prompt and output format from orchestration request to chat request builder ..
             this.requestBuilder.SetPromptAndFormat(prompt: request.Prompt, format: request.OutputFormat);
@@ -52,13 +52,13 @@ namespace OpenAIApiClient.Orchestration
             IExecutionContext executionContext;
             if (request.UseEnsemble)
             {
-                EnsembleDispatchResult routerResult = this.ensembleRouter.Evaluate(request: request.EnsembleRequest!);
-                executionContext = new EnsembleExecutionContext(prompt: request.Prompt, outputFormat: request.OutputFormat, models: routerResult.Models);
+                EnsembleDispatchResult dispatchResult = this.ensembleDispatcher.Evaluate(request: request.EnsembleRequest!);
+                executionContext = new EnsembleExecutionContext(prompt: request.Prompt, outputFormat: request.OutputFormat, models: dispatchResult.Models);
             }
             else
             {
-                SingleModelDispatchResult routerResult = this.singleModelRouter.Evaluate(request: request.SingleModelRequest!);
-                executionContext = new SingleModelExecutionContext(prompt: request.Prompt, outputFormat: request.OutputFormat, model: routerResult.Model);
+                SingleModelDispatchResult dispatchResult = this.singleModelDispatcher.Evaluate(request: request.SingleModelRequest!);
+                executionContext = new SingleModelExecutionContext(prompt: request.Prompt, outputFormat: request.OutputFormat, model: dispatchResult.Model);
             }
 
             // Do we actually have more than one model to be used?
@@ -67,15 +67,15 @@ namespace OpenAIApiClient.Orchestration
             // Control Execution based on execution context (ensemble/single) ..
             if (isEnsemble)
             {
-                IReadOnlyList<ModelResponse> responses = await this.ensembleExecutor.ExecuteAsync(requestBuilder: this.requestBuilder, context: executionContext, cancelToken: cancelToken);
+                IReadOnlyList<AIModelResponse> responses = await this.ensembleExecutor.ExecuteAsync(requestBuilder: this.requestBuilder, context: executionContext, cancelToken: cancelToken);
                 return this.responseHandler.HandleResponses(modelResponses: responses);
             }
             else
             {
                 ModelDescriptor model = executionContext.Models[0];
                 ChatCompletionRequest chatRequest = this.requestBuilder.WithModel(input: model.Name).Build();
-                ModelResponse response = await this.singleModelExecutor.ExecuteAsync(request: chatRequest, cancelToken: cancelToken);
-                return this.responseHandler.HandleResponses(modelResponses: ModelResponse.WrapSingleResponseAsList(modelResponse: response));
+                AIModelResponse response = await this.singleModelExecutor.ExecuteAsync(request: chatRequest, cancelToken: cancelToken);
+                return this.responseHandler.HandleResponses(modelResponses: AIModelResponse.WrapSingleResponseAsList(modelResponse: response));
             }
         }
     }

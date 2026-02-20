@@ -1,4 +1,4 @@
-﻿// <copyright file="OrchestratorDemo.cs" company="854 Things (tm)">
+﻿// <copyright file="AIModelOrchestratorDemo.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -8,40 +8,23 @@ namespace OpenAIApiClient.ConsoleApp.Demos
     using OpenAIApiClient.Helpers.General;
     using OpenAIApiClient.Orchestration;
     using OpenAIApiClient.Orchestration.Dispatch;
-    using OpenAIApiClient.Orchestration.Execution;
-    using OpenAIApiClient.Registries;
+    using OpenAIApiClient.Orchestration.Factories;
+    using OpenAIApiClient.Registries.Models;
 
-    public static class OrchestratorDemo
+    public static class AIModelOrchestratorDemo
     {
         public static async Task RunAsync(ChatClient client, string prompt, CancellationToken cancelToken = default)
         {
             Console.WriteLine("=== AI Orchestrator Demo ===");
             Console.WriteLine();
 
-            // Initialise model registry ..
-            OpenAIModels models = new();
-
-            // Initialise base definition for request builder ..
-            ClientRequestBuilder requestBuilder = new ClientRequestBuilder().WithDefaults();
-
-            // Initialise Dispatchers to select which model(s) to use ..
-            SingleModelDispatcher singleModelDispatcher = new(modelRegistry: models.Registry);
-            EnsembleDispatcher ensembleDispatcher = new(modelRegistry: models.Registry);
-
-            // Create the executor stack in which the ensemble executor uses the single-model executor ..
-            SingleModelExecutor singleModelExecutor = new(client: client);
-            EnsembleExecutor ensembleExecutor = new(singleModelExecutor: singleModelExecutor);
-
-            // Define a model response handler ..
-            ResponseHandlerDemo responseHandlerDemo = new();
-
-            // Create the orchestrator using all the components ..
-            Orchestrator orchestrator = new(requestBuilder: requestBuilder,
-                                            singleModelDispatcher: singleModelDispatcher,
-                                            ensembleDispatcher: ensembleDispatcher,
-                                            singleModelExecutor: singleModelExecutor,
-                                            ensembleExecutor: ensembleExecutor,
-                                            responseHandler: responseHandlerDemo);
+            // Create the orchestrator with all the components using fluent orchestrator builder ..
+            Orchestrator orchestrator = new OrchestratorBuilder()
+                                            .WithClient(client)
+                                            .WithResponseHandler(new MockAIModelResponseHandler())
+                                            .WithModelRegistry(new OpenAIModels())
+                                            .WithRequestBuilder(new ClientRequestBuilder().WithDefaults())
+                                            .Build();
 
             // ------------------------------------------------------------
             // Run a single-model request

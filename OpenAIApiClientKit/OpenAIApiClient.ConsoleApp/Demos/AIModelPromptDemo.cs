@@ -1,4 +1,4 @@
-﻿// <copyright file="ModelPromptDemo.cs" company="854 Things (tm)">
+﻿// <copyright file="AIModelPromptDemo.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -8,12 +8,12 @@ namespace OpenAIApiClient.ConsoleApp.Demos
     using OpenAIApiClient.Helpers.General;
     using OpenAIApiClient.Interfaces.Validators;
     using OpenAIApiClient.Models.Chat.Request;
-    using OpenAIApiClient.Registries;
+    using OpenAIApiClient.Registries.Output;
 
     /// <summary>
     /// Console App Demo to demonstrate implementation example for processing user prompts with various models.
     /// </summary>
-    public static class ModelPromptDemo
+    public static class AIModelPromptDemo
     {
         /// <summary>
         /// Processes a user prompt by sending it to the chat client and displaying the response, supporting both streaming and non-streaming modes.

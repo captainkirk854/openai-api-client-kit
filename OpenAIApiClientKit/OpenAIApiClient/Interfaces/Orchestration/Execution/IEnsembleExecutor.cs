@@ -9,6 +9,6 @@ namespace OpenAIApiClient.Interfaces.Orchestration.Execution
 
     public interface IEnsembleExecutor
     {
-        Task<IReadOnlyList<ModelResponse>> ExecuteAsync(ClientRequestBuilder requestBuilder, IExecutionContext context, CancellationToken cancelToken);
+        Task<IReadOnlyList<AIModelResponse>> ExecuteAsync(ClientRequestBuilder requestBuilder, IExecutionContext context, CancellationToken cancelToken);
     }
 }

@@ -10,6 +10,7 @@ namespace OpenAIApiClient.Tests.Registries.Dispatch
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Orchestration.Dispatch;
+    using OpenAIApiClient.Registries.Models;
     using testClass = OpenAIApiClient.Registries.Dispatch.SingleModelStrategies;
 
     /// <summary>
@@ -23,7 +24,17 @@ namespace OpenAIApiClient.Tests.Registries.Dispatch
         [TestInitialize]
         public void Setup()
         {
-            this.modelRegistry = new OpenAIApiClient.Registries.OpenAIModels().Registry;
+            // Important: Cleanup of custom handler registries on every test method end ..
+            testClass.ClearCustomHandlers();
+
+            this.modelRegistry = new OpenAIModels().GetRegistry();
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            // Important: Cleanup of custom handler registries on every test method end ..
+            testClass.ClearCustomHandlers();
         }
 
         // ---------------------------------------------------------

@@ -1,4 +1,4 @@
-﻿// <copyright file="ResponseHandlerDemo.cs" company="854 Things (tm)">
+﻿// <copyright file="MockAIModelResponseHandler.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -9,16 +9,16 @@ namespace OpenAIApiClient.ConsoleApp.Demos
     using OpenAIApiClient.Orchestration;
 
     /// <summary>
-    /// Defines a Demo <see cref="IResponseHandler"/> for processing <see cref="ModelResponse"/>.
+    /// Defines a Demo <see cref="IResponseHandler"/> for processing <see cref="AIModelResponse"/>.
     /// </summary>
-    public sealed class ResponseHandlerDemo : IResponseHandler
+    public sealed class MockAIModelResponseHandler : IResponseHandler
     {
         /// <summary>
         /// Handles a single model response.
         /// </summary>
         /// <param name="response"></param>
         /// <returns cref="string">Returns a formatted string representation of the response.</returns>
-        public string HandleSingle(ModelResponse response)
+        public string HandleSingle(AIModelResponse response)
         {
             if (!response.IsSuccessful)
             {
@@ -33,12 +33,12 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// </summary>
         /// <param name="responses"></param>
         /// <returns cref="string">Returns a formatted string representation of the ensemble responses.</returns>
-        public string HandleEnsemble(IReadOnlyList<ModelResponse> responses)
+        public string HandleEnsemble(IReadOnlyList<AIModelResponse> responses)
         {
             StringBuilder sb = new();
             sb.AppendLine("[Ensemble Output]");
 
-            foreach (ModelResponse response in responses)
+            foreach (AIModelResponse response in responses)
             {
                 sb.AppendLine();
                 sb.AppendLine($"--- {response.Model.Name} ---");
@@ -61,7 +61,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// </summary>
         /// <param name="modelResponses"></param>
         /// <returns>IReadOnlyList&lt;ModelResponse&gt;.</returns>
-        public IReadOnlyList<ModelResponse> HandleResponses(IReadOnlyList<ModelResponse> modelResponses)
+        public IReadOnlyList<AIModelResponse> HandleResponses(IReadOnlyList<AIModelResponse> modelResponses)
         {
             for (int modelResponse = 0; modelResponse < modelResponses.Count; modelResponse++)
             {

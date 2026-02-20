@@ -8,7 +8,8 @@ namespace OpenAIApiClient.Helpers.General
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Chat.Common;
     using OpenAIApiClient.Models.Chat.Request;
-    using OpenAIApiClient.Registries;
+    using OpenAIApiClient.Registries.Models;
+    using OpenAIApiClient.Registries.Output;
 
     /// <summary>
     /// Provides a fluent builder for constructing chat completion requests with configurable model, message sequence,

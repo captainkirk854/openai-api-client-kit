@@ -12,7 +12,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         /// <summary>
         /// Gets the last responses passed to the handler - only in mock for test verification purposes.
         /// </summary>
-        public IReadOnlyList<ModelResponse>? LastResponses
+        public IReadOnlyList<AIModelResponse>? LastResponses
         {
             get;
             private set;
@@ -21,7 +21,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         /// <summary>
         /// Gets or sets the responses to return when handling responses - only in mock for test verification purposes.
         /// </summary>
-        public IReadOnlyList<ModelResponse> ResponsesToReturn
+        public IReadOnlyList<AIModelResponse> ResponsesToReturn
         {
             get;
             set;
@@ -32,20 +32,20 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         /// </summary>
         /// <param name="modelResponses"></param>
         /// <returns see cref="IReadOnlyList{ModelResponse}">.</returns>
-        public IReadOnlyList<ModelResponse> HandleResponses(IReadOnlyList<ModelResponse> modelResponses)
+        public IReadOnlyList<AIModelResponse> HandleResponses(IReadOnlyList<AIModelResponse> modelResponses)
         {
             this.LastResponses = modelResponses;
             return this.ResponsesToReturn;
         }
 
         /// <inheritdoc/>
-        string IResponseHandler.HandleEnsemble(IReadOnlyList<ModelResponse> modelResponses)
+        string IResponseHandler.HandleEnsemble(IReadOnlyList<AIModelResponse> modelResponses)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
-        string IResponseHandler.HandleSingle(ModelResponse modelResponse)
+        string IResponseHandler.HandleSingle(AIModelResponse modelResponse)
         {
             throw new NotImplementedException();
         }

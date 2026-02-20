@@ -6,7 +6,7 @@ namespace OpenAIApiClient.Models.Registries
 {
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Chat.Response.Completion;
-    using OpenAIApiClient.Registries;
+    using OpenAIApiClient.Registries.Models;
 
     /// <summary>
     /// Model descriptor for OpenAI models.

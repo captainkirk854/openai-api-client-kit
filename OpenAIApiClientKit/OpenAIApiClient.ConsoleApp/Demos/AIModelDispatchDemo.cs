@@ -1,4 +1,4 @@
-﻿// <copyright file="ModelDispatchDemo.cs" company="854 Things (tm)">
+﻿// <copyright file="AIModelDispatchDemo.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -7,16 +7,16 @@ namespace OpenAIApiClient.ConsoleApp.Demos
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Orchestration.Dispatch;
-    using OpenAIApiClient.Registries;
+    using OpenAIApiClient.Registries.Models;
 
     /// <summary>
     /// Single and Ensemble Model Dispatch Selection Demo.
     /// </summary>
-    public static class ModelDispatchDemo
+    public static class AIModelDispatchDemo
     {
         private static readonly OpenAIModels Models = new();
-        private static readonly SingleModelDispatcher SingleModelDispatcher = new(modelRegistry: Models.Registry);
-        private static readonly EnsembleDispatcher EnsembleDispatcher = new(modelRegistry: Models.Registry);
+        private static readonly SingleModelDispatcher SingleModelDispatcher = new(registry: Models);
+        private static readonly EnsembleDispatcher EnsembleDispatcher = new(registry: Models);
 
         public static void Run()
         {
@@ -239,7 +239,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             }
 
             // Validate that enough models exist BEFORE routing ..
-            List<ModelDescriptor> matchingModels = [.. Models.Registry.Values.Where(m => parsed.All(c => m.Capabilities.Contains(c)))];
+            List<ModelDescriptor> matchingModels = [.. Models.GetRegistry().Values.Where(m => parsed.All(c => m.Capabilities.Contains(c)))];
             if (matchingModels.Count < minRequiredCount)
             {
                 Console.WriteLine($"Only {matchingModels.Count} model(s) match those capabilities, but a minimum of {minRequiredCount} model(s) were requested.");

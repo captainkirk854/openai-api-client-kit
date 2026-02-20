@@ -12,9 +12,9 @@ namespace OpenAIApiClient.Orchestration.Execution
     {
         private readonly SingleModelExecutor singleModelExecutor = singleModelExecutor;
 
-        public async Task<IReadOnlyList<ModelResponse>> ExecuteAsync(ClientRequestBuilder requestBuilder, IExecutionContext context, CancellationToken cancelToken)
+        public async Task<IReadOnlyList<AIModelResponse>> ExecuteAsync(ClientRequestBuilder requestBuilder, IExecutionContext context, CancellationToken cancelToken)
         {
-            IEnumerable<Task<ModelResponse>> tasks = context.Models.Select(model =>
+            IEnumerable<Task<AIModelResponse>> tasks = context.Models.Select(model =>
             {
                 // Override request with ensemble model ..
                 ChatCompletionRequest chatRequest = requestBuilder
@@ -25,7 +25,7 @@ namespace OpenAIApiClient.Orchestration.Execution
                 return this.singleModelExecutor.ExecuteAsync(request: chatRequest, cancelToken: cancelToken);
             });
 
-            ModelResponse[] responses = await Task.WhenAll(tasks);
+            AIModelResponse[] responses = await Task.WhenAll(tasks);
             return responses;
         }
     }

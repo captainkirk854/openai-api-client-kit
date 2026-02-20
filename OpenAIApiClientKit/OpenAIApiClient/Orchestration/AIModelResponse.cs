@@ -1,4 +1,4 @@
-﻿// <copyright file="ModelResponse.cs" company="854 Things (tm)">
+﻿// <copyright file="AIModelResponse.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -10,7 +10,7 @@ namespace OpenAIApiClient.Orchestration
     /// <summary>
     /// Model response details.
     /// </summary>
-    public sealed class ModelResponse
+    public sealed class AIModelResponse
     {
         /// <summary>
         /// Gets the model descriptor.
@@ -80,7 +80,7 @@ namespace OpenAIApiClient.Orchestration
         /// </summary>
         /// <param name="modelResponse"></param>
         /// <returns>a list containing the single ModelResponse.</returns>
-        internal static IReadOnlyList<ModelResponse> WrapSingleResponseAsList(ModelResponse modelResponse)
+        internal static IReadOnlyList<AIModelResponse> WrapSingleResponseAsList(AIModelResponse modelResponse)
         {
             return [modelResponse];
         }

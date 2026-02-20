@@ -8,7 +8,7 @@ namespace OpenAIApiClient.Models.Chat.Request
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Chat.Common;
     using OpenAIApiClient.Models.Registries;
-    using OpenAIApiClient.Registries;
+    using OpenAIApiClient.Registries.Models;
 
     public class ChatCompletionRequest
     {

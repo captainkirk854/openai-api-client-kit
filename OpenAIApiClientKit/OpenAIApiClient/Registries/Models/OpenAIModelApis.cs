@@ -2,7 +2,7 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Registries
+namespace OpenAIApiClient.Registries.Models
 {
     using System;
     using System.Collections.Generic;

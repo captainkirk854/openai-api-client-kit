@@ -7,16 +7,17 @@ namespace OpenAIApiClient.Orchestration.Dispatch
     using OpenAIApiClient.Delegates;
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Interfaces.Orchestration.Dispatch;
+    using OpenAIApiClient.Interfaces.Registries;
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Registries.Dispatch;
 
     /// <summary>
     /// <see cref="SingleModelDispatcher"/> provides intentional, criteria‑based delegation to select the correct model based on the provided request.
     /// </summary>
-    /// <param name="modelRegistry"></param>
-    public sealed class SingleModelDispatcher(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry) : ISingleModelDispatcher
+    /// <param name="registry"></param>
+    public sealed class SingleModelDispatcher(IAIModelRegistry registry) : ISingleModelDispatcher
     {
-        private readonly IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry = modelRegistry;
+        private readonly IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry = registry.GetRegistry();
 
         /// <summary>
         /// Evaluates request to select an appropriate model descriptor.

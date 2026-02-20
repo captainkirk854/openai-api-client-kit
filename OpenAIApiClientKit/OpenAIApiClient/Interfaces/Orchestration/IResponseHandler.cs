@@ -8,10 +8,10 @@ namespace OpenAIApiClient.Interfaces.Orchestration
 
     public interface IResponseHandler
     {
-        string HandleSingle(ModelResponse modelResponse);
+        string HandleSingle(AIModelResponse modelResponse);
 
-        string HandleEnsemble(IReadOnlyList<ModelResponse> modelResponses);
+        string HandleEnsemble(IReadOnlyList<AIModelResponse> modelResponses);
 
-        IReadOnlyList<ModelResponse> HandleResponses(IReadOnlyList<ModelResponse> modelResponses);
+        IReadOnlyList<AIModelResponse> HandleResponses(IReadOnlyList<AIModelResponse> modelResponses);
     }
 }

@@ -19,8 +19,8 @@ namespace OpenAIApiClient.Tests.Orchestration
     public class Orchestrator
     {
         private ClientRequestBuilder requestBuilder = null!;
-        private MockSingleModelRouter mockSingleModelRouter = null!;
-        private MockEnsembleRouter mockEnsembleRouter = null!;
+        private MockSingleModelDispatcher mockSingleModelRouter = null!;
+        private MockEnsembleDispatcher mockEnsembleRouter = null!;
         private MockSingleModelExecutor mockSingleExecutor = null!;
         private MockEnsembleExecutor mockEnsembleExecutor = null!;
         private MockResponseHandler mockResponseHandler = null!;
@@ -36,8 +36,8 @@ namespace OpenAIApiClient.Tests.Orchestration
             this.modelB = CreateModelDescriptor(OpenAIModel.GPT4o_Mini);
 
             this.requestBuilder = new ClientRequestBuilder();
-            this.mockSingleModelRouter = new MockSingleModelRouter();
-            this.mockEnsembleRouter = new MockEnsembleRouter();
+            this.mockSingleModelRouter = new MockSingleModelDispatcher();
+            this.mockEnsembleRouter = new MockEnsembleDispatcher();
             this.mockSingleExecutor = new MockSingleModelExecutor();
             this.mockEnsembleExecutor = new MockEnsembleExecutor();
             this.mockResponseHandler = new MockResponseHandler();
@@ -58,7 +58,7 @@ namespace OpenAIApiClient.Tests.Orchestration
         {
             // Arrange
             this.mockSingleModelRouter.ReturnedModel = this.modelA;
-            this.mockSingleExecutor.ResponseToReturn = new ModelResponse { Model = this.modelA, RawOutput = "ok", IsSuccessful = true };
+            this.mockSingleExecutor.ResponseToReturn = new AIModelResponse { Model = this.modelA, RawOutput = "ok", IsSuccessful = true };
             this.mockResponseHandler.ResponsesToReturn = [this.mockSingleExecutor.ResponseToReturn];
             string prompt = "Hello";
 
@@ -71,7 +71,7 @@ namespace OpenAIApiClient.Tests.Orchestration
             };
 
             // Act
-            IReadOnlyList<ModelResponse> result = await this.orchestrator.ProcessAsync(request, CancellationToken.None);
+            IReadOnlyList<AIModelResponse> result = await this.orchestrator.ProcessAsync(request, CancellationToken.None);
 
             // Assert
             Assert.HasCount(1, result);
@@ -90,7 +90,7 @@ namespace OpenAIApiClient.Tests.Orchestration
             // Arrange
             this.mockSingleModelRouter.ReturnedModel = this.modelA;
 
-            ModelResponse modelResponse = new()
+            AIModelResponse modelResponse = new()
             {
                 Model = this.modelA,
                 RawOutput = "done",
@@ -112,7 +112,7 @@ namespace OpenAIApiClient.Tests.Orchestration
             };
 
             // Act
-            IReadOnlyList<ModelResponse> result = await this.orchestrator.ProcessAsync(request, CancellationToken.None);
+            IReadOnlyList<AIModelResponse> result = await this.orchestrator.ProcessAsync(request, CancellationToken.None);
 
             // Assert
             Assert.AreEqual(this.mockResponseHandler.ResponsesToReturn, result);
@@ -129,14 +129,14 @@ namespace OpenAIApiClient.Tests.Orchestration
             string prompt = "Explain";
             this.mockEnsembleRouter.ReturnedModels = [this.modelA, this.modelB];
 
-            ModelResponse[] responses =
+            AIModelResponse[] responses =
             [
-                new ModelResponse {
+                new AIModelResponse {
                                     Model = this.modelA,
                                     RawOutput = "A",
                                     IsSuccessful = true,
                                   },
-                new ModelResponse {
+                new AIModelResponse {
                                     Model = this.modelB,
                                     RawOutput = "B",
                                     IsSuccessful = true,
@@ -155,7 +155,7 @@ namespace OpenAIApiClient.Tests.Orchestration
             };
 
             // Act
-            IReadOnlyList<ModelResponse> result = await this.orchestrator.ProcessAsync(request, CancellationToken.None);
+            IReadOnlyList<AIModelResponse> result = await this.orchestrator.ProcessAsync(request, CancellationToken.None);
 
             // Assert
             Assert.HasCount(2, result);
@@ -176,14 +176,14 @@ namespace OpenAIApiClient.Tests.Orchestration
             string prompt = "Explain";
             this.mockEnsembleRouter.ReturnedModels = [this.modelA, this.modelB];
 
-            ModelResponse[] responses =
+            AIModelResponse[] responses =
             [
-                new ModelResponse {
+                new AIModelResponse {
                                     Model = this.modelA,
                                     RawOutput = "A",
                                     IsSuccessful = true,
                                   },
-                new ModelResponse {
+                new AIModelResponse {
                                     Model = this.modelB,
                                     RawOutput = "B",
                                     IsSuccessful = true,
@@ -202,7 +202,7 @@ namespace OpenAIApiClient.Tests.Orchestration
             };
 
             // Act
-            IReadOnlyList<ModelResponse> result = await this.orchestrator.ProcessAsync(request, CancellationToken.None);
+            IReadOnlyList<AIModelResponse> result = await this.orchestrator.ProcessAsync(request, CancellationToken.None);
 
             // Assert
             Assert.AreEqual(this.mockResponseHandler.ResponsesToReturn, result);

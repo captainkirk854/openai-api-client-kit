@@ -1,10 +1,10 @@
-﻿// <copyright file="ModelResponseSelector.cs" company="854 Things (tm)">
+﻿// <copyright file="AIModelResponseSelector.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
 namespace OpenAIApiClient.Orchestration
 {
-    public sealed class ModelResponseSelector
+    public sealed class AIModelResponseSelector
     {
         /// <summary>
         /// Gets the best OpenAI model response from a list, based on the heuristic: response with the longest output = best response.
@@ -12,22 +12,22 @@ namespace OpenAIApiClient.Orchestration
         /// <param name="responses">A read-only list of OpenAI model responses to evaluate.</param>
         /// <returns>An OpenAIModelResponseCollator containing the selected best response and related metadata.</returns>
         /// <exception cref="InvalidOperationException">Thrown if all model responses in the list have failed.</exception>
-        public static CollatedModelResponse GetOptimal(IReadOnlyList<ModelResponse> responses)
+        public static AIModelResponseCollator GetOptimal(IReadOnlyList<AIModelResponse> responses)
         {
             // Filter to successful response(s) ..
-            List<ModelResponse> successful = [.. responses.Where(r => r.IsSuccessful)];
+            List<AIModelResponse> successful = [.. responses.Where(r => r.IsSuccessful)];
             if (successful.Count == 0)
             {
                 throw new InvalidOperationException("All model calls failed.");
             }
 
             // Native-style heuristic: pick the highest token count (best reasoning) ..
-            ModelResponse best = successful
+            AIModelResponse best = successful
                 .OrderByDescending(r => r.RawOutput.Length)
                 .First();
 
             // Return the final collated response ..
-            return new CollatedModelResponse
+            return new AIModelResponseCollator
             {
                 Content = best.RawOutput,
                 Name = best.Model.Name,

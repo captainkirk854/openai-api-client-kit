@@ -1,4 +1,4 @@
-﻿// <copyright file="BestModelResponseDemo.cs" company="854 Things (tm)">
+﻿// <copyright file="AIModelBestResponseDemo.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -9,12 +9,12 @@ namespace OpenAIApiClient.ConsoleApp.Demos
     using OpenAIApiClient.Orchestration;
     using OpenAIApiClient.Orchestration.Dispatch;
     using OpenAIApiClient.Orchestration.Execution;
-    using OpenAIApiClient.Registries;
+    using OpenAIApiClient.Registries.Models;
 
     /// <summary>
     /// Console App Demo to demonstrate implementation example for OpenAI optimal model selection.
     /// </summary>
-    public static class BestModelResponseDemo
+    public static class AIModelBestResponseDemo
     {
         public static async Task GetBestModelResponseAsync(ChatClient client, string prompt, CancellationTokenSource cts)
         {
@@ -25,15 +25,15 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             ClientRequestBuilder requestBuilder = new ClientRequestBuilder().WithDefaults();
 
             // Initialise Dispatchers to select which model(s) to use ..
-            SingleModelDispatcher singleModelDispatcher = new(modelRegistry: models.Registry);
-            EnsembleDispatcher ensembleDispatcher = new(modelRegistry: models.Registry);
+            SingleModelDispatcher singleModelDispatcher = new(registry: models);
+            EnsembleDispatcher ensembleDispatcher = new(registry: models);
 
             // Create the executor stack in which the ensemble executor uses the single-model executor ..
             SingleModelExecutor singleModelExecutor = new(client: client);
             EnsembleExecutor ensembleExecutor = new(singleModelExecutor: singleModelExecutor);
 
             // Define a model response handler ..
-            ResponseHandlerDemo responseHandlerDemo = new();
+            MockAIModelResponseHandler responseHandlerDemo = new();
 
             // Create the orchestrator using all the components ..
             Orchestrator orchestrator = new(requestBuilder: requestBuilder,
@@ -61,8 +61,8 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             };
 
             // Execute selected model(s) in asynchronous pipelines ..
-            IReadOnlyList<ModelResponse> responses = await orchestrator.ProcessAsync(request: ensembleRequest, cancelToken: cts.Token);
-            CollatedModelResponse final = ModelResponseSelector.GetOptimal(responses: responses);
+            IReadOnlyList<AIModelResponse> responses = await orchestrator.ProcessAsync(request: ensembleRequest, cancelToken: cts.Token);
+            AIModelResponseCollator final = AIModelResponseSelector.GetOptimal(responses: responses);
 
             // Output computed best response information ..
             Console.WriteLine();
@@ -73,7 +73,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             // Output all model response(s) for results comparison transparency ..
             Console.WriteLine();
             Console.WriteLine("=== SOURCE RESPONSE(S) ===");
-            foreach (ModelResponse response in final.SourceResponses)
+            foreach (AIModelResponse response in final.SourceResponses)
             {
                 Console.WriteLine();
                 Console.WriteLine(new string('-', 80));

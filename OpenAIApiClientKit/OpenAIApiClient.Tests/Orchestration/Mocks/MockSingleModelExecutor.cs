@@ -12,6 +12,15 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
     public sealed class MockSingleModelExecutor : ISingleModelExecutor
     {
         /// <summary>
+        /// Gets a value indicating whether the executor was called - only in mock for test verification purposes.
+        /// </summary>
+        public bool WasCalled
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Gets the last call made to the executor - only in mock for test verification purposes.
         /// </summary>
         public (ModelDescriptor model, ChatCompletionRequest request)? LastCall
@@ -23,7 +32,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         /// <summary>
         /// Gets or sets the response to be returned by the executor - only in mock for test verification purposes.
         /// </summary>
-        public ModelResponse ResponseToReturn
+        public AIModelResponse ResponseToReturn
         {
             get;
             set;
@@ -34,9 +43,10 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         /// </summary>
         /// <param name="request"></param>
         /// <param name="token"></param>
-        /// <returns see cref="ModelResponse">.</returns>
-        public Task<ModelResponse> ExecuteAsync(ChatCompletionRequest request, CancellationToken token)
+        /// <returns see cref="AIModelResponse">.</returns>
+        public Task<AIModelResponse> ExecuteAsync(ChatCompletionRequest request, CancellationToken token)
         {
+            this.WasCalled = true;
             this.LastCall = (request.ModelDescriptor, request);
             return Task.FromResult(this.ResponseToReturn);
         }

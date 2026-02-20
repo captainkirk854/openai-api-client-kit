@@ -7,6 +7,7 @@ namespace OpenAIApiClient.Orchestration.Dispatch
     using OpenAIApiClient.Delegates;
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Interfaces.Orchestration.Dispatch;
+    using OpenAIApiClient.Interfaces.Registries;
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Registries.Dispatch;
 
@@ -14,9 +15,9 @@ namespace OpenAIApiClient.Orchestration.Dispatch
     /// <see cref="EnsembleDispatcher"/> provides intentional, criteria‑based delegation to select the correct model(s) based on the provided request.
     /// </summary>
     /// <param name="modelRegistry"></param>
-    public sealed class EnsembleDispatcher(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry) : IEnsembleDispatcher
+    public sealed class EnsembleDispatcher(IAIModelRegistry registry) : IEnsembleDispatcher
     {
-        private readonly IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry = modelRegistry;
+        private readonly IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry = registry.GetRegistry();
 
         /// <summary>
         /// Evaluates a request to select the appropriate set of model descriptor(s).

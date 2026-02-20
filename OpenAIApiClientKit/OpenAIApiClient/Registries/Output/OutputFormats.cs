@@ -2,7 +2,7 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Registries
+namespace OpenAIApiClient.Registries.Output
 {
     using System.Collections.Generic;
     using OpenAIApiClient.Enums;

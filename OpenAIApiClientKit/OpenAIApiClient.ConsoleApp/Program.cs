@@ -35,10 +35,10 @@ namespace OpenAIApiClient.ConsoleApp
                 // Allow user to choose which demo to run ..
                 Console.WriteLine("Welcome to the OpenAI API Client Demo Application!");
                 Console.WriteLine("Which demo would you like to run?");
-                Console.WriteLine("1. Model Prompt Demo");
-                Console.WriteLine("2. Best Model Response Demo");
-                Console.WriteLine("3. Model Strategy Dispatch Demo");
-                Console.WriteLine("4. Orchestration Demo");
+                Console.WriteLine("1. AI Model Prompt Demo");
+                Console.WriteLine("2. AI Model Strategy Dispatch Demo");
+                Console.WriteLine("3. AI Model Best Response Demo");
+                Console.WriteLine("4. AI Model Orchestrator Demo");
 
                 Console.Write("Enter choice (1-4): ");
                 string? demoChoice = Console.ReadLine();
@@ -47,19 +47,19 @@ namespace OpenAIApiClient.ConsoleApp
                 switch (demoChoice)
                 {
                     case "1":
-                        await ModelPromptDemo(client: client, cts: cts);
+                        await AIModelPromptDemo(client: client, cts: cts);
                         break;
 
                     case "2":
-                        await BestModelResponseDemo(client: client, cts: cts);
+                        AIModelDispatchDemo();
                         break;
 
                     case "3":
-                        ModelDispatchDemo();
+                        await AIModelBestResponseDemo(client: client, cts: cts);
                         break;
 
                     case "4":
-                        await OrchestratorDemo(client: client, cts: cts);
+                        await AIModelOrchestratorDemo(client: client, cts: cts);
                         break;
 
                     default:
@@ -90,14 +90,14 @@ namespace OpenAIApiClient.ConsoleApp
         /// <param name="client"></param>
         /// <param name="cts"></param>
         /// <returns>Task.</returns>
-        private static async Task BestModelResponseDemo(ChatClient client, CancellationTokenSource cts)
+        private static async Task AIModelBestResponseDemo(ChatClient client, CancellationTokenSource cts)
         {
             string prompt = "explain the theory of relativity in simple terms.";
             Console.WriteLine($"Using Prompt: {prompt}");
             Console.WriteLine();
 
             // Get best model response for the prompt ..
-            await Demos.BestModelResponseDemo.GetBestModelResponseAsync(client: client, prompt: prompt, cts: cts);
+            await Demos.AIModelBestResponseDemo.GetBestModelResponseAsync(client: client, prompt: prompt, cts: cts);
 
             Console.WriteLine("Press Enter to continue..");
             Console.ReadLine();
@@ -109,7 +109,7 @@ namespace OpenAIApiClient.ConsoleApp
         /// <param name="client"></param>
         /// <param name="cts"></param>
         /// <returns>Task.</returns>
-        private static async Task ModelPromptDemo(ChatClient client, CancellationTokenSource cts)
+        private static async Task AIModelPromptDemo(ChatClient client, CancellationTokenSource cts)
         {
             // Run regular demo starting with whether to use streaming or non-streaming modes ..
             bool isStreaming = SetBooleanPrompt(message: "Use streaming mode?", setTrue: 'y', setFalse: 'n');
@@ -176,7 +176,7 @@ namespace OpenAIApiClient.ConsoleApp
             Console.WriteLine();
 
             // Process user prompt with additional options ..
-            await Demos.ModelPromptDemo.ProcessUserPromptAsync(client: client,
+            await Demos.AIModelPromptDemo.ProcessUserPromptAsync(client: client,
                                                                isStreaming: isStreaming,
                                                                userPrompt: userPrompt,
                                                                isDeterministic: isDeterministic,
@@ -188,9 +188,9 @@ namespace OpenAIApiClient.ConsoleApp
         /// <summary>
         /// A demo implementation to showcase model routing capabilities.
         /// </summary>
-        private static void ModelDispatchDemo()
+        private static void AIModelDispatchDemo()
         {
-            Demos.ModelDispatchDemo.Run();
+            Demos.AIModelDispatchDemo.Run();
         }
 
         /// <summary>
@@ -199,17 +199,16 @@ namespace OpenAIApiClient.ConsoleApp
         /// <param name="client"></param>
         /// <param name="cts"></param>
         /// <returns>Task.</returns>
-        private static async Task OrchestratorDemo(ChatClient client, CancellationTokenSource cts)
+        private static async Task AIModelOrchestratorDemo(ChatClient client, CancellationTokenSource cts)
         {
-            string prompt = @"
-                              List the planets, dwarf planets and top 10 heaviest moons.
-                              List their names along with their masses and diameters in descending order of mass 
-                              with the heaviest celestial body first.";
+            string prompt = @"List the planets, dwarf planets and top 10 heaviest moons.
+                              List their names along with their masses and diameters in 
+                              descending order of mass with the heaviest celestial body first.";
             Console.WriteLine($"Using Prompt: {prompt}");
             Console.WriteLine();
 
             // Run AI Orchestrator demo ..
-            await Demos.OrchestratorDemo.RunAsync(client: client, prompt: prompt, cancelToken: cts.Token);
+            await Demos.AIModelOrchestratorDemo.RunAsync(client: client, prompt: prompt, cancelToken: cts.Token);
 
             Console.WriteLine("Press Enter to continue..");
             Console.ReadLine();

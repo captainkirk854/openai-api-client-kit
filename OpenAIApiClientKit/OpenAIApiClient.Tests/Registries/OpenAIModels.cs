@@ -10,7 +10,7 @@ namespace OpenAIApiClient.Tests.Registries
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Registries;
-    using testClass = OpenAIApiClient.Registries.OpenAIModels;
+    using testClass = OpenAIApiClient.Registries.Models.OpenAIModels;
 
     /// <summary>
     /// Tests for the <see cref="OpenAIModels"/> class.
@@ -19,7 +19,7 @@ namespace OpenAIApiClient.Tests.Registries
     public class OpenAIModels
     {
         // Access the registry from actual class under test ..
-        private static Dictionary<OpenAIModel, ModelDescriptor> Registry => new testClass().Registry;
+        private static Dictionary<OpenAIModel, ModelDescriptor> Registry => new testClass().GetRegistry();
 
         [TestMethod]
         public void All_Descriptors_Have_Matching_Model_Key()

@@ -1,4 +1,4 @@
-﻿// <copyright file="MockSingleModelRouter.cs" company="854 Things (tm)">
+﻿// <copyright file="MockSingleModelDispatcher.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -8,8 +8,17 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Orchestration.Dispatch;
 
-    public sealed class MockSingleModelRouter : ISingleModelDispatcher
+    public sealed class MockSingleModelDispatcher : ISingleModelDispatcher
     {
+        /// <summary>
+        /// Gets a value indicating whether the executor was called - only in mock for test verification purposes.
+        /// </summary>
+        public bool WasCalled
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Gets or sets the model descriptor to be returned by the router - only in mock for test verification purposes.
         /// </summary>
@@ -35,6 +44,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         /// <returns see cref="SingleModelDispatchResult">.</returns>
         public SingleModelDispatchResult Evaluate(SingleModelDispatchRequest request)
         {
+            this.WasCalled = true;
             this.LastRequest = request;
             return new SingleModelDispatchResult(this.ReturnedModel);
         }
