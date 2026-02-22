@@ -8,7 +8,7 @@ namespace OpenAIApiClient.Models.Chat.Request
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Chat.Common;
     using OpenAIApiClient.Models.Registries;
-    using OpenAIApiClient.Registries.Models;
+    using OpenAIApiClient.Registries.AiModels;
 
     public class ChatCompletionRequest
     {
@@ -123,7 +123,7 @@ namespace OpenAIApiClient.Models.Chat.Request
         /// Gets ModelDescriptor for OpenAI model (not to be deserialized).
         /// </summary>
         [JsonIgnore]
-        public ModelDescriptor ModelDescriptor
+        public AiModelDescriptor ModelDescriptor
         {
             get
             {

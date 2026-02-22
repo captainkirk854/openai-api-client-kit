@@ -1,4 +1,4 @@
-﻿// <copyright file="SingleModelStrategies.cs" company="854 Things (tm)">
+﻿// <copyright file="SingleAiModelStrategies.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -12,31 +12,31 @@ namespace OpenAIApiClient.Registries.Dispatch
 
     /// <summary>
     /// Registry for single‑model dispatching strategies.
-    /// Maps a <see cref="SingleModelStrategy"/> to its corresponding handler delegate.
+    /// Maps a <see cref="SingleAiModelStrategy"/> to its corresponding handler delegate.
     /// </summary>
-    public static class SingleModelStrategies
+    public static class SingleAiModelStrategies
     {
         /// <summary>
         /// Dictionary mapping single-model dispatch strategies to their specific delegate handler implementations.
         /// </summary>
-        public static readonly IReadOnlyDictionary<SingleModelStrategy, SingleModelStrategyHandler> DefaultHandlerStrategies =
-            new Dictionary<SingleModelStrategy, SingleModelStrategyHandler>
+        public static readonly IReadOnlyDictionary<SingleAiModelStrategy, SingleAiModelStrategyHandler> DefaultHandlerStrategies =
+            new Dictionary<SingleAiModelStrategy, SingleAiModelStrategyHandler>
             {
-                [SingleModelStrategy.Explicit] = GetExplicitModel,
-                [SingleModelStrategy.LowestCost] = GetLowestCostModel,
-                [SingleModelStrategy.HighestPerformance] = GetHighestPerformanceModel,
-                [SingleModelStrategy.BestReasoning] = GetBestReasoningModel,
-                [SingleModelStrategy.BestVision] = GetBestVisionModel,
-                [SingleModelStrategy.BestAudioIn] = GetLowestCostAudioInModel,
-                [SingleModelStrategy.BestAudioOut] = GetLowestCostAudioOutModel,
-                [SingleModelStrategy.Embedding] = GetLowestCostEmbeddingModel,
-                [SingleModelStrategy.Moderation] = GetLowestCostModerationCapableModel,
+                [SingleAiModelStrategy.Explicit] = GetExplicitModel,
+                [SingleAiModelStrategy.LowestCost] = GetLowestCostModel,
+                [SingleAiModelStrategy.HighestPerformance] = GetHighestPerformanceModel,
+                [SingleAiModelStrategy.BestReasoning] = GetBestReasoningModel,
+                [SingleAiModelStrategy.BestVision] = GetBestVisionModel,
+                [SingleAiModelStrategy.BestAudioIn] = GetLowestCostAudioInModel,
+                [SingleAiModelStrategy.BestAudioOut] = GetLowestCostAudioOutModel,
+                [SingleAiModelStrategy.Embedding] = GetLowestCostEmbeddingModel,
+                [SingleAiModelStrategy.Moderation] = GetLowestCostModerationCapableModel,
             };
 
         /// <summary>
         /// An internal registry storing custom single model strategy handlers.
         /// </summary>
-        private static readonly Dictionary<SingleModelStrategy, SingleModelStrategyHandler> CustomHandlerStrategies = [];
+        private static readonly Dictionary<SingleAiModelStrategy, SingleAiModelStrategyHandler> CustomHandlerStrategies = [];
 
         /// <summary>
         /// Registers or replaces a strategy handler for the given single‑model strategy.
@@ -44,7 +44,7 @@ namespace OpenAIApiClient.Registries.Dispatch
         /// </summary>
         /// <param name="strategy">The strategy key.</param>
         /// <param name="handler">The handler delegate to register.</param>
-        public static void RegisterCustomHandler(SingleModelStrategy strategy, SingleModelStrategyHandler handler)
+        public static void RegisterCustomHandler(SingleAiModelStrategy strategy, SingleAiModelStrategyHandler handler)
         {
             ArgumentNullException.ThrowIfNull(handler);
 
@@ -56,18 +56,18 @@ namespace OpenAIApiClient.Registries.Dispatch
         /// Retrieves the handler for a given strategy.
         /// </summary>
         /// <param name="strategy">The strategy to retrieve.</param>
-        /// <returns cref="SingleModelStrategyHandler">The registered handler.</returns>
+        /// <returns cref="SingleAiModelStrategyHandler">The registered handler.</returns>
         /// <exception cref="KeyNotFoundException">Thrown if no handler is registered for the strategy.</exception>
-        public static SingleModelStrategyHandler Get(SingleModelStrategy strategy)
+        public static SingleAiModelStrategyHandler Get(SingleAiModelStrategy strategy)
         {
             // 1. Override and use Custom strategy handler if found for strategy ..
-            if (CustomHandlerStrategies.TryGetValue(strategy, out SingleModelStrategyHandler? customHandler))
+            if (CustomHandlerStrategies.TryGetValue(strategy, out SingleAiModelStrategyHandler? customHandler))
             {
                 return customHandler;
             }
 
             // 2. Otherwise use Default strategy handler if found for strategy ..
-            if (DefaultHandlerStrategies.TryGetValue(strategy, out SingleModelStrategyHandler? defaultHandler))
+            if (DefaultHandlerStrategies.TryGetValue(strategy, out SingleAiModelStrategyHandler? defaultHandler))
             {
                 return defaultHandler;
             }
@@ -93,16 +93,16 @@ namespace OpenAIApiClient.Registries.Dispatch
         /// </summary>
         /// <param name="modelRegistry"></param>
         /// <param name="request">The dispatch request containing the explicit model descriptor.</param>
-        /// <returns>A <see cref="SingleModelDispatchResult"/> containing the resolved model descriptor.</returns>
+        /// <returns>A <see cref="SingleAiModelDispatchResult"/> containing the resolved model descriptor.</returns>
         /// <exception cref="InvalidOperationException">Thrown if the request does not specify an explicit model.</exception>
-        private static SingleModelDispatchResult GetExplicitModel(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelDispatchRequest request)
+        private static SingleAiModelDispatchResult GetExplicitModel(IReadOnlyDictionary<OpenAIModel, AiModelDescriptor> modelRegistry, SingleAiModelDispatchRequest request)
         {
             if (request.ExplicitModel is null)
             {
                 throw new InvalidOperationException("Explicit routing requires an explicit model.");
             }
 
-            return new SingleModelDispatchResult(model: modelRegistry[request.ExplicitModel.Value]);
+            return new SingleAiModelDispatchResult(model: modelRegistry[request.ExplicitModel.Value]);
         }
 
         /// <summary>
@@ -110,18 +110,18 @@ namespace OpenAIApiClient.Registries.Dispatch
         /// </summary>
         /// <param name="modelRegistry"></param>
         /// <param name="request">The routing request specifying required capabilities.</param>
-        /// <returns>A <see cref="SingleModelDispatchResult"/> containing the resolved model descriptor.</returns>
+        /// <returns>A <see cref="SingleAiModelDispatchResult"/> containing the resolved model descriptor.</returns>
         /// <exception cref="InvalidOperationException">Thrown if model with required capabilities not found in registry.</exception>
-        private static SingleModelDispatchResult GetLowestCostModel(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelDispatchRequest request)
+        private static SingleAiModelDispatchResult GetLowestCostModel(IReadOnlyDictionary<OpenAIModel, AiModelDescriptor> modelRegistry, SingleAiModelDispatchRequest request)
         {
-            IEnumerable<ModelDescriptor> candidates = FilterByCapabilities(modelRegistry, request.RequiredCapabilities);
+            IEnumerable<AiModelDescriptor> candidates = FilterByCapabilities(modelRegistry, request.RequiredCapabilities);
 
-            ModelDescriptor descriptor = candidates
+            AiModelDescriptor descriptor = candidates
                 .OrderBy(c => c.Pricing.InputTokenCost)
                 .ThenBy(c => c.Pricing.OutputTokenCost)
                 .FirstOrDefault() ?? throw new InvalidOperationException("Unable to find the Lowest Cost model that matches required capability(s) in the registry.");
 
-            return new SingleModelDispatchResult(descriptor);
+            return new SingleAiModelDispatchResult(descriptor);
         }
 
         /// <summary>
@@ -129,20 +129,20 @@ namespace OpenAIApiClient.Registries.Dispatch
         /// </summary>
         /// <param name="modelRegistry"></param>
         /// <param name="request">The model router request specifying required capabilities.</param>
-        /// <returns>A <see cref="SingleModelDispatchResult"/> containing the resolved model descriptor.</returns>
+        /// <returns>A <see cref="SingleAiModelDispatchResult"/> containing the resolved model descriptor.</returns>
         /// <exception cref="InvalidOperationException">Thrown if model with required capabilities not found in registry.</exception>
-        private static SingleModelDispatchResult GetHighestPerformanceModel(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelDispatchRequest request)
+        private static SingleAiModelDispatchResult GetHighestPerformanceModel(IReadOnlyDictionary<OpenAIModel, AiModelDescriptor> modelRegistry, SingleAiModelDispatchRequest request)
         {
-            ModelCapability primaryCapability = ModelCapability.HighPerformance;
-            IEnumerable<ModelDescriptor> candidates = FilterByCapabilities(registry: modelRegistry, required: request.RequiredCapabilities);
+            AiModelCapability primaryCapability = AiModelCapability.HighPerformance;
+            IEnumerable<AiModelDescriptor> candidates = FilterByCapabilities(registry: modelRegistry, required: request.RequiredCapabilities);
 
-            ModelDescriptor descriptor = candidates
+            AiModelDescriptor descriptor = candidates
                 .Where(c => c.Capabilities.Contains(primaryCapability))
                 .OrderBy(m => m.Pricing.InputTokenCost)
                 .ThenBy(m => m.Pricing.OutputTokenCost)
                 .FirstOrDefault() ?? throw new InvalidOperationException($"Unable to find a {primaryCapability} model that matches required capability(s) in the registry.");
 
-            return new SingleModelDispatchResult(descriptor);
+            return new SingleAiModelDispatchResult(descriptor);
         }
 
         /// <summary>
@@ -150,12 +150,12 @@ namespace OpenAIApiClient.Registries.Dispatch
         /// </summary>
         /// <param name="modelRegistry"></param>
         /// <param name="request">Dummy model router request required for delegate pattern.</param>
-        /// <returns>A <see cref="SingleModelDispatchResult"/> containing the resolved model descriptor.</returns>
+        /// <returns>A <see cref="SingleAiModelDispatchResult"/> containing the resolved model descriptor.</returns>
         /// <exception cref="InvalidOperationException">Thrown if model with required capabilities not found in registry.</exception>
-        private static SingleModelDispatchResult GetBestReasoningModel(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelDispatchRequest request)
+        private static SingleAiModelDispatchResult GetBestReasoningModel(IReadOnlyDictionary<OpenAIModel, AiModelDescriptor> modelRegistry, SingleAiModelDispatchRequest request)
         {
-            ModelCapability primaryCapability = ModelCapability.Reasoning;
-            return Plop(registry: modelRegistry, capability: primaryCapability, sortingCapability: ModelCapability.HighPerformance);
+            AiModelCapability primaryCapability = AiModelCapability.Reasoning;
+            return Plop(registry: modelRegistry, capability: primaryCapability, sortingCapability: AiModelCapability.HighPerformance);
         }
 
         /// <summary>
@@ -163,12 +163,12 @@ namespace OpenAIApiClient.Registries.Dispatch
         /// </summary>
         /// <param name="modelRegistry">Model registry to filter from.</param>
         /// <param name="request">Dummy model router request required for delegate pattern.</param>
-        /// <returns>A <see cref="SingleModelDispatchResult"/> containing the resolved model descriptor.</returns>
+        /// <returns>A <see cref="SingleAiModelDispatchResult"/> containing the resolved model descriptor.</returns>
         /// <exception cref="InvalidOperationException">Thrown if model with required capabilities not found in registry.</exception>
-        private static SingleModelDispatchResult GetBestVisionModel(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelDispatchRequest request)
+        private static SingleAiModelDispatchResult GetBestVisionModel(IReadOnlyDictionary<OpenAIModel, AiModelDescriptor> modelRegistry, SingleAiModelDispatchRequest request)
         {
-            ModelCapability primaryCapability = ModelCapability.Vision;
-            return Plop(registry: modelRegistry, capability: primaryCapability, sortingCapability: ModelCapability.HighPerformance);
+            AiModelCapability primaryCapability = AiModelCapability.Vision;
+            return Plop(registry: modelRegistry, capability: primaryCapability, sortingCapability: AiModelCapability.HighPerformance);
         }
 
         /// <summary>
@@ -176,11 +176,11 @@ namespace OpenAIApiClient.Registries.Dispatch
         /// </summary>
         /// <param name="modelRegistry">Model registry to filter from.</param>
         /// <param name="request">Dummy model router request required for delegate pattern.</param>
-        /// <returns>A <see cref="SingleModelDispatchResult"/> containing the resolved model descriptor.</returns>
+        /// <returns>A <see cref="SingleAiModelDispatchResult"/> containing the resolved model descriptor.</returns>
         /// <exception cref="InvalidOperationException">Thrown if model with required capabilities not found in registry.</exception>
-        private static SingleModelDispatchResult GetLowestCostAudioInModel(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelDispatchRequest request)
+        private static SingleAiModelDispatchResult GetLowestCostAudioInModel(IReadOnlyDictionary<OpenAIModel, AiModelDescriptor> modelRegistry, SingleAiModelDispatchRequest request)
         {
-            ModelCapability primaryCapability = ModelCapability.AudioIn;
+            AiModelCapability primaryCapability = AiModelCapability.AudioIn;
             return Plop(registry: modelRegistry, capability: primaryCapability);
         }
 
@@ -189,11 +189,11 @@ namespace OpenAIApiClient.Registries.Dispatch
         /// </summary>
         /// <param name="modelRegistry">Model registry to filter from.</param>
         /// <param name="request">Dummy model router request required for delegate pattern.</param>
-        /// <returns>A <see cref="SingleModelDispatchResult"/> containing the resolved model descriptor.</returns>
+        /// <returns>A <see cref="SingleAiModelDispatchResult"/> containing the resolved model descriptor.</returns>
         /// <exception cref="InvalidOperationException">Thrown if model with required capabilities not found in registry.</exception>
-        private static SingleModelDispatchResult GetLowestCostAudioOutModel(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelDispatchRequest request)
+        private static SingleAiModelDispatchResult GetLowestCostAudioOutModel(IReadOnlyDictionary<OpenAIModel, AiModelDescriptor> modelRegistry, SingleAiModelDispatchRequest request)
         {
-            ModelCapability primaryCapability = ModelCapability.AudioOut;
+            AiModelCapability primaryCapability = AiModelCapability.AudioOut;
             return Plop(registry: modelRegistry, capability: primaryCapability);
         }
 
@@ -202,11 +202,11 @@ namespace OpenAIApiClient.Registries.Dispatch
         /// </summary>
         /// <param name="modelRegistry">Model registry to filter from.</param>
         /// <param name="request">Dummy model router request required for delegate pattern.</param>
-        /// <returns>A <see cref="SingleModelDispatchResult"/> containing the resolved model descriptor.</returns>
+        /// <returns>A <see cref="SingleAiModelDispatchResult"/> containing the resolved model descriptor.</returns>
         /// <exception cref="InvalidOperationException">Thrown if model with required capabilities not found in registry.</exception>
-        private static SingleModelDispatchResult GetLowestCostEmbeddingModel(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelDispatchRequest request)
+        private static SingleAiModelDispatchResult GetLowestCostEmbeddingModel(IReadOnlyDictionary<OpenAIModel, AiModelDescriptor> modelRegistry, SingleAiModelDispatchRequest request)
         {
-            ModelCapability primaryCapability = ModelCapability.Embedding;
+            AiModelCapability primaryCapability = AiModelCapability.Embedding;
             return Plop(registry: modelRegistry, capability: primaryCapability);
         }
 
@@ -215,11 +215,11 @@ namespace OpenAIApiClient.Registries.Dispatch
         /// </summary>
         /// <param name="modelRegistry">Model registry to filter from.</param>
         /// <param name="request">Dummy model router request required for delegate pattern.</param>
-        /// <returns>A <see cref="SingleModelDispatchResult"/> containing the resolved model descriptor.</returns>
+        /// <returns>A <see cref="SingleAiModelDispatchResult"/> containing the resolved model descriptor.</returns>
         /// <exception cref="InvalidOperationException">Thrown if model with required capabilities not found in registry.</exception>
-        private static SingleModelDispatchResult GetLowestCostModerationCapableModel(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry, SingleModelDispatchRequest request)
+        private static SingleAiModelDispatchResult GetLowestCostModerationCapableModel(IReadOnlyDictionary<OpenAIModel, AiModelDescriptor> modelRegistry, SingleAiModelDispatchRequest request)
         {
-            ModelCapability primaryCapability = ModelCapability.Moderation;
+            AiModelCapability primaryCapability = AiModelCapability.Moderation;
             return Plop(registry: modelRegistry, capability: primaryCapability);
         }
 
@@ -229,21 +229,21 @@ namespace OpenAIApiClient.Registries.Dispatch
         /// <param name="registry">Model registry to filter from.</param>
         /// <param name="capability">Primary capability to filter model descriptor(s) by.</param>
         /// <param name="sortingCapability">Optional secondary capability to prioritize in sorting.</param>
-        /// <returns>A <see cref="SingleModelDispatchResult"/> containing the resolved model descriptor.</returns>
+        /// <returns>A <see cref="SingleAiModelDispatchResult"/> containing the resolved model descriptor.</returns>
         /// <exception cref="InvalidOperationException">Thrown if model with required capabilities not found in registry.</exception>
-        private static SingleModelDispatchResult Plop(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> registry, ModelCapability capability, ModelCapability? sortingCapability = null)
+        private static SingleAiModelDispatchResult Plop(IReadOnlyDictionary<OpenAIModel, AiModelDescriptor> registry, AiModelCapability capability, AiModelCapability? sortingCapability = null)
         {
             // If no sorting capability is provided, use the primary capability for sorting ..
             sortingCapability ??= capability;
 
-            ModelDescriptor descriptor = registry.Values
+            AiModelDescriptor descriptor = registry.Values
                 .Where(m => m.Capabilities.Contains(capability))
-                .OrderByDescending(m => m.Capabilities.Contains((ModelCapability)sortingCapability))
+                .OrderByDescending(m => m.Capabilities.Contains((AiModelCapability)sortingCapability))
                 .ThenBy(m => m.Pricing.InputTokenCost)
                 .ThenBy(m => m.Pricing.OutputTokenCost)
                 .FirstOrDefault() ?? throw new InvalidOperationException($"Unable to find a {capability} model in the registry.");
 
-            return new SingleModelDispatchResult(descriptor);
+            return new SingleAiModelDispatchResult(descriptor);
         }
 
         /// <summary>
@@ -252,7 +252,7 @@ namespace OpenAIApiClient.Registries.Dispatch
         /// <param name="registry"></param>
         /// <param name="required"></param>
         /// <returns>List of ModelDescriptor(s) with required capabilities.</returns>
-        private static IEnumerable<ModelDescriptor> FilterByCapabilities(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> registry, IReadOnlyCollection<ModelCapability>? required)
+        private static IEnumerable<AiModelDescriptor> FilterByCapabilities(IReadOnlyDictionary<OpenAIModel, AiModelDescriptor> registry, IReadOnlyCollection<AiModelCapability>? required)
         {
             if (required is null || required.Count == 0)
             {

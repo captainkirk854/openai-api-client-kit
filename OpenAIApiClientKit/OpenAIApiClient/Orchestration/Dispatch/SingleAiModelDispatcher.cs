@@ -1,4 +1,4 @@
-﻿// <copyright file="SingleModelDispatcher.cs" company="854 Things (tm)">
+﻿// <copyright file="SingleAiModelDispatcher.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -12,26 +12,26 @@ namespace OpenAIApiClient.Orchestration.Dispatch
     using OpenAIApiClient.Registries.Dispatch;
 
     /// <summary>
-    /// <see cref="SingleModelDispatcher"/> provides intentional, criteria‑based delegation to select the correct model based on the provided request.
+    /// <see cref="SingleAiModelDispatcher"/> provides intentional, criteria‑based delegation to select the correct model based on the provided request.
     /// </summary>
     /// <param name="registry"></param>
-    public sealed class SingleModelDispatcher(IAIModelRegistry registry) : ISingleModelDispatcher
+    public sealed class SingleAiModelDispatcher(IAiModelRegistry registry) : ISingleAiModelDispatcher
     {
-        private readonly IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry = registry.GetRegistry();
+        private readonly IReadOnlyDictionary<OpenAIModel, AiModelDescriptor> modelRegistry = registry.GetRegistry();
 
         /// <summary>
         /// Evaluates request to select an appropriate model descriptor.
         /// </summary>
         /// <param name="request">The single model dispatch request containing strategy and constraints.</param>
-        /// <returns see cref="SingleModelDispatchResult">Selected model descriptor.</returns>
+        /// <returns see cref="SingleAiModelDispatchResult">Selected model descriptor.</returns>
         /// <exception cref="InvalidOperationException">Thrown if the context does not specify an explicit model.</exception>
-        public SingleModelDispatchResult Evaluate(SingleModelDispatchRequest request)
+        public SingleAiModelDispatchResult Evaluate(SingleAiModelDispatchRequest request)
         {
             // Validate input ..
             ArgumentNullException.ThrowIfNull(request);
 
             // Get the actual strategy handler definition to use as delegate ..
-            SingleModelStrategyHandler handler = SingleModelStrategies.Get(strategy: request.Strategy);
+            SingleAiModelStrategyHandler handler = SingleAiModelStrategies.Get(strategy: request.Strategy);
 
             // Invoke the handler to get the result containing the selected model ..
             return handler(modelRegistry: this.modelRegistry, request: request);

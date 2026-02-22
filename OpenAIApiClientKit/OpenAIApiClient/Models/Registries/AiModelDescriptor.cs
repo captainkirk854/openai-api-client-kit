@@ -1,4 +1,4 @@
-﻿// <copyright file="ModelDescriptor.cs" company="854 Things (tm)">
+﻿// <copyright file="AiModelDescriptor.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -6,16 +6,16 @@ namespace OpenAIApiClient.Models.Registries
 {
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Chat.Response.Completion;
-    using OpenAIApiClient.Registries.Models;
+    using OpenAIApiClient.Registries.AiModels;
 
     /// <summary>
     /// Model descriptor for OpenAI models.
     /// </summary>
     /// <remarks>
     ///  - Model is: 'internal set' so that only the registry builder can create valid instances.
-    ///  - Capabilities is immutable from the outside.
+    ///  - The 'Capabilities' property is immutable from the outside.
     /// </remarks>
-    public sealed class ModelDescriptor
+    public sealed class AiModelDescriptor
     {
         /// <summary>
         /// Gets the model name.
@@ -47,11 +47,11 @@ namespace OpenAIApiClient.Models.Registries
         /// <summary>
         /// Gets the capabilities of the model.
         /// </summary>
-        public IReadOnlySet<ModelCapability> Capabilities
+        public IReadOnlySet<AiModelCapability> Capabilities
         {
             get;
             init;
-        } = new HashSet<ModelCapability>();
+        } = new HashSet<AiModelCapability>();
 
         /// <summary>
         /// Gets the pricing information for the model.

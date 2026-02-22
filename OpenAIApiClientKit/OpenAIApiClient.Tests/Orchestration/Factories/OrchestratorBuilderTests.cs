@@ -14,14 +14,14 @@ namespace OpenAIApiClient.Tests.Orchestration.Factories
     public class OrchestratorBuilderTests
     {
         private MockChatClient client = default!;
-        private MockResponseHandler handler = default!;
+        private MockAiModelResponseHandler handler = default!;
         private MockOpenAIModels registry = default!;
 
         [TestInitialize]
         public void Init()
         {
             this.client = new MockChatClient(apiKey: "*fake*");
-            this.handler = new MockResponseHandler();
+            this.handler = new MockAiModelResponseHandler();
             this.registry = new MockOpenAIModels(models: new()
             {
                 { OpenAIModel.GPT4o, CreateModelDescriptor(OpenAIModel.GPT4o) },
@@ -42,10 +42,10 @@ namespace OpenAIApiClient.Tests.Orchestration.Factories
         }
 
         [TestMethod]
-        public async Task Build_Uses_Custom_SingleDispatcher()
+        public async Task Build_Uses_Custom_SingleAiModelDispatcher()
         {
             // Set up the mock dispatcher to always return a valid model descriptor for the test.
-            MockSingleModelDispatcher singleModelDispatcher = new()
+            MockSingleAiModelDispatcher singleModelDispatcher = new()
             {
                 ReturnedModel = CreateModelDescriptor(OpenAIModel.GPT4o),
             };
@@ -71,15 +71,15 @@ namespace OpenAIApiClient.Tests.Orchestration.Factories
         }
 
         [TestMethod]
-        public async Task Build_Uses_Custom_SingleExecutor()
+        public async Task Build_Uses_Custom_SingleAiModelExecutor()
         {
             // Set up the mock dispatcher to always return a valid model descriptor for the test.
-            MockSingleModelDispatcher singleModelDispatcher = new()
+            MockSingleAiModelDispatcher singleModelDispatcher = new()
             {
                 ReturnedModel = CreateModelDescriptor(OpenAIModel.GPT4o),
             };
 
-            MockSingleModelExecutor singleModelExecutor = new();
+            MockSingleAiModelExecutor singleModelExecutor = new();
 
             OrchestratorBuilder builder = new OrchestratorBuilder()
                                               .WithClient(this.client)
@@ -166,15 +166,15 @@ namespace OpenAIApiClient.Tests.Orchestration.Factories
         /// Creates a ModelDescriptor instance for the specified model name.
         /// </summary>
         /// <param name="name"></param>
-        /// <returns see cref="ModelDescriptor">.</returns>
-        private static ModelDescriptor CreateModelDescriptor(OpenAIModel name)
+        /// <returns see cref="AiModelDescriptor">.</returns>
+        private static AiModelDescriptor CreateModelDescriptor(OpenAIModel name)
         {
             // Use reflection to create an instance since the constructor is internal.
-            ModelDescriptor modelDescriptor = (ModelDescriptor)Activator.CreateInstance(typeof(ModelDescriptor), nonPublic: true)!;
+            AiModelDescriptor modelDescriptor = (AiModelDescriptor)Activator.CreateInstance(typeof(AiModelDescriptor), nonPublic: true)!;
 
             // Set the Name property using reflection since it has an internal setter.
-            typeof(ModelDescriptor)
-                .GetProperty(nameof(ModelDescriptor.Name))!
+            typeof(AiModelDescriptor)
+                .GetProperty(nameof(AiModelDescriptor.Name))!
                 .SetValue(modelDescriptor, name);
 
             return modelDescriptor;

@@ -1,4 +1,4 @@
-﻿// <copyright file="PromptContext.cs" company="854 Things (tm)">
+﻿// <copyright file="AiModelPromptContext.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -10,7 +10,7 @@ namespace OpenAIApiClient.Orchestration
     /// <summary>
     /// Defines the context of a prompt being sent to the AI model.
     /// </summary>
-    public sealed class PromptContext
+    public sealed class AiModelPromptContext
     {
         /// <summary>
         /// Gets the prompt to be sent to the model.

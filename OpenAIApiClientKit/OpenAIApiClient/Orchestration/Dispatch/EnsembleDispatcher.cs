@@ -15,9 +15,9 @@ namespace OpenAIApiClient.Orchestration.Dispatch
     /// <see cref="EnsembleDispatcher"/> provides intentional, criteria‑based delegation to select the correct model(s) based on the provided request.
     /// </summary>
     /// <param name="modelRegistry"></param>
-    public sealed class EnsembleDispatcher(IAIModelRegistry registry) : IEnsembleDispatcher
+    public sealed class EnsembleDispatcher(IAiModelRegistry registry) : IEnsembleDispatcher
     {
-        private readonly IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry = registry.GetRegistry();
+        private readonly IReadOnlyDictionary<OpenAIModel, AiModelDescriptor> modelRegistry = registry.GetRegistry();
 
         /// <summary>
         /// Evaluates a request to select the appropriate set of model descriptor(s).
@@ -55,7 +55,7 @@ namespace OpenAIApiClient.Orchestration.Dispatch
                 throw new InvalidOperationException("Custom ensemble requires at least one defined capability.");
             }
 
-            List<ModelDescriptor> models = [.. this.modelRegistry.Values
+            List<AiModelDescriptor> models = [.. this.modelRegistry.Values
                 .Where(model => request.RequiredCapabilities.All(cap => model.Capabilities.Contains(cap)))
                 .OrderBy(model => model.Pricing.InputTokenCost)];
 

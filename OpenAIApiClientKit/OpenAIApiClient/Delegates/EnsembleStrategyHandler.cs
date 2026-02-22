@@ -13,5 +13,5 @@ namespace OpenAIApiClient.Delegates
     /// </summary>
     /// <param name="modelRegistry"></param>
     /// <returns cref="EnsembleDispatchResult">RouterResult.</returns>
-    public delegate EnsembleDispatchResult EnsembleStrategyHandler(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry);
+    public delegate EnsembleDispatchResult EnsembleStrategyHandler(IReadOnlyDictionary<OpenAIModel, AiModelDescriptor> modelRegistry);
 }

@@ -2,7 +2,7 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Tests.Registries
+namespace OpenAIApiClient.Tests.Registries.AiModels
 {
     using System;
     using System.Collections.Generic;
@@ -10,7 +10,7 @@ namespace OpenAIApiClient.Tests.Registries
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Registries;
-    using testClass = OpenAIApiClient.Registries.Models.OpenAIModels;
+    using testClass = OpenAIApiClient.Registries.AiModels.OpenAIModels;
 
     /// <summary>
     /// Tests for the <see cref="OpenAIModels"/> class.
@@ -19,12 +19,12 @@ namespace OpenAIApiClient.Tests.Registries
     public class OpenAIModels
     {
         // Access the registry from actual class under test ..
-        private static Dictionary<OpenAIModel, ModelDescriptor> Registry => new testClass().GetRegistry();
+        private static Dictionary<OpenAIModel, AiModelDescriptor> Registry => new testClass().GetRegistry();
 
         [TestMethod]
         public void All_Descriptors_Have_Matching_Model_Key()
         {
-            foreach ((OpenAIModel model, ModelDescriptor descriptor) in Registry)
+            foreach ((OpenAIModel model, AiModelDescriptor descriptor) in Registry)
             {
                 Assert.IsNotNull(descriptor, $"Descriptor for {model} is null");
                 Assert.AreEqual(model, descriptor.Name, $"Descriptor.Model mismatch for {model}");
@@ -34,7 +34,7 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void All_Descriptors_Have_NonNull_Capabilities()
         {
-            foreach ((OpenAIModel model, ModelDescriptor descriptor) in Registry)
+            foreach ((OpenAIModel model, AiModelDescriptor descriptor) in Registry)
             {
                 Assert.IsNotNull(descriptor.Capabilities, $"Capabilities for {model} must not be null");
             }
@@ -43,7 +43,7 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void All_Descriptors_Have_NonNull_Pricing()
         {
-            foreach ((OpenAIModel model, ModelDescriptor descriptor) in Registry)
+            foreach ((OpenAIModel model, AiModelDescriptor descriptor) in Registry)
             {
                 Assert.IsNotNull(descriptor.Pricing, $"Pricing for {model} must not be null");
             }
@@ -52,7 +52,7 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void All_Descriptors_Have_AtLeast_One_Capability()
         {
-            foreach ((OpenAIModel model, ModelDescriptor descriptor) in Registry)
+            foreach ((OpenAIModel model, AiModelDescriptor descriptor) in Registry)
             {
                 Assert.IsNotEmpty(descriptor.Capabilities, $"Capabilities for {model} must not be empty");
             }
@@ -69,7 +69,7 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void Registry_Is_Immutable()
         {
-            Dictionary<OpenAIModel, ModelDescriptor> dict = Registry;
+            Dictionary<OpenAIModel, AiModelDescriptor> dict = Registry;
             bool threw = false;
 
             try
@@ -109,11 +109,11 @@ namespace OpenAIApiClient.Tests.Registries
         [TestMethod]
         public void Capabilities_Are_Valid_Enum_Values()
         {
-            foreach ((OpenAIModel model, ModelDescriptor descriptor) in Registry)
+            foreach ((OpenAIModel model, AiModelDescriptor descriptor) in Registry)
             {
-                foreach (ModelCapability cap in descriptor.Capabilities)
+                foreach (AiModelCapability cap in descriptor.Capabilities)
                 {
-                    Assert.IsTrue(Enum.IsDefined(typeof(ModelCapability), cap), $"Invalid capability {cap} found in {model}");
+                    Assert.IsTrue(Enum.IsDefined(typeof(AiModelCapability), cap), $"Invalid capability {cap} found in {model}");
                 }
             }
         }

@@ -1,4 +1,4 @@
-﻿// <copyright file="AIModelDispatchDemo.cs" company="854 Things (tm)">
+﻿// <copyright file="AiModelDispatchDemo.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -7,15 +7,15 @@ namespace OpenAIApiClient.ConsoleApp.Demos
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Orchestration.Dispatch;
-    using OpenAIApiClient.Registries.Models;
+    using OpenAIApiClient.Registries.AiModels;
 
     /// <summary>
     /// Single and Ensemble Model Dispatch Selection Demo.
     /// </summary>
-    public static class AIModelDispatchDemo
+    public static class AiModelDispatchDemo
     {
         private static readonly OpenAIModels Models = new();
-        private static readonly SingleModelDispatcher SingleModelDispatcher = new(registry: Models);
+        private static readonly SingleAiModelDispatcher SingleModelDispatcher = new(registry: Models);
         private static readonly EnsembleDispatcher EnsembleDispatcher = new(registry: Models);
 
         public static void Run()
@@ -93,9 +93,9 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 return;
             }
 
-            SingleModelDispatchResult result = SingleModelDispatcher.Evaluate(new SingleModelDispatchRequest
+            SingleAiModelDispatchResult result = SingleModelDispatcher.Evaluate(new SingleAiModelDispatchRequest
             {
-                Strategy = SingleModelStrategy.Explicit,
+                Strategy = SingleAiModelStrategy.Explicit,
                 ExplicitModel = model,
             });
 
@@ -107,9 +107,9 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// </summary>
         private static void RunBestReasoningModelDispatch()
         {
-            SingleModelDispatchResult result = SingleModelDispatcher.Evaluate(new SingleModelDispatchRequest
+            SingleAiModelDispatchResult result = SingleModelDispatcher.Evaluate(new SingleAiModelDispatchRequest
             {
-                Strategy = SingleModelStrategy.BestReasoning,
+                Strategy = SingleAiModelStrategy.BestReasoning,
             });
 
             PrintSingleResult("Dispatch Result for: Best Reasoning Model", result);
@@ -120,10 +120,10 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// </summary>
         private static void RunLowestCostChatModelDispatch()
         {
-            SingleModelDispatchResult result = SingleModelDispatcher.Evaluate(new SingleModelDispatchRequest
+            SingleAiModelDispatchResult result = SingleModelDispatcher.Evaluate(new SingleAiModelDispatchRequest
             {
-                Strategy = SingleModelStrategy.LowestCost,
-                RequiredCapabilities = [ModelCapability.Chat],
+                Strategy = SingleAiModelStrategy.LowestCost,
+                RequiredCapabilities = [AiModelCapability.Chat],
             });
 
             PrintSingleResult("Dispatch Result for: Lowest Cost Chat Model", result);
@@ -134,9 +134,9 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// </summary>
         private static void RunBestVisionModelDispatch()
         {
-            SingleModelDispatchResult result = SingleModelDispatcher.Evaluate(new SingleModelDispatchRequest
+            SingleAiModelDispatchResult result = SingleModelDispatcher.Evaluate(new SingleAiModelDispatchRequest
             {
-                Strategy = SingleModelStrategy.BestVision,
+                Strategy = SingleAiModelStrategy.BestVision,
             });
 
             PrintSingleResult("Dispatch Result for: Best Vision Model", result);
@@ -191,7 +191,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         private static void RunCustomEnsembleModelDispatch()
         {
             Console.WriteLine("Enter required capability(s) (comma-separated):");
-            Console.WriteLine("Options: " + string.Join(", ", Enum.GetNames(typeof(ModelCapability))));
+            Console.WriteLine("Options: " + string.Join(", ", Enum.GetNames(typeof(AiModelCapability))));
 
             string? input = Console.ReadLine();
 
@@ -203,12 +203,12 @@ namespace OpenAIApiClient.ConsoleApp.Demos
 
             List<string> rawParts = [.. input.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim())];
 
-            List<ModelCapability> parsed = [];
+            List<AiModelCapability> parsed = [];
             List<string> invalid = [];
 
             foreach (string part in rawParts)
             {
-                if (Enum.TryParse(part, ignoreCase: true, out ModelCapability cap))
+                if (Enum.TryParse(part, ignoreCase: true, out AiModelCapability cap))
                 {
                     parsed.Add(cap);
                 }
@@ -239,7 +239,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             }
 
             // Validate that enough models exist BEFORE routing ..
-            List<ModelDescriptor> matchingModels = [.. Models.GetRegistry().Values.Where(m => parsed.All(c => m.Capabilities.Contains(c)))];
+            List<AiModelDescriptor> matchingModels = [.. Models.GetRegistry().Values.Where(m => parsed.All(c => m.Capabilities.Contains(c)))];
             if (matchingModels.Count < minRequiredCount)
             {
                 Console.WriteLine($"Only {matchingModels.Count} model(s) match those capabilities, but a minimum of {minRequiredCount} model(s) were requested.");
@@ -266,7 +266,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// </summary>
         /// <param name="title"></param>
         /// <param name="result"></param>
-        private static void PrintSingleResult(string title, SingleModelDispatchResult result)
+        private static void PrintSingleResult(string title, SingleAiModelDispatchResult result)
         {
             Console.WriteLine($"\n=== {title} ===");
             Console.WriteLine($"Model:     {result.Model.Name}");
@@ -283,7 +283,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         {
             Console.WriteLine($"\n=== {title} ===");
 
-            foreach (ModelDescriptor model in result.Models.Distinct())
+            foreach (AiModelDescriptor model in result.Models.Distinct())
             {
                 Console.WriteLine($"Model:     {model.Name}");
                 Console.WriteLine($"Capabilities: {string.Join(", ", model.Capabilities)}");

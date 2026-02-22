@@ -1,4 +1,4 @@
-﻿// <copyright file="MockSingleModelDispatcher.cs" company="854 Things (tm)">
+﻿// <copyright file="MockSingleAiModelDispatcher.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -8,7 +8,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Orchestration.Dispatch;
 
-    public sealed class MockSingleModelDispatcher : ISingleModelDispatcher
+    public sealed class MockSingleAiModelDispatcher : ISingleAiModelDispatcher
     {
         /// <summary>
         /// Gets a value indicating whether the executor was called - only in mock for test verification purposes.
@@ -22,7 +22,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         /// <summary>
         /// Gets or sets the model descriptor to be returned by the router - only in mock for test verification purposes.
         /// </summary>
-        public ModelDescriptor ReturnedModel
+        public AiModelDescriptor ReturnedModel
         {
             get;
             set;
@@ -31,7 +31,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         /// <summary>
         /// Gets the last request received by the router - only in mock for test verification purposes.
         /// </summary>
-        public SingleModelDispatchRequest? LastRequest
+        public SingleAiModelDispatchRequest? LastRequest
         {
             get;
             private set;
@@ -41,12 +41,12 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         /// Routes the request to a model.
         /// </summary>
         /// <param name="request"></param>
-        /// <returns see cref="SingleModelDispatchResult">.</returns>
-        public SingleModelDispatchResult Evaluate(SingleModelDispatchRequest request)
+        /// <returns see cref="SingleAiModelDispatchResult">.</returns>
+        public SingleAiModelDispatchResult Evaluate(SingleAiModelDispatchRequest request)
         {
             this.WasCalled = true;
             this.LastRequest = request;
-            return new SingleModelDispatchResult(this.ReturnedModel);
+            return new SingleAiModelDispatchResult(this.ReturnedModel);
         }
     }
 }

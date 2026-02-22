@@ -1,16 +1,16 @@
-﻿// <copyright file="AIModelResponseCollator.cs" company="854 Things (tm)">
+﻿// <copyright file="AiModelResponseCollator.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
 namespace OpenAIApiClient.Orchestration
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Registries.Models;
+    using OpenAIApiClient.Registries.AiModels;
 
     /// <summary>
     /// Represents a collated response generated from one or more ai model responses.
     /// </summary>
-    public sealed class AIModelResponseCollator
+    public sealed class AiModelResponseCollator
     {
         /// <summary>
         /// Gets the name of the model used to generate the final response.
@@ -33,7 +33,7 @@ namespace OpenAIApiClient.Orchestration
         /// <summary>
         /// Gets the list of all model responses.
         /// </summary>
-        public IReadOnlyList<AIModelResponse> SourceResponses
+        public IReadOnlyList<AiModelResponse> SourceResponses
         {
             get;
             init;

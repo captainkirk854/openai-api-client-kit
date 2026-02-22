@@ -1,4 +1,4 @@
-﻿// <copyright file="SingleModelExecutionContext.cs" company="854 Things (tm)">
+﻿// <copyright file="SingleAiModelExecutionContext.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -15,7 +15,7 @@ namespace OpenAIApiClient.Orchestration.Execution
     /// <param name="prompt"></param>
     /// <param name="outputFormat"></param>
     /// <param name="model"></param>
-    public sealed class SingleModelExecutionContext(string prompt, OutputFormat outputFormat, ModelDescriptor model) : IExecutionContext
+    public sealed class SingleAiModelExecutionContext(string prompt, OutputFormat outputFormat, AiModelDescriptor model) : IExecutionContext
     {
         /// <summary>
         /// Gets the prompt to be sent to the model.
@@ -36,7 +36,7 @@ namespace OpenAIApiClient.Orchestration.Execution
         /// <summary>
         /// Gets the model to be executed.
         /// </summary>
-        public ModelDescriptor Model
+        public AiModelDescriptor Model
         {
             get;
         } = model;
@@ -44,6 +44,6 @@ namespace OpenAIApiClient.Orchestration.Execution
         /// <summary>
         /// Gets the list of models to be executed.
         /// </summary>
-        public IReadOnlyList<ModelDescriptor> Models => [this.Model];
+        public IReadOnlyList<AiModelDescriptor> Models => [this.Model];
     }
 }

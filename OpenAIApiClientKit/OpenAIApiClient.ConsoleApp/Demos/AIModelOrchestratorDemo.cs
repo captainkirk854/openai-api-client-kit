@@ -1,4 +1,4 @@
-﻿// <copyright file="AIModelOrchestratorDemo.cs" company="854 Things (tm)">
+﻿// <copyright file="AiModelOrchestratorDemo.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -9,9 +9,9 @@ namespace OpenAIApiClient.ConsoleApp.Demos
     using OpenAIApiClient.Orchestration;
     using OpenAIApiClient.Orchestration.Dispatch;
     using OpenAIApiClient.Orchestration.Factories;
-    using OpenAIApiClient.Registries.Models;
+    using OpenAIApiClient.Registries.AiModels;
 
-    public static class AIModelOrchestratorDemo
+    public static class AiModelOrchestratorDemo
     {
         public static async Task RunAsync(ChatClient client, string prompt, CancellationToken cancelToken = default)
         {
@@ -21,7 +21,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             // Create the orchestrator with all the components using fluent orchestrator builder ..
             Orchestrator orchestrator = new OrchestratorBuilder()
                                             .WithClient(client)
-                                            .WithResponseHandler(new MockAIModelResponseHandler())
+                                            .WithResponseHandler(new AiModelResponseHandlerDemo())
                                             .WithModelRegistry(new OpenAIModels())
                                             .WithRequestBuilder(new ClientRequestBuilder().WithDefaults())
                                             .Build();
@@ -35,9 +35,9 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 UseEnsemble = false,
                 Prompt = prompt,
                 OutputFormat = OutputFormat.PlainText,
-                SingleModelRequest = new SingleModelDispatchRequest
+                SingleModelRequest = new SingleAiModelDispatchRequest
                 {
-                    Strategy = SingleModelStrategy.BestReasoning,
+                    Strategy = SingleAiModelStrategy.BestReasoning,
                 },
             };
 
@@ -52,9 +52,9 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 UseEnsemble = false,
                 Prompt = prompt,
                 OutputFormat = OutputFormat.PlainText,
-                SingleModelRequest = new SingleModelDispatchRequest
+                SingleModelRequest = new SingleAiModelDispatchRequest
                 {
-                    Strategy = SingleModelStrategy.Explicit,
+                    Strategy = SingleAiModelStrategy.Explicit,
                     ExplicitModel = OpenAIModel.GPT4o_Mini,
                 },
             };
@@ -92,8 +92,8 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                     Strategy = EnsembleStrategy.Custom,
                     RequiredCapabilities =
                     [
-                        ModelCapability.Text,
-                        ModelCapability.Chat,
+                        AiModelCapability.Text,
+                        AiModelCapability.Chat,
                     ],
                 },
             };

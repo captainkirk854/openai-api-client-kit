@@ -15,7 +15,7 @@ namespace OpenAIApiClient.Orchestration.Execution
     /// <param name="prompt"></param>
     /// <param name="outputFormat"></param>
     /// <param name="models"></param>
-    public sealed class EnsembleExecutionContext(string prompt, OutputFormat outputFormat, IReadOnlyList<ModelDescriptor> models) : IExecutionContext
+    public sealed class EnsembleExecutionContext(string prompt, OutputFormat outputFormat, IReadOnlyList<AiModelDescriptor> models) : IExecutionContext
     {
         /// <summary>
         /// Gets the prompt to be sent to the model.
@@ -36,7 +36,7 @@ namespace OpenAIApiClient.Orchestration.Execution
         /// <summary>
         /// Gets the list of models to be executed.
         /// </summary>
-        public IReadOnlyList<ModelDescriptor> Models
+        public IReadOnlyList<AiModelDescriptor> Models
         {
             get;
         } = models;

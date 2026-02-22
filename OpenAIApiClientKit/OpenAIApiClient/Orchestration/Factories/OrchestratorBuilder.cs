@@ -51,12 +51,12 @@ namespace OpenAIApiClient.Orchestration.Factories
     public sealed class OrchestratorBuilder
     {
         private ChatClient client = default!;
-        private IResponseHandler responseHandler = default!;
-        private IAIModelRegistry? registry;
+        private IAiModelResponseHandler responseHandler = default!;
+        private IAiModelRegistry? registry;
         private ClientRequestBuilder? requestBuilder;
-        private ISingleModelDispatcher? singleModelDispatcher;
+        private ISingleAiModelDispatcher? singleModelDispatcher;
         private IEnsembleDispatcher? ensembleDispatcher;
-        private ISingleModelExecutor? singleModelExecutor;
+        private ISingleAiModelExecutor? singleModelExecutor;
         private IEnsembleExecutor? ensembleExecutor;
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace OpenAIApiClient.Orchestration.Factories
         /// </summary>
         /// <param name="handler">The IResponseHandler instance to use for processing model responses. If not set, a default handler that returns raw model responses will be used.</param>
         /// <returns see cref="OrchestratorBuilder">The builder instance, for chaining.</returns>
-        public OrchestratorBuilder WithResponseHandler(IResponseHandler handler)
+        public OrchestratorBuilder WithResponseHandler(IAiModelResponseHandler handler)
         {
             this.responseHandler = handler;
             return this;
@@ -91,7 +91,7 @@ namespace OpenAIApiClient.Orchestration.Factories
         /// </summary>
         /// <param name="registry">The IModelRegistry instance to use for model lookups. If not set, a default registry containing OpenAI models will be used.</param>
         /// <returns see cref="OrchestratorBuilder">The builder instance, for chaining.</returns>
-        public OrchestratorBuilder WithModelRegistry(IAIModelRegistry registry)
+        public OrchestratorBuilder WithModelRegistry(IAiModelRegistry registry)
         {
             this.registry = registry;
             return this;
@@ -113,7 +113,7 @@ namespace OpenAIApiClient.Orchestration.Factories
         /// </summary>
         /// <param name="dispatcher">The ISingleModelDispatcher instance to use for dispatching single-model requests. If not set, a default dispatcher that uses the model registry to find the most capable model for the request will be used.</param>
         /// <returns see cref="OrchestratorBuilder">The builder instance, for chaining.</returns>
-        public OrchestratorBuilder WithSingleModelDispatcher(ISingleModelDispatcher dispatcher)
+        public OrchestratorBuilder WithSingleModelDispatcher(ISingleAiModelDispatcher dispatcher)
         {
             this.singleModelDispatcher = dispatcher;
             return this;
@@ -135,7 +135,7 @@ namespace OpenAIApiClient.Orchestration.Factories
         /// </summary>
         /// <param name="executor">The ISingleModelExecutor instance to use for executing single-model requests. If not set, a default executor that sends requests to the OpenAI API using the provided ChatClient will be used.</param>
         /// <returns see cref="OrchestratorBuilder">The builder instance, for chaining.</returns>
-        public OrchestratorBuilder WithSingleModelExecutor(ISingleModelExecutor executor)
+        public OrchestratorBuilder WithSingleModelExecutor(ISingleAiModelExecutor executor)
         {
             this.singleModelExecutor = executor;
             return this;
@@ -169,17 +169,17 @@ namespace OpenAIApiClient.Orchestration.Factories
             }
 
             // Use factory defaults if caller didn’t override
-            IAIModelRegistry registry = this.registry ?? AIModelRegistryFactory.Create();
+            IAiModelRegistry registry = this.registry ?? AiModelRegistryFactory.Create();
             ClientRequestBuilder requestBuilder = this.requestBuilder ?? RequestBuilderFactory.CreateDefault();
 
             // Create Dispatchers - Use overrides if provided, otherwise fall back to DispatcherFactory ..
-            (SingleModelDispatcher factorySingleModelDispatcher, EnsembleDispatcher defaultEnsembleDispatcher) = DispatcherFactory.Create(registry: registry);
-            ISingleModelDispatcher singleModelDispatcher = this.singleModelDispatcher ?? factorySingleModelDispatcher;
+            (SingleAiModelDispatcher factorySingleModelDispatcher, EnsembleDispatcher defaultEnsembleDispatcher) = DispatcherFactory.Create(registry: registry);
+            ISingleAiModelDispatcher singleModelDispatcher = this.singleModelDispatcher ?? factorySingleModelDispatcher;
             IEnsembleDispatcher ensembleDispatcher = this.ensembleDispatcher ?? defaultEnsembleDispatcher;
 
             // Create Executors - Use overrides if provided, otherwise fall back to ExecutorFactory ..
-            (SingleModelExecutor factorySingleModelExecutor, EnsembleExecutor defaultEnsembleExecutor) = ExecutorFactory.Create(client: this.client);
-            ISingleModelExecutor singleModelExecutor = this.singleModelExecutor ?? factorySingleModelExecutor;
+            (SingleAiModelExecutor factorySingleModelExecutor, EnsembleExecutor defaultEnsembleExecutor) = ExecutorFactory.Create(client: this.client);
+            ISingleAiModelExecutor singleModelExecutor = this.singleModelExecutor ?? factorySingleModelExecutor;
             IEnsembleExecutor ensembleExecutor = this.ensembleExecutor ?? defaultEnsembleExecutor;
 
             // Now that we have all the components (either from the caller or from defaults), create the Orchestrator instance ..

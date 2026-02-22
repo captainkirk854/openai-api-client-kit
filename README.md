@@ -124,9 +124,12 @@ You can configure retry behavior:
 ```ChatClient client = new(apiKey: apiKey, maxRetries: 5, baseDelayMs: 1000);```
 
 # 🧠 Implementation Examples
-See the ```OpenAIApiClient.ConsoleApp``` project for a simple console application demonstrating usage.
-- The ```ModelPromptDemo.cs``` file provides an example of how to prompt different models and handle their responses (non-streaming and streaming).)
-- The ```OptimalModelSelectionDemo.cs``` file provides an example as to how to select the best model based on capabilities and cost.
+See the `OpenAIApiClient.ConsoleApp` project for a simple console application demonstrating usage.
+- `AiModelChatClientDemo` - demonstrates basic implementation of the ChatClient to send a prompt and receive a response.
+- `AIModelDispatchDemo` - demonstrates using the dispatchers to select models based on strategies (e.g., best reasoning model, lowest cost model).)
+- `AIModelBestResponseDemo` - demonstrates using the orchestrator to get the "best" response from lowest-cost and fast-inferencing model(s).
+- `AIModelOrchestratorDemo` - demonstrates using the orchestrator with a custom request and response handler.
+- `AiModelResponseHandlerDemo` - demonstrates implementing a custom response handler to format the output.`
 
 # 🧪 Testing Your Setup
 
@@ -349,7 +352,7 @@ Example:
 OpenAIModel.GPT4_1 → "gpt-4.1"
 
 ## 🧠 3. Capability System
-A flexible ```ModelCapability``` enum has been defined to represent what each model can do:
+A flexible ```AiModelCapability``` enum has been defined to represent what each model can do:
 - Text / Chat
 - Reasoning
 - Vision
@@ -386,7 +389,7 @@ All values were left as placeholders to populate with real pricing when necessar
 
 ## 🗂️ 6. Combined Model Registry
 We end up with a fully integrated registry:
-```Dictionary<OpenAIModel, ModelDescriptor>```
+```Dictionary<OpenAIModel, AiModelDescriptor>```
 
 Each entry includes:
 - The model’s enum
@@ -541,8 +544,8 @@ Strategy → StrategyHandler
 
 A strategy handler is a pure function:
 ```
-(registry, request) → ModelDescriptor
-(registry, request) → List<ModelDescriptor>
+(registry, request) → AiModelDescriptor
+(registry, request) → List<AiModelDescriptor>
 ```
 This design allows new strategies to be added without modifying dispatcher code.
 
@@ -564,8 +567,8 @@ This layer is intentionally thin — it delegates all decision‑making to dispa
 
 ## ⚙️ Execution Layer
 The execution layer runs the selected model(s):
-- ISingleModelExecutor
-- IEnsembleExecutor
+- `ISingleAiModelExecutor`
+- `IEnsembleExecutor`
 
 Single‑model execution is straightforward.
 Ensemble execution runs models in parallel, then aggregates results.
@@ -586,7 +589,7 @@ All responses flow through an IResponseHandler, which formats or merges them int
 
 ## The Single‑Model and Ensemble Dispatchers for OpenAI Model Selection
 This architecture has a robust, extensible, and deterministic model dispatching architecture. The system revolves around two key components:
-- Single Model Dispatcher
+- Single Ai Model Dispatcher
 - Ensemble Dispatcher
 
 - Both dispatchers use strategy registries to evaluate incoming requests and select the most appropriate OpenAI model(s) for execution.
@@ -607,18 +610,18 @@ The result is a clean, declarative, and future‑proof orchestration pipeline.
     - Receives the model registry
     - Receives the dispatcher request
     - Returns:
-        - A single ModelDescriptor, or
-        - A list of ModelDescriptor objects
+        - A single `AiModelDescriptor`, or
+        - A list of `AiModelDescriptor` objects
     
         - This enables a wide range of selection behaviors without modifying dispatcher code.
 
 #### Example Strategy Pattern
 ```csharp
-ModelDispatchingStrategyRegistry.Register(
-    ModelDispatchingStrategy.BestReasoning,
+SingleAiModelStrategies.Register(
+    AiModelDispatchingStrategy.BestReasoning,
     (registry, request) =>
         registry.Values
-            .Where(m => m.Capabilities.Contains(ModelCapability.Reasoning))
+            .Where(m => m.Capabilities.Contains(AiModelCapability.Reasoning))
             .OrderByDescending(m => m.Generation)
             .First());
 ```
@@ -633,15 +636,15 @@ Purpose
 
 Interface:
 
-    public interface ISingleModelDispatcher
+    public interface ISingleAiModelDispatcher
     {
-        SingleModelDispatcherResult Evaluate(ModelDispatcherRequest request);
+        SingleAiModelDispatchResult Evaluate(SingleAiModelDispatchRequest request);
     }
 
 Implementation Highlights
-- Accepts a SingleModelDispatcherRequest
+- Accepts a `SingleAiModelDispatchRequest`
 - Looks up the correct strategy handler from the registry
-- Returns a SingleModelDispatcherResult containing the chosen ModelDescriptor
+- Returns a `SingleAiModelDispatchResult` containing the chosen `AiModelDescriptor`
 
 Benefits
 - Clean separation of concerns
@@ -687,9 +690,9 @@ The Orchestrator coordinates the entire flow:
 - Wraps the result in an ExecutionContext
 - Builds a PromptContext containing a ChatCompletionRequest
 - Executes via:
-    - ISingleModelExecutor
-    - IEnsembleExecutor
-- Passes results to an IResponseHandler
+    - `ISingleAiModelExecutor`
+    - `IEnsembleExecutor`
+- Passes results to an `IAiModelResponseHandler`
 
 This creates a clean pipeline:
 Dispatcher → ExecutionContext → OrchestrationContext → Executor → ResponseHandler
@@ -745,14 +748,14 @@ The result is a system that is:
                         No               Yes
                          |                |
                          v                v
-+--------------------------------+   +--------------------------------+
-| SingleModelDispatcher.Evaluate |   | EnsembleDispatcher.Evaluate    |
-+--------------------------------+   +--------------------------------+
++----------------------------------+   +--------------------------------+
+| SingleAiModelDispatcher.Evaluate |   | EnsembleDispatcher.Evaluate    |
++----------------------------------+   +--------------------------------+
                          |                |
                          v                v
-+--------------------------------+   +--------------------------------+
-|   SingleModelExecutionContext  |   |  EnsembleExecutionContext      |
-+--------------------------------+   +--------------------------------+
++-------------------------------+      +--------------------------------+
+| SingleAiModelExecutionContext |      |  EnsembleExecutionContext      |
++-------------------------------+      +--------------------------------+
                          |                |
                          v                v
 
@@ -768,24 +771,24 @@ The result is a system that is:
                          |                |
                          v                v
 +--------------------------------+   +--------------------------------+
-|   ISingleModelExecutor.Exec    |   |   IEnsembleExecutor.Exec       |
+|   ISingleAiModelExecutor.Exec  |   |   IEnsembleExecutor.Exec       |
 +--------------------------------+   +--------------------------------+
                          |                |
                          v                v
 +--------------------------------+   +--------------------------------+
-|         ModelResponse           |   |      List<ModelResponse>      |
+|         AiModelResponse        |   |      List<AiModelResponse>     |
 +--------------------------------+   +--------------------------------+
                          \                /
                           \              /
                            v            v
-                     +--------------------------------+
-                     |   IResponseHandler.Respond     |
-                     +--------------------------------+
-                                |
-                                v
-                     +------------------------------+
-                     |          Final Output        |
-                     +------------------------------+
+                 +---------------------------------+
+                 | IAiModelResponseHandler.Respond |
+                 +---------------------------------+
+                                 |
+                                 v
+                  +------------------------------+
+                  |          Final Output        |
+                  +------------------------------+
 ```
 
 

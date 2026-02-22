@@ -2,7 +2,7 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Registries.Models
+namespace OpenAIApiClient.Registries.AiModels
 {
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Interfaces.Registries;
@@ -33,10 +33,10 @@ namespace OpenAIApiClient.Registries.Models
     ///
     /// This registry can be easily extended to include additional models as they are released by OpenAI.
     /// </remarks>
-    public sealed class OpenAIModels : IAIModelRegistry
+    public sealed class OpenAIModels : IAiModelRegistry
     {
         // Dictionary to hold model descriptors ..
-        private readonly Dictionary<OpenAIModel, ModelDescriptor> models;
+        private readonly Dictionary<OpenAIModel, AiModelDescriptor> models;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OpenAIModels"/> class.
@@ -64,77 +64,77 @@ namespace OpenAIApiClient.Registries.Models
                 // -------------------------
                 // GPT‑5 Family
                 // -------------------------
-                [OpenAIModel.GPT5_2] = new ModelDescriptor
+                [OpenAIModel.GPT5_2] = new AiModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT5,
                     Domain = ModelDomain.Chat,
-                    Capabilities = new HashSet<ModelCapability>
+                    Capabilities = new HashSet<AiModelCapability>
                     {
-                        ModelCapability.Text,
-                        ModelCapability.Chat,
-                        ModelCapability.Reasoning,
-                        ModelCapability.HighPerformance,
+                        AiModelCapability.Text,
+                        AiModelCapability.Chat,
+                        AiModelCapability.Reasoning,
+                        AiModelCapability.HighPerformance,
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
                 },
 
-                [OpenAIModel.GPT5_2_Pro] = new ModelDescriptor
+                [OpenAIModel.GPT5_2_Pro] = new AiModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT5,
                     Domain = ModelDomain.Chat,
-                    Capabilities = new HashSet<ModelCapability>
+                    Capabilities = new HashSet<AiModelCapability>
                     {
-                        ModelCapability.Text,
-                        ModelCapability.Chat,
-                        ModelCapability.Reasoning,
-                        ModelCapability.HighPerformance,
+                        AiModelCapability.Text,
+                        AiModelCapability.Chat,
+                        AiModelCapability.Reasoning,
+                        AiModelCapability.HighPerformance,
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
                 },
 
-                [OpenAIModel.GPT5] = new ModelDescriptor
+                [OpenAIModel.GPT5] = new AiModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT5,
                     Domain = ModelDomain.Chat,
-                    Capabilities = new HashSet<ModelCapability>
+                    Capabilities = new HashSet<AiModelCapability>
                     {
-                        ModelCapability.Text,
-                        ModelCapability.Chat,
-                        ModelCapability.HighPerformance,
+                        AiModelCapability.Text,
+                        AiModelCapability.Chat,
+                        AiModelCapability.HighPerformance,
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
                 },
 
-                [OpenAIModel.GPT5_Mini] = new ModelDescriptor
+                [OpenAIModel.GPT5_Mini] = new AiModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT5,
                     Domain = ModelDomain.Chat,
-                    Capabilities = new HashSet<ModelCapability>
+                    Capabilities = new HashSet<AiModelCapability>
                     {
-                        ModelCapability.Text,
-                        ModelCapability.Chat,
-                        ModelCapability.LowCost,
+                        AiModelCapability.Text,
+                        AiModelCapability.Chat,
+                        AiModelCapability.LowCost,
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
                 },
 
-                [OpenAIModel.GPT5_Nano] = new ModelDescriptor
+                [OpenAIModel.GPT5_Nano] = new AiModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT5,
                     Domain = ModelDomain.Chat,
-                    Capabilities = new HashSet<ModelCapability>
+                    Capabilities = new HashSet<AiModelCapability>
                     {
-                        ModelCapability.Text,
-                        ModelCapability.Chat,
-                        ModelCapability.LowCost,
+                        AiModelCapability.Text,
+                        AiModelCapability.Chat,
+                        AiModelCapability.LowCost,
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
@@ -145,15 +145,15 @@ namespace OpenAIApiClient.Registries.Models
                 // GPT‑4 Family
                 // -------------------------
                 // GPT‑4.1 — Standard Reasoning Model
-                [OpenAIModel.GPT4_1] = new ModelDescriptor
+                [OpenAIModel.GPT4_1] = new AiModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT41,
                     Domain = ModelDomain.Chat,
-                    Capabilities = new HashSet<ModelCapability>
+                    Capabilities = new HashSet<AiModelCapability>
                     {
-                        ModelCapability.Text,
-                        ModelCapability.Chat,
-                        ModelCapability.Reasoning,
+                        AiModelCapability.Text,
+                        AiModelCapability.Chat,
+                        AiModelCapability.Reasoning,
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00001m,
@@ -162,32 +162,32 @@ namespace OpenAIApiClient.Registries.Models
                 },
 
                 // GPT‑4.1 Mini — Fast, Low‑Cost Model
-                [OpenAIModel.GPT4_1_Mini] = new ModelDescriptor
+                [OpenAIModel.GPT4_1_Mini] = new AiModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT41,
                     Domain = ModelDomain.Chat,
-                    Capabilities = new HashSet<ModelCapability>
+                    Capabilities = new HashSet<AiModelCapability>
                     {
-                        ModelCapability.Text,
-                        ModelCapability.Chat,
-                        ModelCapability.LowCost,
-                        ModelCapability.FastInference,
+                        AiModelCapability.Text,
+                        AiModelCapability.Chat,
+                        AiModelCapability.LowCost,
+                        AiModelCapability.FastInference,
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.0000015m,
                     outputTokenCost: 0.000002m),
                 },
 
-                [OpenAIModel.GPT4_1_Reasoning] = new ModelDescriptor
+                [OpenAIModel.GPT4_1_Reasoning] = new AiModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT41,
                     Domain = ModelDomain.Chat,
-                    Capabilities = new HashSet<ModelCapability>
+                    Capabilities = new HashSet<AiModelCapability>
                     {
-                        ModelCapability.Text,
-                        ModelCapability.Chat,
-                        ModelCapability.Reasoning,
-                        ModelCapability.HighPerformance,
+                        AiModelCapability.Text,
+                        AiModelCapability.Chat,
+                        AiModelCapability.Reasoning,
+                        AiModelCapability.HighPerformance,
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
@@ -196,31 +196,31 @@ namespace OpenAIApiClient.Registries.Models
                 },
 
                 // GPT‑4.1 Critic — Evaluation / Critique Model
-                [OpenAIModel.GPT4_1_Critic] = new ModelDescriptor
+                [OpenAIModel.GPT4_1_Critic] = new AiModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT41,
                     Domain = ModelDomain.Chat,
-                    Capabilities = new HashSet<ModelCapability>
+                    Capabilities = new HashSet<AiModelCapability>
                     {
-                        ModelCapability.Text,
-                        ModelCapability.Chat,
-                        ModelCapability.Reasoning,
-                        ModelCapability.Critic,
+                        AiModelCapability.Text,
+                        AiModelCapability.Chat,
+                        AiModelCapability.Reasoning,
+                        AiModelCapability.Critic,
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00001m,
                     outputTokenCost: 0.00003m),
                 },
 
-                [OpenAIModel.GPT4_Turbo] = new ModelDescriptor
+                [OpenAIModel.GPT4_Turbo] = new AiModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT4,
                     Domain = ModelDomain.Chat,
-                    Capabilities = new HashSet<ModelCapability>
+                    Capabilities = new HashSet<AiModelCapability>
                     {
-                        ModelCapability.Text,
-                        ModelCapability.Chat,
-                        ModelCapability.HighPerformance,
+                        AiModelCapability.Text,
+                        AiModelCapability.Chat,
+                        AiModelCapability.HighPerformance,
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
@@ -230,18 +230,18 @@ namespace OpenAIApiClient.Registries.Models
                 // -------------------------
                 // GPT‑4o Family
                 // -------------------------
-                [OpenAIModel.GPT4o] = new ModelDescriptor
+                [OpenAIModel.GPT4o] = new AiModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT41,
                     Domain = ModelDomain.Chat,
-                    Capabilities = new HashSet<ModelCapability>
+                    Capabilities = new HashSet<AiModelCapability>
                     {
-                        ModelCapability.Text,
-                        ModelCapability.Chat,
-                        ModelCapability.Vision,
-                        ModelCapability.AudioIn,
-                        ModelCapability.AudioOut,
-                        ModelCapability.HighPerformance,
+                        AiModelCapability.Text,
+                        AiModelCapability.Chat,
+                        AiModelCapability.Vision,
+                        AiModelCapability.AudioIn,
+                        AiModelCapability.AudioOut,
+                        AiModelCapability.HighPerformance,
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
@@ -249,17 +249,17 @@ namespace OpenAIApiClient.Registries.Models
                 },
 
                 // GPT‑4o Mini — NEW
-                [OpenAIModel.GPT4o_Mini] = new ModelDescriptor
+                [OpenAIModel.GPT4o_Mini] = new AiModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT4o,
                     Domain = ModelDomain.Chat,
-                    Capabilities = new HashSet<ModelCapability>
+                    Capabilities = new HashSet<AiModelCapability>
                     {
-                        ModelCapability.Text,
-                        ModelCapability.Chat,
-                        ModelCapability.Vision,
-                        ModelCapability.LowCost,
-                        ModelCapability.FastInference,
+                        AiModelCapability.Text,
+                        AiModelCapability.Chat,
+                        AiModelCapability.Vision,
+                        AiModelCapability.LowCost,
+                        AiModelCapability.FastInference,
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000015m,
@@ -269,15 +269,15 @@ namespace OpenAIApiClient.Registries.Models
                 // -------------------------
                 // GPT‑3.5 Family
                 // -------------------------
-                [OpenAIModel.GPT3_5_Turbo] = new ModelDescriptor
+                [OpenAIModel.GPT3_5_Turbo] = new AiModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT35,
                     Domain = ModelDomain.Chat,
-                    Capabilities = new HashSet<ModelCapability>
+                    Capabilities = new HashSet<AiModelCapability>
                     {
-                        ModelCapability.Text,
-                        ModelCapability.Chat,
-                        ModelCapability.LowCost,
+                        AiModelCapability.Text,
+                        AiModelCapability.Chat,
+                        AiModelCapability.LowCost,
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
@@ -287,39 +287,39 @@ namespace OpenAIApiClient.Registries.Models
                 // -------------------------
                 // Embedding Models
                 // -------------------------
-                [OpenAIModel.TextEmbedding_3_Large] = new ModelDescriptor
+                [OpenAIModel.TextEmbedding_3_Large] = new AiModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.Other,
                     Domain = ModelDomain.Embedding,
-                    Capabilities = new HashSet<ModelCapability>
+                    Capabilities = new HashSet<AiModelCapability>
                     {
-                        ModelCapability.Embedding,
+                        AiModelCapability.Embedding,
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
                 },
 
-                [OpenAIModel.TextEmbedding_3_Small] = new ModelDescriptor
+                [OpenAIModel.TextEmbedding_3_Small] = new AiModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.Other,
                     Domain = ModelDomain.Embedding,
-                    Capabilities = new HashSet<ModelCapability>
+                    Capabilities = new HashSet<AiModelCapability>
                     {
-                        ModelCapability.Embedding,
+                        AiModelCapability.Embedding,
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
                 },
 
-                [OpenAIModel.TextEmbedding_Ada_002] = new ModelDescriptor
+                [OpenAIModel.TextEmbedding_Ada_002] = new AiModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT3,
                     Domain = ModelDomain.Embedding,
-                    Capabilities = new HashSet<ModelCapability>
+                    Capabilities = new HashSet<AiModelCapability>
                     {
-                        ModelCapability.Embedding,
+                        AiModelCapability.Embedding,
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
@@ -329,65 +329,65 @@ namespace OpenAIApiClient.Registries.Models
                 // -------------------------
                 // Audio / TTS / Whisper
                 // -------------------------
-                [OpenAIModel.TTS_1] = new ModelDescriptor
+                [OpenAIModel.TTS_1] = new AiModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.Other,
                     Domain = ModelDomain.Audio,
-                    Capabilities = new HashSet<ModelCapability>
+                    Capabilities = new HashSet<AiModelCapability>
                     {
-                        ModelCapability.AudioOut,
+                        AiModelCapability.AudioOut,
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
                 },
 
-                [OpenAIModel.TTS_1_HD] = new ModelDescriptor
+                [OpenAIModel.TTS_1_HD] = new AiModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.Other,
                     Domain = ModelDomain.Audio,
-                    Capabilities = new HashSet<ModelCapability>
+                    Capabilities = new HashSet<AiModelCapability>
                     {
-                        ModelCapability.AudioOut,
+                        AiModelCapability.AudioOut,
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
                 },
 
-                [OpenAIModel.Whisper_1] = new ModelDescriptor
+                [OpenAIModel.Whisper_1] = new AiModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.Other,
                     Domain = ModelDomain.Audio,
-                    Capabilities = new HashSet<ModelCapability>
+                    Capabilities = new HashSet<AiModelCapability>
                     {
-                        ModelCapability.AudioIn,
+                        AiModelCapability.AudioIn,
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
                 },
 
-                [OpenAIModel.TTS1_1106] = new ModelDescriptor
+                [OpenAIModel.TTS1_1106] = new AiModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.Other,
                     Domain = ModelDomain.Audio,
-                    Capabilities = new HashSet<ModelCapability>
+                    Capabilities = new HashSet<AiModelCapability>
                     {
-                        ModelCapability.AudioOut,
+                        AiModelCapability.AudioOut,
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
                 },
 
-                [OpenAIModel.TTS1HD_1106] = new ModelDescriptor
+                [OpenAIModel.TTS1HD_1106] = new AiModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.Other,
                     Domain = ModelDomain.Audio,
-                    Capabilities = new HashSet<ModelCapability>
+                    Capabilities = new HashSet<AiModelCapability>
                     {
-                        ModelCapability.AudioOut,
+                        AiModelCapability.AudioOut,
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
@@ -397,13 +397,13 @@ namespace OpenAIApiClient.Registries.Models
                 // -------------------------
                 // Image Models
                 // -------------------------
-                [OpenAIModel.DALL_E_3] = new ModelDescriptor
+                [OpenAIModel.DALL_E_3] = new AiModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.Other,
                     Domain = ModelDomain.Image,
-                    Capabilities = new HashSet<ModelCapability>
+                    Capabilities = new HashSet<AiModelCapability>
                     {
-                        ModelCapability.ImageGeneration,
+                        AiModelCapability.ImageGeneration,
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
@@ -413,31 +413,31 @@ namespace OpenAIApiClient.Registries.Models
                 // -------------------------
                 // Open‑Weight Models
                 // -------------------------
-                [OpenAIModel.O1] = new ModelDescriptor
+                [OpenAIModel.O1] = new AiModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.Other,
                     Domain = ModelDomain.Chat,
-                    Capabilities = new HashSet<ModelCapability>
+                    Capabilities = new HashSet<AiModelCapability>
                     {
-                        ModelCapability.Text,
-                        ModelCapability.Chat,
-                        ModelCapability.OpenWeight,
+                        AiModelCapability.Text,
+                        AiModelCapability.Chat,
+                        AiModelCapability.OpenWeight,
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
                 },
 
-                [OpenAIModel.O1_Mini] = new ModelDescriptor
+                [OpenAIModel.O1_Mini] = new AiModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.Other,
                     Domain = ModelDomain.Chat,
-                    Capabilities = new HashSet<ModelCapability>
+                    Capabilities = new HashSet<AiModelCapability>
                     {
-                        ModelCapability.Text,
-                        ModelCapability.Chat,
-                        ModelCapability.OpenWeight,
-                        ModelCapability.LowCost,
+                        AiModelCapability.Text,
+                        AiModelCapability.Chat,
+                        AiModelCapability.OpenWeight,
+                        AiModelCapability.LowCost,
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
@@ -447,13 +447,13 @@ namespace OpenAIApiClient.Registries.Models
                 // -------------------------
                 // Moderation
                 // -------------------------
-                [OpenAIModel.OmniModerationLatest] = new ModelDescriptor
+                [OpenAIModel.OmniModerationLatest] = new AiModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT4o,
                     Domain = ModelDomain.Moderation,
-                    Capabilities = new HashSet<ModelCapability>
+                    Capabilities = new HashSet<AiModelCapability>
                     {
-                        ModelCapability.Moderation,
+                        AiModelCapability.Moderation,
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
@@ -462,7 +462,7 @@ namespace OpenAIApiClient.Registries.Models
             };
 
             // Finalise registry, by using dictionary key value to auto-inject the "yet-to-be-set" Model property value for each model descriptor ..
-            foreach ((OpenAIModel model, ModelDescriptor descriptor) in this.models)
+            foreach ((OpenAIModel model, AiModelDescriptor descriptor) in this.models)
             {
                 descriptor.Name = model;
             }
@@ -471,35 +471,35 @@ namespace OpenAIApiClient.Registries.Models
         /// <summary>
         /// Gets the complete model registry dictionary ..
         /// </summary>
-        /// <returns see cref="Dictionary(OpenAIModel, ModelDescriptor)">.</returns>
-        public Dictionary<OpenAIModel, ModelDescriptor> GetRegistry() => this.models;
+        /// <returns see cref="Dictionary(OpenAIModel, AiModelDescriptor)">.</returns>
+        public Dictionary<OpenAIModel, AiModelDescriptor> GetRegistry() => this.models;
 
         /// <summary>
         /// Gets all registered model descriptors ..
         /// </summary>
-        /// <returns see cref="IEnumerable(ModelDescriptor)">.</returns>
-        public IEnumerable<ModelDescriptor> GetAll() => this.models.Values;
+        /// <returns see cref="IEnumerable(AiModelDescriptor)">.</returns>
+        public IEnumerable<AiModelDescriptor> GetAll() => this.models.Values;
 
         /// <summary>
         /// Gets the model descriptor for a specified model by its unique name, or null if not found.
         /// </summary>
         /// <param name="name"></param>
-        /// <returns see cref="ModelDescriptor">.</returns>
-        public ModelDescriptor? GetByName(string name) => this.models.Values.Where(m => m.Name.ToApiString() == name).FirstOrDefault();
+        /// <returns see cref="AiModelDescriptor">.</returns>
+        public AiModelDescriptor? GetByName(string name) => this.models.Values.Where(m => m.Name.ToApiString() == name).FirstOrDefault();
 
         /// <summary>
         /// Gets the model descriptor for a specified model ..
         /// </summary>
         /// <param name="model"></param>
-        /// <returns><see cref="ModelDescriptor"/>.</returns>
-        public ModelDescriptor Get(OpenAIModel model) => this.models[model];
+        /// <returns><see cref="AiModelDescriptor"/>.</returns>
+        public AiModelDescriptor Get(OpenAIModel model) => this.models[model];
 
         /// <summary>
         /// Returns all models that satisfy a capability predicate.
         /// </summary>
         /// <param name="predicate"></param>
-        /// <returns see cref="IEnumerable(ModelDescriptor)">.</returns>
-        public IEnumerable<ModelDescriptor> Find(Func<ModelDescriptor, bool> predicate)
+        /// <returns see cref="IEnumerable(AiModelDescriptor)">.</returns>
+        public IEnumerable<AiModelDescriptor> Find(Func<AiModelDescriptor, bool> predicate)
         {
             return this.models.Values.Where(predicate);
         }

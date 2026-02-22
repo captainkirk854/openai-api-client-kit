@@ -8,7 +8,7 @@ namespace OpenAIApiClient.Helpers.General
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Chat.Common;
     using OpenAIApiClient.Models.Chat.Request;
-    using OpenAIApiClient.Registries.Models;
+    using OpenAIApiClient.Registries.AiModels;
     using OpenAIApiClient.Registries.Output;
 
     /// <summary>

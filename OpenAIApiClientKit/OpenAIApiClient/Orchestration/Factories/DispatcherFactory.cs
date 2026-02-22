@@ -16,8 +16,8 @@ namespace OpenAIApiClient.Orchestration.Factories
         /// Creates instances of SingleModelDispatcher and EnsembleDispatcher using the provided model registry.
         /// </summary>
         /// <param name="registry"></param>
-        /// <returns see cref="(SingleModelDispatcher, EnsembleDispatcher)">Tuple containing the created dispatchers.</returns>
-        public static (SingleModelDispatcher, EnsembleDispatcher) Create(IAIModelRegistry registry)
-            => (new SingleModelDispatcher(registry: registry), new EnsembleDispatcher(registry: registry));
+        /// <returns see cref="(SingleAiModelDispatcher, EnsembleDispatcher)">Tuple containing the created dispatchers.</returns>
+        public static (SingleAiModelDispatcher, EnsembleDispatcher) Create(IAiModelRegistry registry)
+            => (new SingleAiModelDispatcher(registry: registry), new EnsembleDispatcher(registry: registry));
     }
 }

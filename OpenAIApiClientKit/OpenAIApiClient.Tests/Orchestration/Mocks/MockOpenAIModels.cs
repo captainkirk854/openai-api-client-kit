@@ -7,23 +7,23 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Interfaces.Registries;
     using OpenAIApiClient.Models.Registries;
-    using OpenAIApiClient.Registries.Models;
+    using OpenAIApiClient.Registries.AiModels;
 
     /// <summary>
     /// Provides a fake read-only registry of OpenAI models and their descriptors.
     /// </summary>
     /// <param name="models">A dictionary mapping OpenAI models to their descriptors.</param>
-    public sealed class MockOpenAIModels(Dictionary<OpenAIModel, ModelDescriptor> models) : IAIModelRegistry
+    public sealed class MockOpenAIModels(Dictionary<OpenAIModel, AiModelDescriptor> models) : IAiModelRegistry
     {
-        private readonly Dictionary<OpenAIModel, ModelDescriptor> models = models;
+        private readonly Dictionary<OpenAIModel, AiModelDescriptor> models = models;
 
-        public Dictionary<OpenAIModel, ModelDescriptor> GetRegistry() => this.models;
+        public Dictionary<OpenAIModel, AiModelDescriptor> GetRegistry() => this.models;
 
-        public IEnumerable<ModelDescriptor> GetAll() => this.models.Values;
+        public IEnumerable<AiModelDescriptor> GetAll() => this.models.Values;
 
-        public ModelDescriptor? GetByName(string name) => this.models.Values.Where(m => m.Name.ToApiString() == name).FirstOrDefault();
+        public AiModelDescriptor? GetByName(string name) => this.models.Values.Where(m => m.Name.ToApiString() == name).FirstOrDefault();
 
-        public IEnumerable<ModelDescriptor> Find(Func<ModelDescriptor, bool> predicate)
+        public IEnumerable<AiModelDescriptor> Find(Func<AiModelDescriptor, bool> predicate)
             => this.models.Values.Where(predicate);
     }
 }

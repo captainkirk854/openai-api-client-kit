@@ -31,13 +31,13 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         /// <summary>
         /// Gets or sets the responses to return when ExecuteAsync is called - only in mock class for test verification purposes.
         /// </summary>
-        public IReadOnlyList<AIModelResponse> ResponsesToReturn
+        public IReadOnlyList<AiModelResponse> ResponsesToReturn
         {
             get;
             set;
         } = default!;
 
-        public Task<IReadOnlyList<AIModelResponse>> ExecuteAsync(ClientRequestBuilder requestBuilder, IExecutionContext context, CancellationToken cancelToken)
+        public Task<IReadOnlyList<AiModelResponse>> ExecuteAsync(ClientRequestBuilder requestBuilder, IExecutionContext context, CancellationToken cancelToken)
         {
             this.WasCalled = true;
             this.LastContext = context;

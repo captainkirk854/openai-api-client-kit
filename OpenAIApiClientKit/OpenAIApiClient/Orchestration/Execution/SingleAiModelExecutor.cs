@@ -1,4 +1,4 @@
-﻿// <copyright file="SingleModelExecutor.cs" company="854 Things (tm)">
+﻿// <copyright file="SingleAiModelExecutor.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -16,7 +16,7 @@ namespace OpenAIApiClient.Orchestration.Execution
     /// Executes OpenAI models using the provided ChatClient.
     /// </summary>
     /// <param name="client"></param>
-    public sealed class SingleModelExecutor(ChatClient client) : ISingleModelExecutor
+    public sealed class SingleAiModelExecutor(ChatClient client) : ISingleAiModelExecutor
     {
         /// <summary>
         /// Executes the given model with the provided prompt context.
@@ -24,10 +24,10 @@ namespace OpenAIApiClient.Orchestration.Execution
         /// <param name="request">Chat Completion request.</param>
         /// <param name="cancelToken">Cancellation token.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains the model response.</returns>
-        public async Task<AIModelResponse> ExecuteAsync(ChatCompletionRequest request, CancellationToken cancelToken)
+        public async Task<AiModelResponse> ExecuteAsync(ChatCompletionRequest request, CancellationToken cancelToken)
         {
             // Initialise ..
-            ModelDescriptor model = request.ModelDescriptor;
+            AiModelDescriptor model = request.ModelDescriptor;
 
             // Start timing ..
             Stopwatch sw = Stopwatch.StartNew();
@@ -45,7 +45,7 @@ namespace OpenAIApiClient.Orchestration.Execution
                 {
                     throw new InvalidOperationException("The response from the model was null or contained no response choices.");
                 }
-                return new AIModelResponse
+                return new AiModelResponse
                 {
                     Model = model,
                     RawOutput = response.Choices[0].Message.Content!,
@@ -61,7 +61,7 @@ namespace OpenAIApiClient.Orchestration.Execution
                 sw.Stop();
 
                 // Return failed response ..
-                return new AIModelResponse
+                return new AiModelResponse
                 {
                     Model = model,
                     IsSuccessful = false,

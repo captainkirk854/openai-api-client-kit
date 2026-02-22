@@ -1,10 +1,10 @@
-﻿// <copyright file="ModelCapability.cs" company="854 Things (tm)">
+﻿// <copyright file="AiModelCapability.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
 namespace OpenAIApiClient.Enums
 {
-    public enum ModelCapability
+    public enum AiModelCapability
     {
         Reasoning,
         FastInference,

@@ -47,7 +47,7 @@ namespace OpenAIApiClient.ConsoleApp
                 switch (demoChoice)
                 {
                     case "1":
-                        await AIModelPromptDemo(client: client, cts: cts);
+                        await AIModelChatClientDemo(client: client, cts: cts);
                         break;
 
                     case "2":
@@ -97,7 +97,7 @@ namespace OpenAIApiClient.ConsoleApp
             Console.WriteLine();
 
             // Get best model response for the prompt ..
-            await Demos.AIModelBestResponseDemo.GetBestModelResponseAsync(client: client, prompt: prompt, cts: cts);
+            await Demos.AiModelBestResponseDemo.GetBestModelResponseAsync(client: client, prompt: prompt, cts: cts);
 
             Console.WriteLine("Press Enter to continue..");
             Console.ReadLine();
@@ -109,7 +109,7 @@ namespace OpenAIApiClient.ConsoleApp
         /// <param name="client"></param>
         /// <param name="cts"></param>
         /// <returns>Task.</returns>
-        private static async Task AIModelPromptDemo(ChatClient client, CancellationTokenSource cts)
+        private static async Task AIModelChatClientDemo(ChatClient client, CancellationTokenSource cts)
         {
             // Run regular demo starting with whether to use streaming or non-streaming modes ..
             bool isStreaming = SetBooleanPrompt(message: "Use streaming mode?", setTrue: 'y', setFalse: 'n');
@@ -176,13 +176,13 @@ namespace OpenAIApiClient.ConsoleApp
             Console.WriteLine();
 
             // Process user prompt with additional options ..
-            await Demos.AIModelPromptDemo.ProcessUserPromptAsync(client: client,
-                                                               isStreaming: isStreaming,
-                                                               userPrompt: userPrompt,
-                                                               isDeterministic: isDeterministic,
-                                                               outputFormat: outputFormatChoice,
-                                                               cts: cts,
-                                                               model: selectedModel);
+            await Demos.AiModelChatClientDemo.ProcessUserPromptAsync(client: client,
+                                                                     isStreaming: isStreaming,
+                                                                     userPrompt: userPrompt,
+                                                                     isDeterministic: isDeterministic,
+                                                                     outputFormat: outputFormatChoice,
+                                                                     cts: cts,
+                                                                     model: selectedModel);
         }
 
         /// <summary>
@@ -190,7 +190,7 @@ namespace OpenAIApiClient.ConsoleApp
         /// </summary>
         private static void AIModelDispatchDemo()
         {
-            Demos.AIModelDispatchDemo.Run();
+            Demos.AiModelDispatchDemo.Run();
         }
 
         /// <summary>
@@ -208,7 +208,7 @@ namespace OpenAIApiClient.ConsoleApp
             Console.WriteLine();
 
             // Run AI Orchestrator demo ..
-            await Demos.AIModelOrchestratorDemo.RunAsync(client: client, prompt: prompt, cancelToken: cts.Token);
+            await Demos.AiModelOrchestratorDemo.RunAsync(client: client, prompt: prompt, cancelToken: cts.Token);
 
             Console.WriteLine("Press Enter to continue..");
             Console.ReadLine();

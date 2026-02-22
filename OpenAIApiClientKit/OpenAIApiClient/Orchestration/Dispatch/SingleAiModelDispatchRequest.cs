@@ -1,4 +1,4 @@
-﻿// <copyright file="SingleModelDispatchRequest.cs" company="854 Things (tm)">
+﻿// <copyright file="SingleAiModelDispatchRequest.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -9,19 +9,19 @@ namespace OpenAIApiClient.Orchestration.Dispatch
     /// <summary>
     /// Defines a request to the single model router for selecting an appropriate model based on the specified criteria.
     /// </summary>
-    public sealed class SingleModelDispatchRequest
+    public sealed class SingleAiModelDispatchRequest
     {
         /// <summary>
         /// Gets the strategy to use (e.g., BestReasoning, LowestCost, Explicit).
         /// </summary>
-        public SingleModelStrategy Strategy
+        public SingleAiModelStrategy Strategy
         {
             get;
             init;
         }
 
         /// <summary>
-        /// Gets the Optional explicit model override (used only for <see cref="SingleModelStrategy.Explicit"/> strategy).
+        /// Gets the Optional explicit model override (used only for <see cref="SingleAiModelStrategy.Explicit"/> strategy).
         /// </summary>
         public OpenAIModel? ExplicitModel
         {
@@ -32,7 +32,7 @@ namespace OpenAIApiClient.Orchestration.Dispatch
         /// <summary>
         /// Gets the Optional required capabilities (e.g., Vision, AudioIn, Reasoning).
         /// </summary>
-        public IReadOnlyList<ModelCapability>? RequiredCapabilities
+        public IReadOnlyList<AiModelCapability>? RequiredCapabilities
         {
             get;
             init;

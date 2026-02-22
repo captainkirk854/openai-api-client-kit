@@ -20,7 +20,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
         public void Init()
         {
             // Important: Cleanup of custom handler registries on every test method start ..
-            SingleModelStrategies.ClearCustomHandlers();
+            SingleAiModelStrategies.ClearCustomHandlers();
             EnsembleStrategies.ClearCustomHandlers();
         }
 
@@ -28,7 +28,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
         public void Cleanup()
         {
             // Important: Cleanup of custom handler registries on every test method end ..
-            SingleModelStrategies.ClearCustomHandlers();
+            SingleAiModelStrategies.ClearCustomHandlers();
             EnsembleStrategies.ClearCustomHandlers();
         }
 
@@ -36,8 +36,8 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
         public void Evaluate_Throws_WhenRequestIsNull()
         {
             // Arrange
-            Dictionary<OpenAIModel, ModelDescriptor> internalRegistry = [];
-            IAIModelRegistry registry = new MockOpenAIModels(models: internalRegistry);
+            Dictionary<OpenAIModel, AiModelDescriptor> internalRegistry = [];
+            IAiModelRegistry registry = new MockOpenAIModels(models: internalRegistry);
             testClass dispatcher = new(registry: registry);
 
             // Act & Assert
@@ -57,10 +57,10 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
         {
             // Arrange
             OpenAIModel modelToUse = OpenAIModel.GPT4o;
-            IReadOnlyList<ModelCapability> capabilities = [ModelCapability.Reasoning];
+            IReadOnlyList<AiModelCapability> capabilities = [AiModelCapability.Reasoning];
 
             // Get the mock registry, the model descriptor and the expected result as a tuple ..
-            (IAIModelRegistry aiModels, ModelDescriptor _, EnsembleDispatchResult expected) = Cook(aiModel: modelToUse, capabilities: capabilities);
+            (IAiModelRegistry aiModels, AiModelDescriptor _, EnsembleDispatchResult expected) = Cook(aiModel: modelToUse, capabilities: capabilities);
 
             // Register a custom strategy handler
             EnsembleStrategies.RegisterCustomHandler(strategy: EnsembleStrategy.Reasoning, handler: _ => expected); // EnsembleStrategies.Register(strategy: EnsembleStrategy.Reasoning, handler: (IReadOnlyDictionary<OpenAIModel, ModelDescriptor> _) => expected);
@@ -93,12 +93,12 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
             OpenAIModel aiModel3 = OpenAIModel.GPT4_Turbo;
 
             // Create model descriptors ..
-            ModelDescriptor m1 = CreateDescriptor(aiModel1, 1.0m, [ModelCapability.Reasoning, ModelCapability.Vision]);
-            ModelDescriptor m2 = CreateDescriptor(aiModel2, 0.5m, [ModelCapability.Reasoning]);
-            ModelDescriptor m3 = CreateDescriptor(aiModel3, 2.0m, [ModelCapability.Vision]);
+            AiModelDescriptor m1 = CreateDescriptor(aiModel1, 1.0m, [AiModelCapability.Reasoning, AiModelCapability.Vision]);
+            AiModelDescriptor m2 = CreateDescriptor(aiModel2, 0.5m, [AiModelCapability.Reasoning]);
+            AiModelDescriptor m3 = CreateDescriptor(aiModel3, 2.0m, [AiModelCapability.Vision]);
 
             // Create a registry with the models ..
-            Dictionary<OpenAIModel, ModelDescriptor> internalRegistry = new()
+            Dictionary<OpenAIModel, AiModelDescriptor> internalRegistry = new()
             {
                 { aiModel1, m1 },
                 { aiModel2, m2 },
@@ -115,7 +115,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
             EnsembleDispatchRequest request = new()
             {
                 Strategy = EnsembleStrategy.Custom,
-                RequiredCapabilities = [ModelCapability.Reasoning],
+                RequiredCapabilities = [AiModelCapability.Reasoning],
             };
 
             // Act
@@ -132,7 +132,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
         public void Evaluate_CustomStrategy_Throws_WhenNoCapabilitiesProvided()
         {
             // Arrange
-            Dictionary<OpenAIModel, ModelDescriptor> registry = [];
+            Dictionary<OpenAIModel, AiModelDescriptor> registry = [];
             MockOpenAIModels aiModels = new(models: registry);
 
             testClass dispatcher = new(registry: aiModels);
@@ -160,10 +160,10 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
         {
             // Arrange
             OpenAIModel modelToUse = OpenAIModel.GPT4o;
-            IReadOnlyList<ModelCapability> capabilities = [ModelCapability.Reasoning];
+            IReadOnlyList<AiModelCapability> capabilities = [AiModelCapability.Reasoning];
 
             // Get the mock registry, the model descriptor and the expected result as a tuple ..
-            (IAIModelRegistry aiModels, ModelDescriptor _, EnsembleDispatchResult _) = Cook(aiModel: modelToUse, capabilities: capabilities);
+            (IAiModelRegistry aiModels, AiModelDescriptor _, EnsembleDispatchResult _) = Cook(aiModel: modelToUse, capabilities: capabilities);
 
             // Create the dispatcher ..
             testClass dispatcher = new(registry: aiModels);
@@ -172,7 +172,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
             EnsembleDispatchRequest request = new()
             {
                 Strategy = EnsembleStrategy.Custom,
-                RequiredCapabilities = [ModelCapability.Vision],
+                RequiredCapabilities = [AiModelCapability.Vision],
             };
 
             // Act & Assert
@@ -192,14 +192,14 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
         /// </summary>
         /// <param name="aiModel"></param>
         /// <param name="capabilities"></param>
-        /// <returns see cref="(IAIModelRegistry, ModelDescriptor, EnsembleDispatchResult)">.</returns>
-        private static (IAIModelRegistry, ModelDescriptor, EnsembleDispatchResult) Cook(OpenAIModel aiModel, IReadOnlyList<ModelCapability> capabilities)
+        /// <returns see cref="(IAiModelRegistry, AiModelDescriptor, EnsembleDispatchResult)">.</returns>
+        private static (IAiModelRegistry, AiModelDescriptor, EnsembleDispatchResult) Cook(OpenAIModel aiModel, IReadOnlyList<AiModelCapability> capabilities)
         {
             // Create the test model descriptor ..
-            ModelDescriptor m1 = CreateDescriptor(aiModel: aiModel, cost: 1.0m, capabilities: capabilities);
+            AiModelDescriptor m1 = CreateDescriptor(aiModel: aiModel, cost: 1.0m, capabilities: capabilities);
 
             // Define an internal registry with one, single entry for the test model ..
-            Dictionary<OpenAIModel, ModelDescriptor> internalRegistry = new()
+            Dictionary<OpenAIModel, AiModelDescriptor> internalRegistry = new()
             {
                 { aiModel, m1 },
             };
@@ -220,21 +220,21 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
         /// <param name="aiModel"></param>
         /// <param name="cost"></param>
         /// <param name="capabilities"></param>
-        /// <returns see cref="ModelDescriptor">.</returns>
-        private static ModelDescriptor CreateDescriptor(OpenAIModel aiModel, decimal cost, IEnumerable<ModelCapability> capabilities)
+        /// <returns see cref="AiModelDescriptor">.</returns>
+        private static AiModelDescriptor CreateDescriptor(OpenAIModel aiModel, decimal cost, IEnumerable<AiModelCapability> capabilities)
         {
             // Create the descriptor ..
-            ModelDescriptor descriptor = new()
+            AiModelDescriptor descriptor = new()
             {
-                Capabilities = new HashSet<ModelCapability>(capabilities),
+                Capabilities = new HashSet<AiModelCapability>(capabilities),
                 Pricing = new ModelPricing(cost, cost),
                 Domain = ModelDomain.Other,
                 Generation = OpenAIModelGeneration.Other,
             };
 
             // and set the descriptor's internal property "Name" via reflection
-            typeof(ModelDescriptor)
-                .GetProperty(name: nameof(ModelDescriptor.Name))!
+            typeof(AiModelDescriptor)
+                .GetProperty(name: nameof(AiModelDescriptor.Name))!
                 .SetValue(obj: descriptor, value: aiModel);
 
             return descriptor;

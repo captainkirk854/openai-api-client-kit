@@ -8,13 +8,13 @@ namespace OpenAIApiClient.Orchestration.Execution
     using OpenAIApiClient.Interfaces.Orchestration.Execution;
     using OpenAIApiClient.Models.Chat.Request;
 
-    public sealed class EnsembleExecutor(ISingleModelExecutor singleModelExecutor) : IEnsembleExecutor
+    public sealed class EnsembleExecutor(ISingleAiModelExecutor singleModelExecutor) : IEnsembleExecutor
     {
-        private readonly ISingleModelExecutor singleModelExecutor = singleModelExecutor;
+        private readonly ISingleAiModelExecutor singleModelExecutor = singleModelExecutor;
 
-        public async Task<IReadOnlyList<AIModelResponse>> ExecuteAsync(ClientRequestBuilder requestBuilder, IExecutionContext context, CancellationToken cancelToken)
+        public async Task<IReadOnlyList<AiModelResponse>> ExecuteAsync(ClientRequestBuilder requestBuilder, IExecutionContext context, CancellationToken cancelToken)
         {
-            IEnumerable<Task<AIModelResponse>> tasks = context.Models.Select(model =>
+            IEnumerable<Task<AiModelResponse>> tasks = context.Models.Select(model =>
             {
                 // Build the request by overriding the model in the request builder with the current model for this iteration of the loop ..
                 ChatCompletionRequest chatRequest = requestBuilder
@@ -25,7 +25,7 @@ namespace OpenAIApiClient.Orchestration.Execution
                 return this.singleModelExecutor.ExecuteAsync(request: chatRequest, cancelToken: cancelToken);
             });
 
-            AIModelResponse[] responses = await Task.WhenAll(tasks);
+            AiModelResponse[] responses = await Task.WhenAll(tasks);
             return responses;
         }
     }
