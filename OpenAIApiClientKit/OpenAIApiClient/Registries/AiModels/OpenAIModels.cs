@@ -178,40 +178,6 @@ namespace OpenAIApiClient.Registries.AiModels
                     outputTokenCost: 0.000002m),
                 },
 
-                [OpenAIModel.GPT4_1_Reasoning] = new AiModelDescriptor
-                {
-                    Generation = OpenAIModelGeneration.GPT41,
-                    Domain = ModelDomain.Chat,
-                    Capabilities = new HashSet<AiModelCapability>
-                    {
-                        AiModelCapability.Text,
-                        AiModelCapability.Chat,
-                        AiModelCapability.Reasoning,
-                        AiModelCapability.HighPerformance,
-                    },
-                    Pricing = new ModelPricing(
-                    inputTokenCost: 0.00000000m,
-                    outputTokenCost: 0.00000000m,
-                    reasoningTokenCost: 0.00000000m),
-                },
-
-                // GPT‑4.1 Critic — Evaluation / Critique Model
-                [OpenAIModel.GPT4_1_Critic] = new AiModelDescriptor
-                {
-                    Generation = OpenAIModelGeneration.GPT41,
-                    Domain = ModelDomain.Chat,
-                    Capabilities = new HashSet<AiModelCapability>
-                    {
-                        AiModelCapability.Text,
-                        AiModelCapability.Chat,
-                        AiModelCapability.Reasoning,
-                        AiModelCapability.Critic,
-                    },
-                    Pricing = new ModelPricing(
-                    inputTokenCost: 0.00001m,
-                    outputTokenCost: 0.00003m),
-                },
-
                 [OpenAIModel.GPT4_Turbo] = new AiModelDescriptor
                 {
                     Generation = OpenAIModelGeneration.GPT4,
@@ -442,6 +408,54 @@ namespace OpenAIApiClient.Registries.AiModels
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
+                },
+
+                [OpenAIModel.O3] = new AiModelDescriptor
+                {
+                    Generation = OpenAIModelGeneration.Other,
+                    Domain = ModelDomain.Chat,
+                    Capabilities = new HashSet<AiModelCapability>
+                    {
+                        AiModelCapability.Reasoning,
+                        AiModelCapability.HighPerformance,
+                        AiModelCapability.Critic,
+                    },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m,
+                    reasoningTokenCost: 0.00000000m),
+                },
+
+                [OpenAIModel.O3_Mini] = new AiModelDescriptor
+                {
+                    Generation = OpenAIModelGeneration.Other,
+                    Domain = ModelDomain.Chat,
+                    Capabilities = new HashSet<AiModelCapability>
+                    {
+                        AiModelCapability.Reasoning,
+                        AiModelCapability.HighPerformance,
+                        AiModelCapability.Critic,
+                    },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m,
+                    reasoningTokenCost: 0.00000000m),
+                },
+
+                [OpenAIModel.O4_Mini] = new AiModelDescriptor
+                {
+                    Generation = OpenAIModelGeneration.Other,
+                    Domain = ModelDomain.Chat,
+                    Capabilities = new HashSet<AiModelCapability>
+                    {
+                        AiModelCapability.Reasoning,
+                        AiModelCapability.HighPerformance,
+                        AiModelCapability.LowCost,
+                    },
+                    Pricing = new ModelPricing(
+                    inputTokenCost: 0.00000000m,
+                    outputTokenCost: 0.00000000m,
+                    reasoningTokenCost: 0.00000000m),
                 },
 
                 // -------------------------

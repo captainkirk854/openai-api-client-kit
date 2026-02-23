@@ -7,6 +7,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Helpers.General;
     using OpenAIApiClient.Orchestration;
+    using OpenAIApiClient.Orchestration.Consolidation;
     using OpenAIApiClient.Orchestration.Dispatch;
     using OpenAIApiClient.Orchestration.Execution;
     using OpenAIApiClient.Registries.AiModels;

@@ -38,8 +38,6 @@ namespace OpenAIApiClient.Registries.AiModels
                 // -------------------------
                 [OpenAIModel.GPT4_1] = "gpt-4.1",
                 [OpenAIModel.GPT4_1_Mini] = "gpt-4.1-mini",
-                [OpenAIModel.GPT4_1_Reasoning] = "gpt-4.1-reasoning",
-                [OpenAIModel.GPT4_1_Critic] = "gpt-4.1-critic",
                 [OpenAIModel.GPT4_Turbo] = "gpt-4-turbo",
 
                 // -------------------------
@@ -79,6 +77,9 @@ namespace OpenAIApiClient.Registries.AiModels
                 // -------------------------
                 [OpenAIModel.O1] = "o1",
                 [OpenAIModel.O1_Mini] = "o1-mini",
+                [OpenAIModel.O3] = "o3",
+                [OpenAIModel.O3_Mini] = "o3-mini",
+                [OpenAIModel.O4_Mini] = "o4-mini",
 
                 // -------------------------
                 // Moderation

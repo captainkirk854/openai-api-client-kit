@@ -39,8 +39,9 @@ namespace OpenAIApiClient.ConsoleApp
                 Console.WriteLine("2. AI Model Strategy Dispatch Demo");
                 Console.WriteLine("3. AI Model Best Response Demo");
                 Console.WriteLine("4. AI Model Orchestrator Demo");
+                Console.WriteLine("5. AI Advanced Get Best Model Response Demo");
 
-                Console.Write("Enter choice (1-4): ");
+                Console.Write("Enter choice (1-5): ");
                 string? demoChoice = Console.ReadLine();
                 Console.WriteLine();
 
@@ -60,6 +61,10 @@ namespace OpenAIApiClient.ConsoleApp
 
                     case "4":
                         await AIModelOrchestratorDemo(client: client, cts: cts);
+                        break;
+
+                    case "5":
+                        await AiAdvancedGetBestModelResponseDemo(client: client, cts: cts);
                         break;
 
                     default:
@@ -209,6 +214,27 @@ namespace OpenAIApiClient.ConsoleApp
 
             // Run AI Orchestrator demo ..
             await Demos.AiModelOrchestratorDemo.RunAsync(client: client, prompt: prompt, cancelToken: cts.Token);
+
+            Console.WriteLine("Press Enter to continue..");
+            Console.ReadLine();
+        }
+
+        /// <summary>
+        /// A demo implementation to showcase AI orchestration capabilities with multi-model consolidation to get the best response.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="cts"></param>
+        /// <returns>Task.</returns>
+        private static async Task AiAdvancedGetBestModelResponseDemo(ChatClient client, CancellationTokenSource cts)
+        {
+            string prompt = @"Explain Mahalanobis distance in simple terms suitable for a high school student.
+        //Focus on: what it is, why it matters, and its application in maths and statistics.";
+
+            Console.WriteLine($"Using Prompt: {prompt}");
+            Console.WriteLine();
+
+            // Run AI Orchestrator demo ..
+            await Demos.AiAdvancedEnsembleConsolidationDemo.GetBestModelResponseAsync(client: client, prompt: prompt, cts: cts);
 
             Console.WriteLine("Press Enter to continue..");
             Console.ReadLine();

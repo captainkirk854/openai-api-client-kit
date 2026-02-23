@@ -24,8 +24,6 @@ namespace OpenAIApiClient.Enums
         // -------------------------
         GPT4_1,
         GPT4_1_Mini,
-        GPT4_1_Reasoning,
-        GPT4_1_Critic,
         GPT4_Turbo,   // Optimized GPT-4 variant
 
         // -------------------------
@@ -65,6 +63,9 @@ namespace OpenAIApiClient.Enums
         // -------------------------
         O1,
         O1_Mini,
+        O3,
+        O3_Mini,
+        O4_Mini,
 
         // -------------------------
         // Moderation
