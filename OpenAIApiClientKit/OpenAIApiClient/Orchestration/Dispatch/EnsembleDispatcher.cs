@@ -50,9 +50,17 @@ namespace OpenAIApiClient.Orchestration.Dispatch
         /// <exception cref="InvalidOperationException">Thrown if no required capabilities are specified or if no models match the requested capabilities.</exception>
         private EnsembleDispatchResult BuildCustomEnsemble(EnsembleDispatchRequest request)
         {
+            // If no required capabilities are specified, use the explicitly defined models (if any) or throw an exception if none are provided.
             if (request.RequiredCapabilities is null || request.RequiredCapabilities.Count == 0)
             {
-                throw new InvalidOperationException("Custom ensemble requires at least one defined capability.");
+                // If no explicit models are provided, throw an exception since we cannot build an ensemble without criteria or specified models.
+                if (request.ExplicitModels is null || request.ExplicitModels.Count == 0)
+                {
+                    throw new InvalidOperationException("Custom ensemble requires at least one defined capability.");
+                }
+
+                // Otherwise, return the explicitly defined models as the ensemble result.
+                return new EnsembleDispatchResult(models: [.. request.ExplicitModels.Select(model => this.modelRegistry[model])]);
             }
 
             List<AiModelDescriptor> models = [.. this.modelRegistry.Values

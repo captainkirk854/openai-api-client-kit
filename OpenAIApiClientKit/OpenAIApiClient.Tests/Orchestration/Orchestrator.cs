@@ -9,6 +9,7 @@ namespace OpenAIApiClient.Tests.Orchestration
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Orchestration;
     using OpenAIApiClient.Orchestration.Dispatch;
+    using OpenAIApiClient.Orchestration.Response;
     using OpenAIApiClient.Tests.Orchestration.Mocks;
     using testClass = OpenAIApiClient.Orchestration.Orchestrator;
 

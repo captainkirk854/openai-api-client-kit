@@ -4,7 +4,7 @@
 
 namespace OpenAIApiClient.Models.Consolidation
 {
-    using OpenAIApiClient.Orchestration;
+    using OpenAIApiClient.Orchestration.Response;
 
     /// <summary>
     /// Represents a response that has been scored during heuristic evaluation.

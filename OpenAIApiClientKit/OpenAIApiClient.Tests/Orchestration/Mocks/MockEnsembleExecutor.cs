@@ -6,7 +6,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
 {
     using OpenAIApiClient.Helpers.General;
     using OpenAIApiClient.Interfaces.Orchestration.Execution;
-    using OpenAIApiClient.Orchestration;
+    using OpenAIApiClient.Orchestration.Response;
 
     public sealed class MockEnsembleExecutor : IEnsembleExecutor
     {

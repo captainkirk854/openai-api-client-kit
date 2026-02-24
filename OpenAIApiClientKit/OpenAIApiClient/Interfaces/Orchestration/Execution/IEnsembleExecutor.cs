@@ -5,7 +5,7 @@
 namespace OpenAIApiClient.Interfaces.Orchestration.Execution
 {
     using OpenAIApiClient.Helpers.General;
-    using OpenAIApiClient.Orchestration;
+    using OpenAIApiClient.Orchestration.Response;
 
     public interface IEnsembleExecutor
     {

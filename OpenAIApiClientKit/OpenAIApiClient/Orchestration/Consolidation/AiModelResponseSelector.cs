@@ -4,6 +4,8 @@
 
 namespace OpenAIApiClient.Orchestration.Consolidation
 {
+    using OpenAIApiClient.Orchestration.Response;
+
     public sealed class AiModelResponseSelector
     {
         /// <summary>

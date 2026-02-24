@@ -6,7 +6,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
 {
     using System.Text;
     using OpenAIApiClient.Interfaces.Orchestration;
-    using OpenAIApiClient.Orchestration;
+    using OpenAIApiClient.Orchestration.Response;
 
     /// <summary>
     /// Defines a Demo <see cref="IAiModelResponseHandler"/> for processing <see cref="AiModelResponse"/>.

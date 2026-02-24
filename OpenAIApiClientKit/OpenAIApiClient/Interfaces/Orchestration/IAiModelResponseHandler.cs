@@ -4,7 +4,7 @@
 
 namespace OpenAIApiClient.Interfaces.Orchestration
 {
-    using OpenAIApiClient.Orchestration;
+    using OpenAIApiClient.Orchestration.Response;
 
     public interface IAiModelResponseHandler
     {

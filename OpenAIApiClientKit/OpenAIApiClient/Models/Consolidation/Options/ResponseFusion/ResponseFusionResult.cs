@@ -5,7 +5,7 @@
 namespace OpenAIApiClient.Models.Consolidation.Options.ResponseFusion
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Orchestration;
+    using OpenAIApiClient.Orchestration.Response;
 
     /// <summary>
     /// Represents the result of response fusion consolidation strategy.

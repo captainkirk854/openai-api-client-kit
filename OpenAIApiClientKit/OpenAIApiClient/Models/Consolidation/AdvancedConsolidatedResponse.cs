@@ -5,7 +5,7 @@
 namespace OpenAIApiClient.Models.Consolidation
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Orchestration;
+    using OpenAIApiClient.Orchestration.Response;
 
     /// <summary>
     /// Represents the consolidated result from multiple models.

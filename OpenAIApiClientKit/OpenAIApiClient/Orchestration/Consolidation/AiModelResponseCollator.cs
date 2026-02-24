@@ -5,6 +5,7 @@
 namespace OpenAIApiClient.Orchestration.Consolidation
 {
     using OpenAIApiClient.Enums;
+    using OpenAIApiClient.Orchestration.Response;
     using OpenAIApiClient.Registries.AiModels;
 
     /// <summary>

@@ -7,98 +7,117 @@ namespace OpenAIApiClient.Orchestration.Consolidation
     using System.Diagnostics;
     using OpenAIApiClient;
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Helpers.General;
-    using OpenAIApiClient.Models.Chat.Request;
+    using OpenAIApiClient.Interfaces.Orchestration;
     using OpenAIApiClient.Models.Consolidation;
     using OpenAIApiClient.Models.Consolidation.Options.HeuristicScoring;
     using OpenAIApiClient.Models.Consolidation.Options.LLMJudge;
     using OpenAIApiClient.Models.Consolidation.Options.ResponseFusion;
-    using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Orchestration;
     using OpenAIApiClient.Orchestration.Consolidation.Options;
-    using OpenAIApiClient.Orchestration.Execution;
-    using OpenAIApiClient.Registries.AiModels;
+    using OpenAIApiClient.Orchestration.Dispatch;
+    using OpenAIApiClient.Orchestration.Factories;
+    using OpenAIApiClient.Orchestration.Response;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="AdvancedEnsembleExecutor"/> class.
     /// Advanced consolidation strategies for fan-out ensemble responses.
     /// Supports: LLM Judge, Heuristic Scoring, and Response Fusion.
     /// Coordinates specialized consolidation strategy classes.
     /// </summary>
-    /// <param name="client">The <see cref="ChatClient"/> instance for making API calls.</param>
-    public class AdvancedEnsembleExecutor(ChatClient client)
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="AdvancedEnsembleExecutor"/> class.
+    /// </remarks>
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="AdvancedEnsembleExecutor"/> class
+    /// using the default orchestration pipeline created by <see cref="OrchestratorBuilder"/>.
+    /// </remarks>
+    /// <param name="client">The <see cref="ChatClient"/> used for API calls.</param>
+    /// <param name="responseHandler">
+    /// The <see cref="IAiModelResponseHandler"/> used by the orchestrator to post‑process responses.
+    /// </param>
+    public class AdvancedEnsembleExecutor(ChatClient client, IAiModelResponseHandler responseHandler)
     {
-        private readonly ChatClient client = client;
-        private readonly OpenAIModels modelRegistry = new();
-        private readonly SingleAiModelExecutor singleModelExecutor = new(client: client);
-        private readonly LLMJudge llmJudgeConsolidation = new(client: client);
-        private readonly ResponseFusion responseFusionConsolidation = new(client: client);
+        // Use the Orchestrator for fan-out to leverage its parallel dispatch and response handling capabilities.
+        private readonly Orchestrator orchestrator = new OrchestratorBuilder()
+                                                         .WithClient(client)
+                                                         .WithResponseHandler(responseHandler)
+                                                         .Build();
+
+        // Specialized consolidation strategy classes that encapsulate the logic for each approach.
+        private readonly LLMJudge llmJudgeStrategy = new(client: client);
+        private readonly ResponseFusion responseFusionStrategy = new(client: client);
 
         /// <summary>
         /// Fan-out to N models and consolidate using specified strategy.
         /// </summary>
         /// <param name="prompt">The user prompt to send to all models.</param>
-        /// <param name="fanoutModels">The array of <see cref="OpenAIModel"/> values to fan-out to.</param>
+        /// <param name="models">The array of <see cref="OpenAIModel"/> values to use to evaluate prompt.</param>
         /// <param name="consolidationMode">The <see cref="ConsolidationMode"/> strategy to use.</param>
         /// <param name="judgeModel">The judge <see cref="OpenAIModel"/> for LLM-based strategies (optional).</param>
-        /// <param name="cancellationToken">The cancellation token for the operation.</param>
+        /// <param name="cancelToken">The cancellation token for the operation.</param>
         /// <returns>
         /// An <see cref="AdvancedConsolidatedResponse"/> containing the consolidated content,
-        /// metadata, and individual fan-out <see cref="AiModelResponse"/> instances.
+        /// metadata, and individual model response(s) <see cref="AiModelResponse"/> instances.
         /// </returns>
+        /// <exception cref="ArgumentException">
+        /// Thrown when <paramref name="prompt"/> is null or whitespace,
+        /// or when <paramref name="models"/> is empty,
+        /// or when a judge model is required but not supplied.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when advanced fan-out and consolidation fails.
+        /// </exception>
         public async Task<AdvancedConsolidatedResponse> FanOutAndConsolidateAdvancedAsync(string prompt,
-                                                                                          OpenAIModel[] fanoutModels,
+                                                                                          OpenAIModel[] models,
                                                                                           ConsolidationMode consolidationMode,
                                                                                           OpenAIModel? judgeModel = null,
-                                                                                          CancellationToken cancellationToken = default)
+                                                                                          CancellationToken cancelToken = default)
         {
             if (string.IsNullOrWhiteSpace(prompt))
             {
                 throw new ArgumentException("Prompt cannot be empty", nameof(prompt));
             }
 
-            if (fanoutModels.Length == 0)
+            if (models.Length == 0)
             {
-                throw new ArgumentException("At least one model must be specified", nameof(fanoutModels));
+                throw new ArgumentException("At least one model must be specified", nameof(models));
             }
 
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             try
             {
-                // Step 1: Fan-out to all models
-                Console.WriteLine($" Fanning out to {fanoutModels.Length} models...");
-                List<AiModelResponse> fanoutResponses = await this.FanOutToModelsAsync(prompt, fanoutModels, cancellationToken);
+                // Step 1: Submit prompt to all models using the orchestrator.
+                Console.WriteLine($" Using {models.Length} models...");
+                List<AiModelResponse> responses = await this.ExecuteEnsembleAsync(prompt, models, cancelToken);
 
-                // Step 2: Consolidate based on strategy
+                // Step 2: Consolidate based on strategy.
                 string consolidatedContent;
                 object? consolidationMetadata = null;
 
                 switch (consolidationMode)
                 {
                     case ConsolidationMode.LLMAsJudge:
-                        if (judgeModel == null)
+                        if (judgeModel is null)
                         {
                             throw new ArgumentException("A Judge model is required for LLM Judge consolidation!", nameof(judgeModel));
                         }
-
-                        LLMJudgeResult judgeResult = await this.llmJudgeConsolidation.ConsolidateWithLLMJudgeAsync(prompt, fanoutResponses, judgeModel.Value, cancellationToken);
+                        LLMJudgeResult judgeResult = await this.llmJudgeStrategy.ConsolidateWithLLMJudgeAsync(prompt, responses, judgeModel.Value, cancelToken);
                         consolidatedContent = judgeResult.SelectedResponse;
                         consolidationMetadata = judgeResult;
                         break;
 
                     case ConsolidationMode.HeuristicScoring:
-                        HeuristicScoringResult heuristicResult = HeuristicScoring.ConsolidateWithHeuristicScoring(prompt, fanoutResponses);
+                        HeuristicScoringResult heuristicResult = HeuristicScoring.ConsolidateWithHeuristicScoring(prompt, responses);
                         consolidatedContent = heuristicResult.SelectedResponse;
                         consolidationMetadata = heuristicResult;
                         break;
 
                     case ConsolidationMode.ResponseFusion:
-                        if (judgeModel == null)
+                        if (judgeModel is null)
                         {
                             throw new ArgumentException("A Judge model is required for Response Fusion", nameof(judgeModel));
                         }
-
-                        ResponseFusionResult fusionResult = await this.responseFusionConsolidation.ConsolidateWithResponseFusionAsync(prompt, fanoutResponses, judgeModel.Value, cancellationToken);
+                        ResponseFusionResult fusionResult = await this.responseFusionStrategy.ConsolidateWithResponseFusionAsync(prompt, responses, judgeModel.Value, cancelToken);
                         consolidatedContent = fusionResult.SynthesizedResponse;
                         consolidationMetadata = fusionResult;
                         break;
@@ -109,94 +128,71 @@ namespace OpenAIApiClient.Orchestration.Consolidation
 
                 stopwatch.Stop();
 
+                // Step 3: Return a comprehensive response object with all relevant data and metadata.
                 return new AdvancedConsolidatedResponse
                 {
                     UserPrompt = prompt,
                     ConsolidatedContent = consolidatedContent,
-                    FanoutResponses = fanoutResponses,
+                    FanoutResponses = responses,
                     ConsolidationMode = consolidationMode,
                     ConsolidationMetadata = consolidationMetadata,
                     TotalLatency = stopwatch.Elapsed,
-                    SuccessCount = fanoutResponses.Count(r => r.IsSuccessful),
-                    FailureCount = fanoutResponses.Count(r => !r.IsSuccessful),
+                    SuccessCount = responses.Count(r => r.IsSuccessful),
+                    FailureCount = responses.Count(r => !r.IsSuccessful),
                 };
             }
             catch (Exception ex)
             {
                 stopwatch.Stop();
-                throw new InvalidOperationException($"Advanced fan-out and consolidation failed after {stopwatch.ElapsedMilliseconds}ms: {ex.Message}", ex);
+                throw new InvalidOperationException($"Advanced consolidation failed after {stopwatch.ElapsedMilliseconds}ms: {ex.Message}", ex);
             }
         }
 
-        // ============================================================================
-        // HELPER: FAN-OUT TO MODELS
-        // ============================================================================
-
         /// <summary>
-        /// Fan-out: Send the prompt to N models in parallel using <see cref="SingleAiModelExecutor"/>.
+        /// Fan-out: Send the prompt to the specified models using the orchestrator,
+        /// then map <see cref="ModelResponse"/> results into <see cref="AiModelResponse"/>
+        /// objects for advanced consolidation.
         /// </summary>
         /// <param name="prompt">The prompt to send to all models.</param>
         /// <param name="models">The <see cref="OpenAIModel"/> values to query in parallel.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancelToken">The cancellation token.</param>
         /// <returns>
         /// A <see cref="List{T}"/> of <see cref="AiModelResponse"/> objects from all models.
         /// </returns>
-        private async Task<List<AiModelResponse>> FanOutToModelsAsync(string prompt, OpenAIModel[] models, CancellationToken cancellationToken)
+        private async Task<List<AiModelResponse>> ExecuteEnsembleAsync(string prompt, OpenAIModel[] models, CancellationToken cancelToken)
         {
-            List<Task<AiModelResponse>> tasks = [];
-
-            foreach (OpenAIModel model in models)
+            // Define an ensemble orchestration request with explicit models or required capabilities.
+            OrchestrationRequest request = new()
             {
-                Task<AiModelResponse> task = this.QuerySingleModelAsync(prompt: prompt, model: model, cancellationToken: cancellationToken);
-                tasks.Add(task);
-            }
-
-            AiModelResponse[] results = await Task.WhenAll(tasks);
-            return [.. results];
-        }
-
-        /// <summary>
-        /// Queries a single model using the <see cref="SingleAiModelExecutor"/>.
-        /// </summary>
-        /// <param name="prompt">The prompt to send to the model.</param>
-        /// <param name="model">The <see cref="OpenAIModel"/> to query.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>
-        /// An <see cref="AiModelResponse"/> from the requested model, including success
-        /// status, raw output, and cost/latency metadata.
-        /// </returns>
-        private async Task<AiModelResponse> QuerySingleModelAsync(string prompt, OpenAIModel model, CancellationToken cancellationToken)
-        {
-            // Validate model exists in registry ..
-            AiModelDescriptor modelDescriptor = this.modelRegistry.Get(model);
-
-            // Build the request for the single model executor ..
-            ChatCompletionRequest request = new ClientRequestBuilder()
-                .WithModel(model)
-                .AddSystemMessage("You are a helpful, accurate, and concise assistant.")
-                .AddUserMessage(prompt)
-                .UsingMaxTokens(2000)
-                .Build();
-
-            // Execute the request and return the response, handling any exceptions to ensure we return a well-formed AiModelResponse.
-            try
-            {
-                AiModelResponse response = await this.singleModelExecutor.ExecuteAsync(request: request, cancelToken: cancellationToken);
-                return response;
-            }
-            catch (Exception ex)
-            {
-                return new AiModelResponse
+                UseEnsemble = true,
+                Prompt = prompt,
+                OutputFormat = OutputFormat.PlainText,
+                EnsembleRequest = new EnsembleDispatchRequest
                 {
-                    Model = modelDescriptor,
-                    RawOutput = string.Empty,
-                    IsSuccessful = false,
-                    ErrorMessage = ex.Message,
-                    Latency = TimeSpan.Zero,
-                    TotalTokens = 0,
-                    EstimatedCost = 0,
-                };
-            }
+                    Strategy = EnsembleStrategy.Custom,
+                    ExplicitModels = models,
+                },
+            };
+
+            // Distribute request to all specified models in parallel using the orchestrator.
+            IReadOnlyList<AiModelResponse> orchestratorResponses = await this.orchestrator.ProcessAsync(request: request, cancelToken: cancelToken);
+
+            // Map Orchestrator's ModelResponse objects to AiModelResponse for consolidation strategies.
+            List<AiModelResponse> results =
+            [
+                .. orchestratorResponses.Select(r => new AiModelResponse
+                {
+                    Model = r.Model,
+                    RawOutput = r.RawOutput ?? string.Empty,
+                    IsSuccessful = r.IsSuccessful,
+                    ErrorMessage = r.ErrorMessage,
+                    Latency = r.Latency,
+                    TotalTokens = r.TotalTokens,
+                    EstimatedCost = r.EstimatedCost,
+                }),
+            ];
+
+            return results;
         }
     }
 }

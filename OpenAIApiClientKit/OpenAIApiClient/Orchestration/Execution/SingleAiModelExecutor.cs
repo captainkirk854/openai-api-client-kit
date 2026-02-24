@@ -11,6 +11,7 @@ namespace OpenAIApiClient.Orchestration.Execution
     using OpenAIApiClient.Models.Chat.Request;
     using OpenAIApiClient.Models.Chat.Response.Completion;
     using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Orchestration.Response;
 
     /// <summary>
     /// Executes OpenAI models using the provided ChatClient.

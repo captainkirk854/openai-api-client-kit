@@ -10,6 +10,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
     using OpenAIApiClient.Orchestration.Consolidation;
     using OpenAIApiClient.Orchestration.Dispatch;
     using OpenAIApiClient.Orchestration.Execution;
+    using OpenAIApiClient.Orchestration.Response;
     using OpenAIApiClient.Registries.AiModels;
 
     /// <summary>

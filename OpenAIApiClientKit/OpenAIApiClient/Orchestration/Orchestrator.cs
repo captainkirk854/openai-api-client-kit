@@ -12,6 +12,7 @@ namespace OpenAIApiClient.Orchestration
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Orchestration.Dispatch;
     using OpenAIApiClient.Orchestration.Execution;
+    using OpenAIApiClient.Orchestration.Response;
 
     /// <summary>
     /// Responsible for orchestrating model requests, routing them to the appropriate models,

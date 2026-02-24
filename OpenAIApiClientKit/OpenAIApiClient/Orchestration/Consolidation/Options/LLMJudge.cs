@@ -12,9 +12,8 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
     using OpenAIApiClient.Helpers.General;
     using OpenAIApiClient.Models.Chat.Request;
     using OpenAIApiClient.Models.Consolidation.Options.LLMJudge;
-    using OpenAIApiClient.Orchestration;
     using OpenAIApiClient.Orchestration.Execution;
-    using OpenAIApiClient.Registries.AiModels;
+    using OpenAIApiClient.Orchestration.Response;
     using OpenAIApiClient.Registries.Prompts;
 
     /// <summary>
@@ -27,8 +26,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
     /// <param name="client">The <see cref="ChatClient"/> instance for making API calls.</param>
     public sealed class LLMJudge(ChatClient client)
     {
-        private readonly ChatClient client = client;
-        private readonly OpenAIModels modelRegistry = new();
+        // Use the single model executor to execute the judge request, since it's just one request.
         private readonly SingleAiModelExecutor singleModelExecutor = new(client: client);
 
         /// <summary>
@@ -42,14 +40,11 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
         /// An instance of <see cref="LLMJudgeResult"/> containing the selected response,
         /// reasoning, and any associated scoring information.
         /// </returns>
-        public async Task<LLMJudgeResult> ConsolidateWithLLMJudgeAsync(
-            string prompt,
-            List<AiModelResponse> responses,
-            OpenAIModel judgeModel,
-            CancellationToken cancellationToken)
+        public async Task<LLMJudgeResult> ConsolidateWithLLMJudgeAsync(string prompt, List<AiModelResponse> responses, OpenAIModel judgeModel, CancellationToken cancellationToken)
         {
             Console.WriteLine($" Asking {judgeModel} to judge the responses...");
 
+            // Filter out unsuccessful responses, as the judge should only evaluate successful outputs.
             List<AiModelResponse> successfulResponses = [.. responses.Where(r => r.IsSuccessful)];
 
             if (successfulResponses.Count == 0)
@@ -57,24 +52,22 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
                 throw new InvalidOperationException("No successful model response(s) to judge");
             }
 
-            // Build judgment prompt
+            // Create judgment request ..
             string judgmentPrompt = BuildJudgmentPrompt(prompt, successfulResponses);
-
             ChatCompletionRequest judgeRequest = new ClientRequestBuilder()
-                .WithModel(judgeModel)
-                .AddSystemMessage(PromptRegistry.Prompts[PromptId.SetModelJudgementMode])
-                .AddUserMessage(judgmentPrompt)
-                .Build();
+                                                     .WithModel(judgeModel)
+                                                     .AddSystemMessage(PromptRegistry.Prompts[PromptId.SetModelJudgementMode])
+                                                     .AddUserMessage(judgmentPrompt)
+                                                     .Build();
 
-            AiModelResponse judgeResponse = await this.singleModelExecutor.ExecuteAsync(
-                request: judgeRequest,
-                cancelToken: cancellationToken);
-
+            // .. and execute it
+            AiModelResponse judgeResponse = await this.singleModelExecutor.ExecuteAsync(request: judgeRequest, cancelToken: cancellationToken);
             string judgeContent = judgeResponse.RawOutput ?? string.Empty;
 
-            // Parse judge response
+            // Parse judgement response ..
             ParsedJudgeResponse parseResult = ParseJudgeResponse(judgeContent, successfulResponses);
 
+            // .. and return structured result
             return new LLMJudgeResult
             {
                 JudgeModel = judgeModel,
@@ -89,28 +82,29 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
         /// <summary>
         /// Builds the judgment prompt from the user prompt and candidate responses.
         /// </summary>
-        /// <param name="userPrompt">The original user prompt.</param>
+        /// <param name="prompt">The original user prompt.</param>
         /// <param name="responses">The candidate <see cref="AiModelResponse"/> instances to evaluate.</param>
         /// <returns>A formatted judgment prompt <see cref="string"/>.</returns>
-        private static string BuildJudgmentPrompt(string userPrompt, List<AiModelResponse> responses)
+        private static string BuildJudgmentPrompt(string prompt, List<AiModelResponse> responses)
         {
-            StringBuilder stringBuilder = new();
-            stringBuilder.AppendLine("USER PROMPT:");
-            stringBuilder.AppendLine(userPrompt);
-            stringBuilder.AppendLine();
-            stringBuilder.AppendLine("CANDIDATE RESPONSES:");
-            stringBuilder.AppendLine();
+            // In a real implementation, you would want to create a more sophisticated prompt that clearly instructs the judge model on how to evaluate the responses.
+            StringBuilder sb = new();
+            sb.AppendLine("USER PROMPT:");
+            sb.AppendLine(prompt);
+            sb.AppendLine();
+            sb.AppendLine("CANDIDATE RESPONSES:");
+            sb.AppendLine();
 
             for (int i = 0; i < responses.Count; i++)
             {
-                stringBuilder.AppendLine($"[RESPONSE #{i + 1} from {responses[i].Model.Name}]");
-                stringBuilder.AppendLine(responses[i].RawOutput);
-                stringBuilder.AppendLine();
+                sb.AppendLine($"[RESPONSE #{i + 1} from {responses[i].Model.Name}]");
+                sb.AppendLine(responses[i].RawOutput);
+                sb.AppendLine();
             }
 
-            stringBuilder.AppendLine("SELECT THE BEST RESPONSE AND PROVIDE YOUR EVALUATION.");
+            sb.AppendLine("SELECT THE BEST RESPONSE AND PROVIDE YOUR EVALUATION.");
 
-            return stringBuilder.ToString();
+            return sb.ToString();
         }
 
         /// <summary>
@@ -124,6 +118,9 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
         /// </returns>
         private static ParsedJudgeResponse ParseJudgeResponse(string judgeContent, List<AiModelResponse> responses)
         {
+            string modelIndexKey = "selected_model_index";
+            string reasoningKey = "reasoning";
+
             try
             {
                 // Try to parse JSON using System.Text.Json
@@ -135,14 +132,14 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
                     JsonElement rootElement = jsonDocument.RootElement;
 
                     // Extract selected_model_index
-                    if (rootElement.TryGetProperty("selected_model_index", out JsonElement indexElement) &&
+                    if (rootElement.TryGetProperty(modelIndexKey, out JsonElement indexElement) &&
                         indexElement.TryGetInt32(out int selectedIndex))
                     {
                         if (selectedIndex >= 0 && selectedIndex < responses.Count)
                         {
                             // Extract reasoning
                             string reasoning = "Judge selected this response.";
-                            if (rootElement.TryGetProperty("reasoning", out JsonElement reasoningElement))
+                            if (rootElement.TryGetProperty(reasoningKey, out JsonElement reasoningElement))
                             {
                                 reasoning = reasoningElement.GetString() ?? reasoning;
                             }
@@ -178,7 +175,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
                 {
                     SelectedIndex = 0,
                     SelectedResponse = responses[0].RawOutput,
-                    Reasoning = "Error parsing judge response; defaulting to first.",
+                    Reasoning = "Error parsing judge response; defaulting to first response.",
                     Scores = [],
                 };
             }

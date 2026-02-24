@@ -10,8 +10,8 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
     using OpenAIApiClient.Helpers.General;
     using OpenAIApiClient.Models.Chat.Request;
     using OpenAIApiClient.Models.Consolidation.Options.ResponseFusion;
-    using OpenAIApiClient.Orchestration;
     using OpenAIApiClient.Orchestration.Execution;
+    using OpenAIApiClient.Orchestration.Response;
     using OpenAIApiClient.Registries.AiModels;
     using OpenAIApiClient.Registries.Prompts;
 

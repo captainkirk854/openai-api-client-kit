@@ -7,7 +7,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
     using System.Text.RegularExpressions;
     using OpenAIApiClient.Models.Consolidation;
     using OpenAIApiClient.Models.Consolidation.Options.HeuristicScoring;
-    using OpenAIApiClient.Orchestration;
+    using OpenAIApiClient.Orchestration.Response;
     using OpenAIApiClient.Registries.AiModels;
 
     /// <summary>

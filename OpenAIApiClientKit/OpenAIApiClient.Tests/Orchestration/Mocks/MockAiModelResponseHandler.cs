@@ -5,7 +5,7 @@
 namespace OpenAIApiClient.Tests.Orchestration.Mocks
 {
     using OpenAIApiClient.Interfaces.Orchestration;
-    using OpenAIApiClient.Orchestration;
+    using OpenAIApiClient.Orchestration.Response;
 
     public sealed class MockAiModelResponseHandler : IAiModelResponseHandler
     {
