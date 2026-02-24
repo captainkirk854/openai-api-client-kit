@@ -1,4 +1,4 @@
-﻿// <copyright file="AiModelBestResponseDemo.cs" company="854 Things (tm)">
+﻿// <copyright file="AiSimpleEnsembleConsolidationDemo.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -16,9 +16,9 @@ namespace OpenAIApiClient.ConsoleApp.Demos
     /// <summary>
     /// Console App Demo to demonstrate implementation example for OpenAI optimal model selection.
     /// </summary>
-    public static class AiModelBestResponseDemo
+    public static class AiSimpleEnsembleConsolidationDemo
     {
-        public static async Task GetBestModelResponseAsync(ChatClient client, string prompt, CancellationTokenSource cts)
+        public static async Task GetBestHeuristicModelResponseAsync(ChatClient client, string prompt, CancellationTokenSource cts)
         {
             // Initialise model registry ..
             OpenAIModels models = new();
@@ -64,7 +64,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
 
             // Execute selected model(s) in asynchronous pipelines ..
             IReadOnlyList<AiModelResponse> responses = await orchestrator.ProcessAsync(request: ensembleRequest, cancelToken: cts.Token);
-            AiModelResponseCollator final = AiModelResponseSelector.GetOptimal(responses: responses);
+            AiModelResponseCollator final = AiModelHeuristicResponseSelector.GetBestHeuristicResponse(prompt: prompt, responses: responses);
 
             // Output computed best response information ..
             Console.WriteLine();

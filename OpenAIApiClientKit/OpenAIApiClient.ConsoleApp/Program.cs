@@ -35,11 +35,11 @@ namespace OpenAIApiClient.ConsoleApp
                 // Allow user to choose which demo to run ..
                 Console.WriteLine("Welcome to the OpenAI API Client Demo Application!");
                 Console.WriteLine("Which demo would you like to run?");
-                Console.WriteLine("1. AI Model Prompt Demo");
-                Console.WriteLine("2. AI Model Strategy Dispatch Demo");
-                Console.WriteLine("3. AI Model Best Response Demo");
-                Console.WriteLine("4. AI Model Orchestrator Demo");
-                Console.WriteLine("5. AI Advanced Get Best Model Response Demo");
+                Console.WriteLine("1. AI Model Simple Chat Prompt Demo with Streaming and Non-Streaming Modes");
+                Console.WriteLine("2. AI Model Strategy Dispatch Demo with Multiple Dispatch Strategies");
+                Console.WriteLine("3. AI Model Orchestrator Demo with Single-Model and Multi-Model Strategies");
+                Console.WriteLine("4. AI Simple Get Best Model Response Demo using Heuristic Consolidation");
+                Console.WriteLine("5. AI Advanced Get Best Model Response Demo using Advanced Consolidation");
 
                 Console.Write("Enter choice (1-5): ");
                 string? demoChoice = Console.ReadLine();
@@ -48,19 +48,19 @@ namespace OpenAIApiClient.ConsoleApp
                 switch (demoChoice)
                 {
                     case "1":
-                        await AIModelChatClientDemo(client: client, cts: cts);
+                        await AiModelSimpleChatClientDemo(client: client, cts: cts);
                         break;
 
                     case "2":
-                        AIModelDispatchDemo();
+                        AiModelDispatchDemo();
                         break;
 
                     case "3":
-                        await AIModelBestResponseDemo(client: client, cts: cts);
+                        await AiModelOrchestratorDemo(client: client, cts: cts);
                         break;
 
                     case "4":
-                        await AIModelOrchestratorDemo(client: client, cts: cts);
+                        await AiSimpleGetModelBestResponseDemo(client: client, cts: cts);
                         break;
 
                     case "5":
@@ -90,31 +90,12 @@ namespace OpenAIApiClient.ConsoleApp
         }
 
         /// <summary>
-        /// A demo implementation to get the best model response for a given prompt.
+        /// A demo implementation to process a user prompt by sending it to the chat client and displaying the response, supporting both streaming and non-streaming modes.
         /// </summary>
         /// <param name="client"></param>
         /// <param name="cts"></param>
         /// <returns>Task.</returns>
-        private static async Task AIModelBestResponseDemo(ChatClient client, CancellationTokenSource cts)
-        {
-            string prompt = "explain the theory of relativity in simple terms.";
-            Console.WriteLine($"Using Prompt: {prompt}");
-            Console.WriteLine();
-
-            // Get best model response for the prompt ..
-            await Demos.AiModelBestResponseDemo.GetBestModelResponseAsync(client: client, prompt: prompt, cts: cts);
-
-            Console.WriteLine("Press Enter to continue..");
-            Console.ReadLine();
-        }
-
-        /// <summary>
-        /// A demo implementation to process user prompts with various options.
-        /// </summary>
-        /// <param name="client"></param>
-        /// <param name="cts"></param>
-        /// <returns>Task.</returns>
-        private static async Task AIModelChatClientDemo(ChatClient client, CancellationTokenSource cts)
+        private static async Task AiModelSimpleChatClientDemo(ChatClient client, CancellationTokenSource cts)
         {
             // Run regular demo starting with whether to use streaming or non-streaming modes ..
             bool isStreaming = SetBooleanPrompt(message: "Use streaming mode?", setTrue: 'y', setFalse: 'n');
@@ -181,30 +162,30 @@ namespace OpenAIApiClient.ConsoleApp
             Console.WriteLine();
 
             // Process user prompt with additional options ..
-            await Demos.AiModelChatClientDemo.ProcessUserPromptAsync(client: client,
-                                                                     isStreaming: isStreaming,
-                                                                     userPrompt: userPrompt,
-                                                                     isDeterministic: isDeterministic,
-                                                                     outputFormat: outputFormatChoice,
-                                                                     cts: cts,
-                                                                     model: selectedModel);
+            await Demos.AiModelSimpleChatClientDemo.ProcessUserPromptAsync(client: client,
+                                                                           isStreaming: isStreaming,
+                                                                           userPrompt: userPrompt,
+                                                                           isDeterministic: isDeterministic,
+                                                                           outputFormat: outputFormatChoice,
+                                                                           cts: cts,
+                                                                           model: selectedModel);
         }
 
         /// <summary>
-        /// A demo implementation to showcase model routing capabilities.
+        /// A demo implementation to showcase AI model strategy dispatch capabilities.
         /// </summary>
-        private static void AIModelDispatchDemo()
+        private static void AiModelDispatchDemo()
         {
             Demos.AiModelDispatchDemo.Run();
         }
 
         /// <summary>
-        /// A demo implementation to showcase AI orchestration capabilities.
+        /// A demo implementation to showcase AI orchestration capabilities with single-model and multi-model strategies.
         /// </summary>
         /// <param name="client"></param>
         /// <param name="cts"></param>
         /// <returns>Task.</returns>
-        private static async Task AIModelOrchestratorDemo(ChatClient client, CancellationTokenSource cts)
+        private static async Task AiModelOrchestratorDemo(ChatClient client, CancellationTokenSource cts)
         {
             string prompt = @"List the planets, dwarf planets and top 10 heaviest moons.
                               List their names along with their masses and diameters in 
@@ -220,7 +201,26 @@ namespace OpenAIApiClient.ConsoleApp
         }
 
         /// <summary>
-        /// A demo implementation to showcase AI orchestration capabilities with multi-model consolidation to get the best response.
+        /// A demo implementation to showcase AI orchestration capabilities with multi-model consolidation to get the best response using a simple heuristic approach.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="cts"></param>
+        /// <returns>Task.</returns>
+        private static async Task AiSimpleGetModelBestResponseDemo(ChatClient client, CancellationTokenSource cts)
+        {
+            string prompt = "explain the theory of relativity in simple terms.";
+            Console.WriteLine($"Using Prompt: {prompt}");
+            Console.WriteLine();
+
+            // Get best model response for the prompt ..
+            await Demos.AiSimpleEnsembleConsolidationDemo.GetBestHeuristicModelResponseAsync(client: client, prompt: prompt, cts: cts);
+
+            Console.WriteLine("Press Enter to continue..");
+            Console.ReadLine();
+        }
+
+        /// <summary>
+        /// A demo implementation to showcase AI orchestration capabilities with multi-model consolidation to get the best response using a more advanced approach leveraging multiple factors and criteria for evaluation.
         /// </summary>
         /// <param name="client"></param>
         /// <param name="cts"></param>
