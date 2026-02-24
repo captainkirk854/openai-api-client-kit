@@ -15,7 +15,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
     {
         public static async Task GetBestModelResponseAsync(ChatClient client, string prompt, CancellationTokenSource cts)
         {
-            AdvancedEnsembleConsolidation consolidation = new(client);
+            AdvancedEnsembleExecutor executor = new(client);
 
             OpenAIModel[] fanoutModels =
             [
@@ -28,17 +28,15 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             OpenAIModel judgeModel = OpenAIModel.GPT5;
             OpenAIModel fusionModel = OpenAIModel.O4_Mini;
 
-            // ========================================
             // OPTION 1: LLM AS JUDGE
-            // ========================================
             Console.WriteLine("\nOPTION 1: LLM AS JUDGE\n");
             try
             {
-                AdvancedConsolidatedResponse llmJudgeResponse = await consolidation.FanOutAndConsolidateAdvancedAsync(prompt: prompt,
-                                                                                                                      fanoutModels: fanoutModels,
-                                                                                                                      consolidationMode: ConsolidationMode.LLMAsJudge,
-                                                                                                                      judgeModel: judgeModel,
-                                                                                                                      cancellationToken: cts.Token);
+                AdvancedConsolidatedResponse llmJudgeResponse = await executor.FanOutAndConsolidateAdvancedAsync(prompt: prompt,
+                                                                                                                 fanoutModels: fanoutModels,
+                                                                                                                 consolidationMode: ConsolidationMode.LLMAsJudge,
+                                                                                                                 judgeModel: judgeModel,
+                                                                                                                 cancellationToken: cts.Token);
 
                 Console.WriteLine("Fan-out Responses:");
                 foreach (AiModelResponse resp in llmJudgeResponse.FanoutResponses)
@@ -62,16 +60,14 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 Console.WriteLine($"Error: {ex.Message}");
             }
 
-            // ========================================
             // OPTION 2: HEURISTIC SCORING
-            // ========================================
             Console.WriteLine("\n\nOPTION 2: HEURISTIC SCORING\n");
             try
             {
-                AdvancedConsolidatedResponse heuristicResponse = await consolidation.FanOutAndConsolidateAdvancedAsync(prompt: prompt,
-                                                                                                                       fanoutModels: fanoutModels,
-                                                                                                                       consolidationMode: ConsolidationMode.HeuristicScoring,
-                                                                                                                       cancellationToken: cts.Token);
+                AdvancedConsolidatedResponse heuristicResponse = await executor.FanOutAndConsolidateAdvancedAsync(prompt: prompt,
+                                                                                                                  fanoutModels: fanoutModels,
+                                                                                                                  consolidationMode: ConsolidationMode.HeuristicScoring,
+                                                                                                                  cancellationToken: cts.Token);
 
                 if (heuristicResponse.ConsolidationMetadata is HeuristicScoringResult heuristicResult)
                 {
@@ -96,17 +92,15 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 Console.WriteLine($"Error: {ex.Message}");
             }
 
-            // ========================================
             // OPTION 3: RESPONSE FUSION
-            // ========================================
             Console.WriteLine("\n\nOPTION 3: RESPONSE FUSION\n");
             try
             {
-                AdvancedConsolidatedResponse fusionResponse = await consolidation.FanOutAndConsolidateAdvancedAsync(prompt: prompt,
-                                                                                                                    fanoutModels: fanoutModels,
-                                                                                                                    consolidationMode: ConsolidationMode.ResponseFusion,
-                                                                                                                    judgeModel: fusionModel,
-                                                                                                                    cancellationToken: cts.Token);
+                AdvancedConsolidatedResponse fusionResponse = await executor.FanOutAndConsolidateAdvancedAsync(prompt: prompt,
+                                                                                                               fanoutModels: fanoutModels,
+                                                                                                               consolidationMode: ConsolidationMode.ResponseFusion,
+                                                                                                               judgeModel: fusionModel,
+                                                                                                               cancellationToken: cts.Token);
 
                 Console.WriteLine("Synthesizing all responses...");
                 Console.WriteLine("\nSynthesized Answer:");
