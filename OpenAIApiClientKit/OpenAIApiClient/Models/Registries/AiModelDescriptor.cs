@@ -63,6 +63,15 @@ namespace OpenAIApiClient.Models.Registries
         } = new ModelPricing(0, 0);
 
         /// <summary>
+        /// Gets the default configuration settings for the model.
+        /// </summary>
+        public ModelConfig DefaultConfig
+        {
+            get;
+            init;
+        } = new ModelConfig();
+
+        /// <summary>
         /// Overrides ToString() to provide a string representation of the OpenAIModels enum.
         /// </summary>
         /// <returns>String representation of the OpenAIModels enum.</returns>

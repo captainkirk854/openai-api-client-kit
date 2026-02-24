@@ -107,6 +107,35 @@ namespace OpenAIApiClient.Tests.Registries.AiModels
         }
 
         [TestMethod]
+        public void All_Descriptors_Have_NonNull_DefaultConfig()
+        {
+            foreach ((OpenAIModel model, AiModelDescriptor descriptor) in Registry)
+            {
+                Assert.IsNotNull(descriptor.DefaultConfig, $"DefaultConfig for {model} must not be null");
+            }
+        }
+
+        [TestMethod]
+        public void All_Descriptors_Have_Valid_DefaultConfig_Temperature()
+        {
+            foreach ((OpenAIModel model, AiModelDescriptor descriptor) in Registry)
+            {
+                Assert.IsTrue(
+                    descriptor.DefaultConfig.Temperature >= 0.0f && descriptor.DefaultConfig.Temperature <= 2.0f,
+                    $"DefaultConfig.Temperature for {model} must be between 0.0 and 2.0, but was {descriptor.DefaultConfig.Temperature}");
+            }
+        }
+
+        [TestMethod]
+        public void All_Descriptors_Have_Valid_DefaultConfig_MaxTokens()
+        {
+            foreach ((OpenAIModel model, AiModelDescriptor descriptor) in Registry)
+            {
+                Assert.IsGreaterThan(0, descriptor.DefaultConfig.MaxTokens, $"DefaultConfig.MaxTokens for {model} must be greater than 0");
+            }
+        }
+
+        [TestMethod]
         public void Capabilities_Are_Valid_Enum_Values()
         {
             foreach ((OpenAIModel model, AiModelDescriptor descriptor) in Registry)

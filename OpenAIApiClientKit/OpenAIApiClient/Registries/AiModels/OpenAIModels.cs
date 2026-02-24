@@ -78,6 +78,11 @@ namespace OpenAIApiClient.Registries.AiModels
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
+                    DefaultConfig = new ModelConfig
+                    {
+                        Temperature = 0.7f,
+                        MaxTokens = 16384,
+                    },
                 },
 
                 [OpenAIModel.GPT5_2_Pro] = new AiModelDescriptor
@@ -94,6 +99,11 @@ namespace OpenAIApiClient.Registries.AiModels
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
+                    DefaultConfig = new ModelConfig
+                    {
+                        Temperature = 0.7f,
+                        MaxTokens = 16384,
+                    },
                 },
 
                 [OpenAIModel.GPT5] = new AiModelDescriptor
@@ -109,6 +119,11 @@ namespace OpenAIApiClient.Registries.AiModels
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
+                    DefaultConfig = new ModelConfig
+                    {
+                        Temperature = 0.7f,
+                        MaxTokens = 16384,
+                    },
                 },
 
                 [OpenAIModel.GPT5_Mini] = new AiModelDescriptor
@@ -124,6 +139,11 @@ namespace OpenAIApiClient.Registries.AiModels
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
+                    DefaultConfig = new ModelConfig
+                    {
+                        Temperature = 0.7f,
+                        MaxTokens = 16384,
+                    },
                 },
 
                 [OpenAIModel.GPT5_Nano] = new AiModelDescriptor
@@ -139,6 +159,11 @@ namespace OpenAIApiClient.Registries.AiModels
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
+                    DefaultConfig = new ModelConfig
+                    {
+                        Temperature = 0.7f,
+                        MaxTokens = 16384,
+                    },
                 },
 
                 // -------------------------
@@ -159,6 +184,11 @@ namespace OpenAIApiClient.Registries.AiModels
                     inputTokenCost: 0.00001m,
                     outputTokenCost: 0.00003m,
                     cachedInputTokenCost: 0.000002m),
+                    DefaultConfig = new ModelConfig
+                    {
+                        Temperature = 0.7f,
+                        MaxTokens = 32768,
+                    },
                 },
 
                 // GPT‑4.1 Mini — Fast, Low‑Cost Model
@@ -176,6 +206,11 @@ namespace OpenAIApiClient.Registries.AiModels
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.0000015m,
                     outputTokenCost: 0.000002m),
+                    DefaultConfig = new ModelConfig
+                    {
+                        Temperature = 0.7f,
+                        MaxTokens = 32768,
+                    },
                 },
 
                 [OpenAIModel.GPT4_Turbo] = new AiModelDescriptor
@@ -191,6 +226,11 @@ namespace OpenAIApiClient.Registries.AiModels
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
+                    DefaultConfig = new ModelConfig
+                    {
+                        Temperature = 0.7f,
+                        MaxTokens = 4096,
+                    },
                 },
 
                 // -------------------------
@@ -212,6 +252,11 @@ namespace OpenAIApiClient.Registries.AiModels
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
+                    DefaultConfig = new ModelConfig
+                    {
+                        Temperature = 0.7f,
+                        MaxTokens = 16384,
+                    },
                 },
 
                 // GPT‑4o Mini — NEW
@@ -230,6 +275,11 @@ namespace OpenAIApiClient.Registries.AiModels
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000015m,
                     outputTokenCost: 0.00000060m),
+                    DefaultConfig = new ModelConfig
+                    {
+                        Temperature = 0.7f,
+                        MaxTokens = 16384,
+                    },
                 },
 
                 // -------------------------
@@ -248,6 +298,11 @@ namespace OpenAIApiClient.Registries.AiModels
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
+                    DefaultConfig = new ModelConfig
+                    {
+                        Temperature = 0.7f,
+                        MaxTokens = 4096,
+                    },
                 },
 
                 // -------------------------
@@ -264,6 +319,11 @@ namespace OpenAIApiClient.Registries.AiModels
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
+                    DefaultConfig = new ModelConfig
+                    {
+                        Temperature = 0.0f,
+                        MaxTokens = 8192,
+                    },
                 },
 
                 [OpenAIModel.TextEmbedding_3_Small] = new AiModelDescriptor
@@ -277,6 +337,11 @@ namespace OpenAIApiClient.Registries.AiModels
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
+                    DefaultConfig = new ModelConfig
+                    {
+                        Temperature = 0.0f,
+                        MaxTokens = 8192,
+                    },
                 },
 
                 [OpenAIModel.TextEmbedding_Ada_002] = new AiModelDescriptor
@@ -290,6 +355,11 @@ namespace OpenAIApiClient.Registries.AiModels
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
+                    DefaultConfig = new ModelConfig
+                    {
+                        Temperature = 0.0f,
+                        MaxTokens = 8192,
+                    },
                 },
 
                 // -------------------------
@@ -306,6 +376,11 @@ namespace OpenAIApiClient.Registries.AiModels
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
+                    DefaultConfig = new ModelConfig
+                    {
+                        Temperature = 0.7f,
+                        MaxTokens = 4096,
+                    },
                 },
 
                 [OpenAIModel.TTS_1_HD] = new AiModelDescriptor
@@ -319,6 +394,11 @@ namespace OpenAIApiClient.Registries.AiModels
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
+                    DefaultConfig = new ModelConfig
+                    {
+                        Temperature = 0.7f,
+                        MaxTokens = 4096,
+                    },
                 },
 
                 [OpenAIModel.Whisper_1] = new AiModelDescriptor
@@ -332,6 +412,11 @@ namespace OpenAIApiClient.Registries.AiModels
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
+                    DefaultConfig = new ModelConfig
+                    {
+                        Temperature = 0.0f,
+                        MaxTokens = 4096,
+                    },
                 },
 
                 [OpenAIModel.TTS1_1106] = new AiModelDescriptor
@@ -345,6 +430,11 @@ namespace OpenAIApiClient.Registries.AiModels
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
+                    DefaultConfig = new ModelConfig
+                    {
+                        Temperature = 0.7f,
+                        MaxTokens = 4096,
+                    },
                 },
 
                 [OpenAIModel.TTS1HD_1106] = new AiModelDescriptor
@@ -358,6 +448,11 @@ namespace OpenAIApiClient.Registries.AiModels
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
+                    DefaultConfig = new ModelConfig
+                    {
+                        Temperature = 0.7f,
+                        MaxTokens = 4096,
+                    },
                 },
 
                 // -------------------------
@@ -374,6 +469,11 @@ namespace OpenAIApiClient.Registries.AiModels
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
+                    DefaultConfig = new ModelConfig
+                    {
+                        Temperature = 0.7f,
+                        MaxTokens = 4096,
+                    },
                 },
 
                 // -------------------------
@@ -392,6 +492,11 @@ namespace OpenAIApiClient.Registries.AiModels
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
+                    DefaultConfig = new ModelConfig
+                    {
+                        Temperature = 1.0f,
+                        MaxTokens = 16384,
+                    },
                 },
 
                 [OpenAIModel.O1_Mini] = new AiModelDescriptor
@@ -408,6 +513,11 @@ namespace OpenAIApiClient.Registries.AiModels
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
+                    DefaultConfig = new ModelConfig
+                    {
+                        Temperature = 1.0f,
+                        MaxTokens = 16384,
+                    },
                 },
 
                 [OpenAIModel.O3] = new AiModelDescriptor
@@ -424,6 +534,11 @@ namespace OpenAIApiClient.Registries.AiModels
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m,
                     reasoningTokenCost: 0.00000000m),
+                    DefaultConfig = new ModelConfig
+                    {
+                        Temperature = 1.0f,
+                        MaxTokens = 16384,
+                    },
                 },
 
                 [OpenAIModel.O3_Mini] = new AiModelDescriptor
@@ -440,6 +555,11 @@ namespace OpenAIApiClient.Registries.AiModels
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m,
                     reasoningTokenCost: 0.00000000m),
+                    DefaultConfig = new ModelConfig
+                    {
+                        Temperature = 1.0f,
+                        MaxTokens = 16384,
+                    },
                 },
 
                 [OpenAIModel.O4_Mini] = new AiModelDescriptor
@@ -456,6 +576,11 @@ namespace OpenAIApiClient.Registries.AiModels
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m,
                     reasoningTokenCost: 0.00000000m),
+                    DefaultConfig = new ModelConfig
+                    {
+                        Temperature = 1.0f,
+                        MaxTokens = 16384,
+                    },
                 },
 
                 // -------------------------
@@ -472,6 +597,11 @@ namespace OpenAIApiClient.Registries.AiModels
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
+                    DefaultConfig = new ModelConfig
+                    {
+                        Temperature = 0.0f,
+                        MaxTokens = 4096,
+                    },
                 },
             };
 
