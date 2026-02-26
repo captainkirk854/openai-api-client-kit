@@ -12,7 +12,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
     /// <summary>
     /// Single and Ensemble Model Dispatch Selection Demo.
     /// </summary>
-    public static class AiModelDispatchDemo
+    public static class AiModelDispatchDemoX
     {
         private static readonly OpenAIModels Models = new();
         private static readonly SingleAiModelDispatcher SingleModelDispatcher = new(registry: Models);

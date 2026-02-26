@@ -15,7 +15,7 @@ namespace OpenAIApiClient.Orchestration.Dispatch
     /// <see cref="SingleAiModelDispatcher"/> provides intentional, criteria‑based delegation to select the correct model based on the provided request.
     /// </summary>
     /// <param name="registry"></param>
-    public sealed class SingleAiModelDispatcher(IAiModelRegistry registry) : ISingleAiModelDispatcher
+    public sealed class SingleAiModelDispatcher(IAiModelRegistryX registry) : ISingleAiModelDispatcher
     {
         private readonly IReadOnlyDictionary<OpenAIModel, AiModelDescriptor> modelRegistry = registry.GetRegistry();
 

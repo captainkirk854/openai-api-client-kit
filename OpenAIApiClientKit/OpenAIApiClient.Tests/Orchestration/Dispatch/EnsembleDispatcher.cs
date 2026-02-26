@@ -37,7 +37,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
         {
             // Arrange
             Dictionary<OpenAIModel, AiModelDescriptor> internalRegistry = [];
-            IAiModelRegistry registry = new MockOpenAIModels(models: internalRegistry);
+            IAiModelRegistryX registry = new MockOpenAIModels(models: internalRegistry);
             testClass dispatcher = new(registry: registry);
 
             // Act & Assert
@@ -60,7 +60,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
             IReadOnlyList<AiModelCapability> capabilities = [AiModelCapability.Reasoning];
 
             // Get the mock registry, the model descriptor and the expected result as a tuple ..
-            (IAiModelRegistry aiModels, AiModelDescriptor _, EnsembleDispatchResult expected) = Cook(aiModel: modelToUse, capabilities: capabilities);
+            (IAiModelRegistryX aiModels, AiModelDescriptor _, EnsembleDispatchResult expected) = Cook(aiModel: modelToUse, capabilities: capabilities);
 
             // Register a custom strategy handler
             EnsembleStrategies.RegisterCustomHandler(strategy: EnsembleStrategy.Reasoning, handler: _ => expected); // EnsembleStrategies.Register(strategy: EnsembleStrategy.Reasoning, handler: (IReadOnlyDictionary<OpenAIModel, ModelDescriptor> _) => expected);
@@ -163,7 +163,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
             IReadOnlyList<AiModelCapability> capabilities = [AiModelCapability.Reasoning];
 
             // Get the mock registry, the model descriptor and the expected result as a tuple ..
-            (IAiModelRegistry aiModels, AiModelDescriptor _, EnsembleDispatchResult _) = Cook(aiModel: modelToUse, capabilities: capabilities);
+            (IAiModelRegistryX aiModels, AiModelDescriptor _, EnsembleDispatchResult _) = Cook(aiModel: modelToUse, capabilities: capabilities);
 
             // Create the dispatcher ..
             testClass dispatcher = new(registry: aiModels);
@@ -192,8 +192,8 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
         /// </summary>
         /// <param name="aiModel"></param>
         /// <param name="capabilities"></param>
-        /// <returns see cref="(IAiModelRegistry, AiModelDescriptor, EnsembleDispatchResult)">.</returns>
-        private static (IAiModelRegistry, AiModelDescriptor, EnsembleDispatchResult) Cook(OpenAIModel aiModel, IReadOnlyList<AiModelCapability> capabilities)
+        /// <returns see cref="(IAiModelRegistryX, AiModelDescriptor, EnsembleDispatchResult)">.</returns>
+        private static (IAiModelRegistryX, AiModelDescriptor, EnsembleDispatchResult) Cook(OpenAIModel aiModel, IReadOnlyList<AiModelCapability> capabilities)
         {
             // Create the test model descriptor ..
             AiModelDescriptor m1 = CreateDescriptor(aiModel: aiModel, cost: 1.0m, capabilities: capabilities);

@@ -37,7 +37,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
         public void Evaluate_Throws_WhenRequestIsNull()
         {
             // Arrange
-            IAiModelRegistry registry = new OpenAIModels();
+            IAiModelRegistryX registry = new OpenAIModels();
             testClass dispatcher = new(registry: registry);
 
             // Act & Assert
@@ -61,7 +61,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
             SingleAiModelStrategy strategy = SingleAiModelStrategy.BestReasoning;
 
             // Get the mock registry, the model descriptor and the expected result as a tuple ..
-            (IAiModelRegistry aiModels, AiModelDescriptor model, SingleAiModelDispatchResult expected) = Cook(aiModel: aiModelToUse, capabilities: capabilities);
+            (IAiModelRegistryX aiModels, AiModelDescriptor model, SingleAiModelDispatchResult expected) = Cook(aiModel: aiModelToUse, capabilities: capabilities);
 
             // Register a custom strategy handler
             SingleAiModelStrategies.RegisterCustomHandler(strategy: strategy, handler: (_, _) => expected);
@@ -91,7 +91,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
             SingleAiModelStrategy strategy = SingleAiModelStrategy.LowestCost;
 
             // Get the mock registry, the model descriptor and the expected result as a tuple ..
-            (IAiModelRegistry aiModels, AiModelDescriptor model, _) = Cook(aiModel: aiModelToUse, capabilities: capabilities);
+            (IAiModelRegistryX aiModels, AiModelDescriptor model, _) = Cook(aiModel: aiModelToUse, capabilities: capabilities);
 
             // Initialise ..
             SingleAiModelDispatchRequest? capturedContext = null;
@@ -133,7 +133,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
             IReadOnlyList<AiModelCapability> capabilities = [AiModelCapability.Reasoning];
 
             // Get the mock registry, the model descriptor and the expected result as a tuple ..
-            (IAiModelRegistry aiModels, _, _) = Cook(aiModel: aiModelToUse, capabilities: capabilities);
+            (IAiModelRegistryX aiModels, _, _) = Cook(aiModel: aiModelToUse, capabilities: capabilities);
 
             // Create the dispatcher ..
             testClass dispatcher = new(aiModels);
@@ -164,7 +164,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
             SingleAiModelStrategy strategy = SingleAiModelStrategy.HighestPerformance;
 
             // Get the mock registry, the model descriptor and the expected result as a tuple ..
-            (IAiModelRegistry aiModels, AiModelDescriptor model, SingleAiModelDispatchResult expected) = Cook(aiModel: aiModelToUse, capabilities: capabilities);
+            (IAiModelRegistryX aiModels, AiModelDescriptor model, SingleAiModelDispatchResult expected) = Cook(aiModel: aiModelToUse, capabilities: capabilities);
 
             // Register a custom strategy handler
             SingleAiModelStrategies.RegisterCustomHandler(strategy: strategy, handler: (_, _) => expected); // lambda expression is implicitly type: (_, _) => expected
@@ -189,8 +189,8 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
         /// </summary>
         /// <param name="aiModel"></param>
         /// <param name="capabilities"></param>
-        /// <returns see cref="(IAiModelRegistry, AiModelDescriptor, SingleAiModelDispatchResult)">.</returns>
-        private static (IAiModelRegistry, AiModelDescriptor, SingleAiModelDispatchResult) Cook(OpenAIModel aiModel, IReadOnlyList<AiModelCapability> capabilities)
+        /// <returns see cref="(IAiModelRegistryX, AiModelDescriptor, SingleAiModelDispatchResult)">.</returns>
+        private static (IAiModelRegistryX, AiModelDescriptor, SingleAiModelDispatchResult) Cook(OpenAIModel aiModel, IReadOnlyList<AiModelCapability> capabilities)
         {
             // Create the test model descriptor ..
             AiModelDescriptor m1 = CreateDescriptor(aiModel: aiModel, cost: 1.0m, capabilities: capabilities);

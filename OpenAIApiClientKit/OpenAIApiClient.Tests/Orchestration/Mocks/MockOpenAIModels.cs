@@ -13,7 +13,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
     /// Provides a fake read-only registry of OpenAI models and their descriptors.
     /// </summary>
     /// <param name="models">A dictionary mapping OpenAI models to their descriptors.</param>
-    public sealed class MockOpenAIModels(Dictionary<OpenAIModel, AiModelDescriptor> models) : IAiModelRegistry
+    public sealed class MockOpenAIModels(Dictionary<OpenAIModel, AiModelDescriptor> models) : IAiModelRegistryX
     {
         private readonly Dictionary<OpenAIModel, AiModelDescriptor> models = models;
 
