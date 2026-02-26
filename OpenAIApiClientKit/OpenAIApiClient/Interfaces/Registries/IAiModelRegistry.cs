@@ -7,7 +7,7 @@ namespace OpenAIApiClient.Interfaces.Registries
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Registries;
 
-    public interface IAiModelRegistryX
+    public interface IAiModelRegistry
     {
         /// <summary>
         /// Gets the complete model registry dictionary ..

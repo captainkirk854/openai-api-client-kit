@@ -176,7 +176,7 @@ namespace OpenAIApiClient.ConsoleApp
         /// </summary>
         private static void AiModelDispatchDemo()
         {
-            Demos.AiModelDispatchDemoX.Run();
+            Demos.AiModelDispatchDemo.Run();
         }
 
         /// <summary>
@@ -194,7 +194,7 @@ namespace OpenAIApiClient.ConsoleApp
             Console.WriteLine();
 
             // Run AI Orchestrator demo ..
-            await Demos.AiModelOrchestratorDemoX.RunAsync(client: client, prompt: prompt, cancelToken: cts.Token);
+            await Demos.AiModelOrchestratorDemo.RunAsync(client: client, prompt: prompt, cancelToken: cts.Token);
 
             Console.WriteLine("Press Enter to continue..");
             Console.ReadLine();

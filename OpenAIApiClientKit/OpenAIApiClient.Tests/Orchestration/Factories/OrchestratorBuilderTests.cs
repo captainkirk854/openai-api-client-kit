@@ -170,7 +170,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Factories
             }
             catch (InvalidOperationException ex)
             {
-                Assert.Contains("IResponseHandler", ex.Message);
+                Assert.Contains("IAiModelResponseHandler", ex.Message);
             }
         }
 

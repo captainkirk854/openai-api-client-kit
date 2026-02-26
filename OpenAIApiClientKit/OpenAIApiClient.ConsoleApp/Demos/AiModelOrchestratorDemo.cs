@@ -11,7 +11,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
     using OpenAIApiClient.Orchestration.Factories;
     using OpenAIApiClient.Registries.AiModels;
 
-    public static class AiModelOrchestratorDemoX
+    public static class AiModelOrchestratorDemo
     {
         public static async Task RunAsync(ChatClient client, string prompt, CancellationToken cancelToken = default)
         {

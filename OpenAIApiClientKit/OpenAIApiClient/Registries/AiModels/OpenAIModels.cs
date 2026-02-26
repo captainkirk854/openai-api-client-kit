@@ -33,7 +33,7 @@ namespace OpenAIApiClient.Registries.AiModels
     ///
     /// This registry can be easily extended to include additional models as they are released by OpenAI.
     /// </remarks>
-    public sealed class OpenAIModels : IAiModelRegistryX
+    public sealed class OpenAIModels : IAiModelRegistry
     {
         // Dictionary to hold model descriptors ..
         private readonly Dictionary<OpenAIModel, AiModelDescriptor> models;

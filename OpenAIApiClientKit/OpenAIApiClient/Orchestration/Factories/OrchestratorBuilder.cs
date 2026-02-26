@@ -52,7 +52,7 @@ namespace OpenAIApiClient.Orchestration.Factories
     {
         private ChatClient client = default!;
         private IAiModelResponseHandler responseHandler = default!;
-        private IAiModelRegistryX? registry;
+        private IAiModelRegistry? registry;
         private ClientRequestBuilder? requestBuilder;
         private ISingleAiModelDispatcher? singleModelDispatcher;
         private IEnsembleDispatcher? ensembleDispatcher;
@@ -91,7 +91,7 @@ namespace OpenAIApiClient.Orchestration.Factories
         /// </summary>
         /// <param name="registry">The IModelRegistry instance to use for model lookups. If not set, a default registry containing OpenAI models will be used.</param>
         /// <returns see cref="OrchestratorBuilder">The builder instance, for chaining.</returns>
-        public OrchestratorBuilder WithModelRegistry(IAiModelRegistryX registry)
+        public OrchestratorBuilder WithModelRegistry(IAiModelRegistry registry)
         {
             this.registry = registry;
             return this;
@@ -169,7 +169,7 @@ namespace OpenAIApiClient.Orchestration.Factories
             }
 
             // Use factory defaults if caller didn’t override
-            IAiModelRegistryX registry = this.registry ?? AiModelRegistryFactoryX.Create();
+            IAiModelRegistry registry = this.registry ?? AiModelRegistryFactory.Create();
             ClientRequestBuilder requestBuilder = this.requestBuilder ?? RequestBuilderFactory.CreateDefault();
 
             // Create Dispatchers - Use overrides if provided, otherwise fall back to DispatcherFactory ..
