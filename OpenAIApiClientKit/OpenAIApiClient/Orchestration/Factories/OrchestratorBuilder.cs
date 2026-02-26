@@ -165,7 +165,7 @@ namespace OpenAIApiClient.Orchestration.Factories
 
             if (this.responseHandler is null)
             {
-                throw new InvalidOperationException("A <IResponseHandler> must be provided.");
+                throw new InvalidOperationException("A <IAiModelResponseHandler> must be provided.");
             }
 
             // Use factory defaults if caller didn’t override
