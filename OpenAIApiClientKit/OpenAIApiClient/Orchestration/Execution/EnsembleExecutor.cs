@@ -4,17 +4,40 @@
 
 namespace OpenAIApiClient.Orchestration.Execution
 {
+    using OpenAIApiClient.Helpers.General;
     using OpenAIApiClient.Interfaces.Orchestration.Execution;
+    using OpenAIApiClient.Models.Chat.Request;
+    using OpenAIApiClient.Orchestration.Response;
 
-    public sealed class EnsembleExecutor(SingleModelExecutor singleModelExecutor) : IEnsembleExecutor
+    public sealed class EnsembleExecutor(ISingleAiModelExecutor singleModelExecutor) : IEnsembleExecutor
     {
-        private readonly SingleModelExecutor singleModelExecutor = singleModelExecutor;
+        // Inject the single model executor which will be used to execute requests on individual models as part of the ensemble execution process.
+        private readonly ISingleAiModelExecutor singleModelExecutor = singleModelExecutor;
 
-        public async Task<IReadOnlyList<ModelResponse>> ExecuteAsync(OrchestrationContext context, CancellationToken cancelToken)
+        /// <summary>
+        /// Execute the request across all models in the context and return a list of responses, one per model.
+        /// The request is built once per model by overriding the model in the request builder with the current model for that iteration of the loop.
+        /// </summary>
+        /// <param name="requestBuilder"></param>
+        /// <param name="context"></param>
+        /// <param name="cancelToken"></param>
+        /// <returns see cref="IReadOnlyList{AiModelResponse}">Model responses for each model in the context.</returns>
+        public async Task<IReadOnlyList<AiModelResponse>> ExecuteAsync(ClientRequestBuilder requestBuilder, IExecutionContext context, CancellationToken cancelToken)
         {
-            Task<ModelResponse>[] tasks = [.. context.ExecutionContext.Models.Select(model => this.singleModelExecutor.ExecuteAsync(model, context.PromptContext, cancelToken))];
+            IEnumerable<Task<AiModelResponse>> tasks = context.Models.Select(model =>
+            {
+                // Build the request by overriding the model in the request builder with the current model for this iteration of the loop ..
+                ChatCompletionRequest chatRequest = requestBuilder
+                    .WithModel(model.Name)
+                    .Build();
 
-            return await Task.WhenAll(tasks);
+                // Execute the request on this model ..
+                return this.singleModelExecutor.ExecuteAsync(request: chatRequest, cancelToken: cancelToken);
+            });
+
+            // Await all tasks to complete and gather the responses into a list to return ..
+            AiModelResponse[] responses = await Task.WhenAll(tasks);
+            return responses;
         }
     }
 }

@@ -4,10 +4,11 @@
 
 namespace OpenAIApiClient.Interfaces.Orchestration.Execution
 {
-    using OpenAIApiClient.Orchestration;
+    using OpenAIApiClient.Helpers.General;
+    using OpenAIApiClient.Orchestration.Response;
 
     public interface IEnsembleExecutor
     {
-        Task<IReadOnlyList<ModelResponse>> ExecuteAsync(OrchestrationContext context, CancellationToken cancelToken);
+        Task<IReadOnlyList<AiModelResponse>> ExecuteAsync(ClientRequestBuilder requestBuilder, IExecutionContext context, CancellationToken cancelToken);
     }
 }

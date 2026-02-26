@@ -87,24 +87,24 @@ namespace OpenAIApiClient.Registries.Dispatch
         /// </summary>
         /// <param name="registry"></param>
         /// <returns cref="EnsembleDispatchResult"> with selected reasoning, chat, and critic model descriptors.</returns>
-        private static EnsembleDispatchResult BuildReasoningEnsemble(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> registry)
+        private static EnsembleDispatchResult BuildReasoningEnsemble(IReadOnlyDictionary<OpenAIModel, AiModelDescriptor> registry)
         {
             // Select the highest performing reasoning model ..
-            ModelDescriptor? reasoning = registry.Values
-                .Where(m => m.Capabilities.Contains(ModelCapability.Reasoning))
-                .OrderByDescending(m => m.Capabilities.Contains(ModelCapability.HighPerformance))
+            AiModelDescriptor? reasoning = registry.Values
+                .Where(m => m.Capabilities.Contains(AiModelCapability.Reasoning))
+                .OrderByDescending(m => m.Capabilities.Contains(AiModelCapability.HighPerformance))
                 .FirstOrDefault() ?? throw new InvalidOperationException("No Reasoning-capable model found in the registry.");
 
             // .. a fast chat model that is also not the selected reasoning model ..
-            ModelDescriptor? fast = registry.Values
-                .Where(m => m.Capabilities.Contains(ModelCapability.Chat))
+            AiModelDescriptor? fast = registry.Values
+                .Where(m => m.Capabilities.Contains(AiModelCapability.Chat))
                 .Where(m => m.Name != reasoning.Name)
                 .OrderBy(m => m.Pricing.InputTokenCost)
                 .FirstOrDefault() ?? throw new InvalidOperationException("No Chat-capable model found in the registry.");
 
             // .. and a cost-effective critic model that is neither the reasoning nor the fast model ..
-            ModelDescriptor? critic = registry.Values
-                .Where(m => m.Capabilities.Contains(ModelCapability.Critic))
+            AiModelDescriptor? critic = registry.Values
+                .Where(m => m.Capabilities.Contains(AiModelCapability.Critic))
                 .Where(m => m.Name != fast.Name && m.Name != reasoning.Name)
                 .OrderBy(m => m.Pricing.InputTokenCost)
                 .FirstOrDefault() ?? throw new InvalidOperationException("No Critic-capable model found in the registry.");
@@ -123,17 +123,17 @@ namespace OpenAIApiClient.Registries.Dispatch
         /// </summary>
         /// <param name="modelRegistry"></param>
         /// <returns cref="EnsembleDispatchResult"> with selected vision and chat model descriptors.</returns>
-        private static EnsembleDispatchResult BuildVisionEnsemble(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry)
+        private static EnsembleDispatchResult BuildVisionEnsemble(IReadOnlyDictionary<OpenAIModel, AiModelDescriptor> modelRegistry)
         {
             // Select the highest performing vision model ..
-            ModelDescriptor? vision = modelRegistry.Values
-                .Where(m => m.Capabilities.Contains(ModelCapability.Vision))
-                .OrderByDescending(m => m.Capabilities.Contains(ModelCapability.HighPerformance))
+            AiModelDescriptor? vision = modelRegistry.Values
+                .Where(m => m.Capabilities.Contains(AiModelCapability.Vision))
+                .OrderByDescending(m => m.Capabilities.Contains(AiModelCapability.HighPerformance))
                 .FirstOrDefault() ?? throw new InvalidOperationException("No Vision-capable model found in the registry.");
 
             // .. and the most cost-effective chat model that is not the selected vision model ..
-            ModelDescriptor? fastText = modelRegistry.Values
-                .Where(m => m.Capabilities.Contains(ModelCapability.Chat))
+            AiModelDescriptor? fastText = modelRegistry.Values
+                .Where(m => m.Capabilities.Contains(AiModelCapability.Chat))
                 .Where(m => m.Name != vision.Name)
                 .OrderBy(m => m.Pricing.InputTokenCost)
                 .FirstOrDefault() ?? throw new InvalidOperationException("No Chat-capable model found in the registry.");
@@ -149,24 +149,24 @@ namespace OpenAIApiClient.Registries.Dispatch
         /// Creates an ensemble of models optimized for cost by selecting low-cost, chat-capable, and high-performance model descriptors from the registry.
         /// </summary>
         /// <returns cref="EnsembleDispatchResult"> with selected cost-optimised, chat-capable, and high-performance model descriptors.</returns>
-        private static EnsembleDispatchResult BuildCostOptimisedEnsemble(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry)
+        private static EnsembleDispatchResult BuildCostOptimisedEnsemble(IReadOnlyDictionary<OpenAIModel, AiModelDescriptor> modelRegistry)
         {
             // Select the most cost-effective low-cost model ..
-            ModelDescriptor? low = modelRegistry.Values
-                .Where(m => m.Capabilities.Contains(ModelCapability.LowCost))
+            AiModelDescriptor? low = modelRegistry.Values
+                .Where(m => m.Capabilities.Contains(AiModelCapability.LowCost))
                 .OrderBy(m => m.Pricing.InputTokenCost)
                 .FirstOrDefault() ?? throw new InvalidOperationException("No LowCost-capable model found in the registry.");
 
             // .. a mid-tier chat model that is not the selected low-cost model ..
-            ModelDescriptor? mid = modelRegistry.Values
-                .Where(m => m.Capabilities.Contains(ModelCapability.Chat))
+            AiModelDescriptor? mid = modelRegistry.Values
+                .Where(m => m.Capabilities.Contains(AiModelCapability.Chat))
                 .Where(m => m.Name != low.Name)
                 .OrderBy(m => m.Pricing.InputTokenCost)
                 .FirstOrDefault() ?? throw new InvalidOperationException("No Chat-capable model found in the registry.");
 
             // .. and a high-performance model that is neither the low-cost nor the mid-tier chat model ..
-            ModelDescriptor? high = modelRegistry.Values
-                .Where(m => m.Capabilities.Contains(ModelCapability.HighPerformance))
+            AiModelDescriptor? high = modelRegistry.Values
+                .Where(m => m.Capabilities.Contains(AiModelCapability.HighPerformance))
                 .Where(m => m.Name != low.Name && m.Name != mid.Name)
                 .OrderBy(m => m.Pricing.InputTokenCost)
                 .FirstOrDefault() ?? throw new InvalidOperationException("No HighPerformance-capable model found in the registry.");

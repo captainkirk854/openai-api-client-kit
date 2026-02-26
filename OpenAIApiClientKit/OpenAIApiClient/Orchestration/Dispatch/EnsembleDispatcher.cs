@@ -7,6 +7,7 @@ namespace OpenAIApiClient.Orchestration.Dispatch
     using OpenAIApiClient.Delegates;
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Interfaces.Orchestration.Dispatch;
+    using OpenAIApiClient.Interfaces.Registries;
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Registries.Dispatch;
 
@@ -14,9 +15,9 @@ namespace OpenAIApiClient.Orchestration.Dispatch
     /// <see cref="EnsembleDispatcher"/> provides intentional, criteria‑based delegation to select the correct model(s) based on the provided request.
     /// </summary>
     /// <param name="modelRegistry"></param>
-    public sealed class EnsembleDispatcher(IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry) : IEnsembleDispatcher
+    public sealed class EnsembleDispatcher(IAiModelRegistry registry) : IEnsembleDispatcher
     {
-        private readonly IReadOnlyDictionary<OpenAIModel, ModelDescriptor> modelRegistry = modelRegistry;
+        private readonly IReadOnlyDictionary<OpenAIModel, AiModelDescriptor> modelRegistry = registry.GetRegistry();
 
         /// <summary>
         /// Evaluates a request to select the appropriate set of model descriptor(s).
@@ -49,12 +50,20 @@ namespace OpenAIApiClient.Orchestration.Dispatch
         /// <exception cref="InvalidOperationException">Thrown if no required capabilities are specified or if no models match the requested capabilities.</exception>
         private EnsembleDispatchResult BuildCustomEnsemble(EnsembleDispatchRequest request)
         {
+            // If no required capabilities are specified, use the explicitly defined models (if any) or throw an exception if none are provided.
             if (request.RequiredCapabilities is null || request.RequiredCapabilities.Count == 0)
             {
-                throw new InvalidOperationException("Custom ensemble requires at least one defined capability.");
+                // If no explicit models are provided, throw an exception since we cannot build an ensemble without criteria or specified models.
+                if (request.ExplicitModels is null || request.ExplicitModels.Count == 0)
+                {
+                    throw new InvalidOperationException("Custom ensemble requires at least one defined capability.");
+                }
+
+                // Otherwise, return the explicitly defined models as the ensemble result.
+                return new EnsembleDispatchResult(models: [.. request.ExplicitModels.Select(model => this.modelRegistry[model])]);
             }
 
-            List<ModelDescriptor> models = [.. this.modelRegistry.Values
+            List<AiModelDescriptor> models = [.. this.modelRegistry.Values
                 .Where(model => request.RequiredCapabilities.All(cap => model.Capabilities.Contains(cap)))
                 .OrderBy(model => model.Pricing.InputTokenCost)];
 

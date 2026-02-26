@@ -41,7 +41,7 @@ namespace OpenAIApiClient.Orchestration.Dispatch
         /// <summary>
         /// Gets the Optional required capabilities for all models in the ensemble.
         /// </summary>
-        public IReadOnlyList<ModelCapability>? RequiredCapabilities
+        public IReadOnlyList<AiModelCapability>? RequiredCapabilities
         {
             get;
             init;
