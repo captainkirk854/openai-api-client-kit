@@ -232,7 +232,7 @@ namespace OpenAIApiClient
                 // Buffer items from the streaming operation ..
                 try
                 {
-                    await foreach (var item in operation().WithCancellation(cancellationToken))
+                    await foreach (T? item in operation().WithCancellation(cancellationToken))
                     {
                         bufferedItems.Add(item);
                     }
@@ -253,7 +253,7 @@ namespace OpenAIApiClient
 
                 if (!shouldRetry)
                 {
-                    foreach (var item in bufferedItems)
+                    foreach (T? item in bufferedItems)
                     {
                         yield return item;
                     }

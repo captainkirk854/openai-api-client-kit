@@ -1,108 +1,164 @@
-# 🚀 ChatGPT C# Client
+# 🚀 ChatGPT C# Client & OpenAI Orchestration Framework
 
-A lightweight, production‑ready C# wrapper for accessing OpenAI’s ChatGPT models — no Azure deployment required.
+A lightweight, production‑ready C# wrapper and orchestration framework for accessing OpenAI’s ChatGPT and related models — no Azure deployment required.
+
+This repo now includes two major layers:
+
+- **Chat Client Layer** – a clean, resilient `ChatClient` for calling OpenAI’s chat completions (sync + streaming).
+- **Orchestration Layer** – a strongly‑typed model registry plus strategy‑driven dispatchers and executors that can pick and run the “right” model(s) for a given task.
+
+---
 
 Supports:
-- ✔️ Simple chat completions
-- ✔️ Streaming responses (token‑by‑token)
-- ✔️ Automatic retries
-- ✔️ Exponential backoff with jitter
-- ✔️ Smart handling of ```HTTP 429 Rate Limit``` + ```Retry-After``` header
-- ✔️ Clean, reusable API surface
+
+- ✔️ Simple chat completions  
+- ✔️ Streaming responses (token‑by‑token)  
+- ✔️ Automatic retries  
+- ✔️ Exponential backoff with jitter  
+- ✔️ Smart handling of `HTTP 429 Rate Limit` + `Retry-After` header  
+- ✔�� Strongly‑typed **OpenAI Model Registry**  
+- ✔️ Strategy‑driven **Single‑Model** & **Ensemble** dispatchers  
+- ✔️ **Model‑as‑judge** evaluation flows  
+- ✔️ **Decision‑by‑heuristic** model selection and ranking  
+- ✔️ **Response synthesis** across multiple model outputs  
+- ✔️ Pluggable **response handlers**  
+- ✔️ Clean, reusable API surface  
+
+---
 
 # 📘 Overview
 
-This project provides a robust, developer‑friendly C# client for interacting with OpenAI’s Chat Completion API.
+This project provides a robust, developer‑friendly C# client for interacting with OpenAI’s Chat Completion API, plus a full orchestration stack for model selection and execution.
 
 It’s designed for:
-- Backend services
-- Desktop apps
-- Tools and utilities
-- High‑reliability integrations
+
+- Backend services  
+- Desktop apps  
+- Tools and utilities  
+- High‑reliability integrations  
+- Model experimentation and cost/performance trade‑off analysis  
 
 No Azure OpenAI deployment is required — this client talks directly to OpenAI’s public API.
+
+---
 
 # 🔧 Features
 
 ## 🧵 Streaming Support
 
-Consume responses as they are generated using ```IAsyncEnumerable<ChatCompletionChunk>```.
+Consume responses as they are generated using `IAsyncEnumerable<ChatCompletionChunk>`.
 
 ## 🔁 Retry Logic
 
 Automatic retries on:
-- Network failures
-- Transient errors
-- HTTP 429 (rate limit)
+
+- Network failures  
+- Transient errors  
+- HTTP 429 (rate limit)  
 
 ## ⏳ Rate‑Limit Handling
-Honors the server’s ```Retry-After``` header when present in response.
+
+Honors the server’s `Retry-After` header when present in the response.
 
 ## 🧱 Minimal Dependencies
 
-Only uses ```System.Net.Http``` and ```System.Text.Json```.
+Only uses:
+
+- `System.Net.Http`  
+- `System.Text.Json`  
+
+---
 
 # 📦 Installation
 
-Add the required package(s) if required:
-e.g., ```dotnet add package System.Net.Http.Json```
+Add any required packages, for example:
+
+```bash
+dotnet add package System.Net.Http.Json
+```
+
+---
 
 # 🔑 Getting an OpenAI API Key
-- Visit https://platform.openai.com
-- Log in or create an account
-- Go to API Keys
-- Click Create new secret key
-- Store it securely (never commit it to Git)
+
+1. Visit https://platform.openai.com  
+2. Log in or create an account  
+3. Go to **API Keys**  
+4. Click **Create new secret key**  
+5. Store it securely (never commit it to Git)  
 
 Set it as an environment variable:
+
 Windows (PowerShell):
-```setx OPENAI_API_KEY "your-api-key"```
+
+```powershell
+setx OPENAI_API_KEY "your-api-key"
+```
+
+> Note: In the console demo project, the environment variable is read as `OPENAI_API_KEY`.  
+> Make sure this matches how you configure your environment.
+
+---
 
 # 🧠 ChatClient
-Place the full wrapper class in: ```ChatClient.cs```
+
+Place the full wrapper class in `ChatClient.cs`.
 
 This class includes:
-- Normal completions
-- Streaming completions
-- Retry logic
-- Rate‑limit handling
-- Retry-After support
+
+- Normal completions  
+- Streaming completions  
+- Retry logic  
+- Rate‑limit handling  
+- `Retry-After` support  
+
+It is suitable as a drop‑in client for typical backend or desktop usage.
+
+---
 
 # 🖥️ Usage Examples
 
 ## Common Setup
-```
+
+```csharp
 string? apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
 
 ChatClient client = new(apiKey: apiKey);
 
-ChatCompletionRequest request = 
-new ClientRequestBuilder().WithModel(input: OpenAIModels.GPT4o_Mini)
-                          .AddSystemMessage(input: "You are a helpful assistant that answers concisely.")
-                          .AddUserMessage(input: "Write a haiku about winter mornings.")
-                          .UsingMaxTokens(input: 1000)
-                          .EnableStreaming(input: isStreaming)
-                          .WithTemperature(input: temperature)
-                          .WithTopP(input: topP)
-                          .WithPresencePenalty(input: presencePenalty)
-                          .WithFrequencyPenalty(input: frequencyPenalty)
-                          .Build();
+ChatCompletionRequest request =
+    new ClientRequestBuilder()
+        .WithModel(input: OpenAIModels.GPT4o_Mini)
+        .AddSystemMessage(input: "You are a helpful assistant that answers concisely.")
+        .AddUserMessage(input: "Write a haiku about winter mornings.")
+        .UsingMaxTokens(input: 1000)
+        .EnableStreaming(input: isStreaming)
+        .WithTemperature(input: temperature)
+        .WithTopP(input: topP)                 // Validated to [0.0, 1.0]
+        .WithPresencePenalty(input: presencePenalty)
+        .WithFrequencyPenalty(input: frequencyPenalty)
+        .Build();
 
 using CancellationTokenSource cts = new(TimeSpan.FromSeconds(30));
 ```
 
 ## Standard Response
-```
-ChatCompletionResponse? response = await client.CreateChatCompletionAsync(request: request, cancelToken: cts.Token);
+
+```csharp
+ChatCompletionResponse? response =
+    await client.CreateChatCompletionAsync(request: request, cancelToken: cts.Token);
+
 return response?.Choices[0].Message.Content;
 ```
 
 ## Streaming Response
-```
+
+```csharp
 string? response = string.Empty;
 
 // Stream the response chunk(s) ..
-await foreach (ChatCompletionChunk chunk in client.CreateChatCompletionStreamAsync(request: request, cancelToken: cts.Token))
+await foreach (ChatCompletionChunk chunk in client.CreateChatCompletionStreamAsync(
+                   request: request,
+                   cancelToken: cts.Token))
 {
     // Extract delta content from chunk and concatenate to final response ..
     ChatDelta chunkDelta = chunk.Choices[0].Delta;
@@ -112,36 +168,56 @@ await foreach (ChatCompletionChunk chunk in client.CreateChatCompletionStreamAsy
 return response;
 ```
 
+---
+
 # 🛡️ Error Handling
 
 The client automatically:
-- Retries on transient network errors
-- Detects HTTP 429
-- Reads and honors Retry-After
-- Falls back to exponential backoff with jitter
+
+- Retries on transient network errors  
+- Detects HTTP 429  
+- Reads and honors `Retry-After`  
+- Falls back to exponential backoff with jitter  
 
 You can configure retry behavior:
-```ChatClient client = new(apiKey: apiKey, maxRetries: 5, baseDelayMs: 1000);```
+
+```csharp
+ChatClient client = new(apiKey: apiKey, maxRetries: 5, baseDelayMs: 1000);
+```
+
+---
 
 # 🧠 Implementation Examples
-See the `OpenAIApiClient.ConsoleApp` project for a simple console application demonstrating usage.
-- `AiModelChatClientDemo` - demonstrates basic implementation of the ChatClient to send a prompt and receive a response.
-- `AIModelDispatchDemo` - demonstrates using the dispatchers to select models based on strategies (e.g., best reasoning model, lowest cost model).)
-- `AIModelBestResponseDemo` - demonstrates using the orchestrator to get the "best" response from lowest-cost and fast-inferencing model(s).
-- `AIModelOrchestratorDemo` - demonstrates using the orchestrator with a custom request and response handler.
-- `AiModelResponseHandlerDemo` - demonstrates implementing a custom response handler to format the output.`
+
+See the `OpenAIApiClient.ConsoleApp` project for a collection of demos:
+
+- `AiModelChatClientDemo` – basic `ChatClient` usage to send a prompt and receive a response.  
+- `AIModelDispatchDemo` – uses the dispatchers to select models based on strategies  
+  (e.g., best reasoning model, lowest cost model).  
+- `AIModelBestResponseDemo` – uses the orchestrator to get a “best” response from a
+  combination of low‑cost and fast‑inference models, including **model‑as‑judge** and  
+  **response synthesis** patterns.  
+- `AIModelOrchestratorDemo` – orchestrator usage with a custom request and response handler,
+  including **heuristic‑driven decisions**.  
+- `AiModelResponseHandlerDemo` – shows how to implement a custom response handler to
+  format and inspect the output (including token counts and estimated costs).  
+
+These demos are aligned with the orchestration/dispatching architecture introduced in this branch.
+
+---
 
 # 🧪 Testing Your Setup
 
-## Set your OpenAI API Key environment variable
+## 1. Set your OpenAI API Key environment variable
+
 ```powershell
-setx OPENAI__API_KEY "your-api-key"
+setx OPENAI_API_KEY "your-api-key"
 ```
 
-## Run:
-### Option 1: Using PowerShell to list available OpenAI models
+## 2. Option 1: Use PowerShell to list available OpenAI models
 
-#### Simple PowerShell script to list available OpenAI models associated with your API key
+A simple PowerShell function to list models associated with your API key:
+
 ```powershell
 function Get-OpenAIModels {
     param(
@@ -157,13 +233,14 @@ function Get-OpenAIModels {
 (Get-OpenAIModels).data | Sort-Object -Property id
 ```
 
-### Option 2: Using PowerShell to send a chat completion request using GPT-5
+## 3. Option 2: Use PowerShell to send a chat completion request (GPT‑5)
 
-Note: OpenAI requires GPT-5 access to be enabled on your account which means verifying 
-your organization and billing details at https://platform.openai.com/settings/organization/general.
-Lack of access will result in a 403 Forbidden response or similar.
+> Note: GPT‑5 access must be enabled for your account. You need a verified organization and billing at  
+> https://platform.openai.com/settings/organization/general.  
+> Otherwise, you’ll receive 403/Forbidden or similar errors.
 
-#### Simple PowerShell script to send a chat completion request to GPT-5
+### Simple PowerShell script
+
 ```powershell
 function Invoke-GPT5Prompt {
     param(
@@ -202,14 +279,15 @@ function Invoke-GPT5Prompt {
 
     return $response.choices[0].message.content
 }
+
 # Example usage
 $response = Invoke-GPT5Prompt -Prompt "List the planets and their diameters in order of size"
 $response
 ```
 
-#### Extended PowerShell script to send a chat completion request to GPT-5 with more options
-```powershell
+### Extended PowerShell script with more options
 
+```powershell
 function Invoke-GPT5Prompt {
     [CmdletBinding()]
     param(
@@ -272,7 +350,7 @@ function Invoke-GPT5Prompt {
         model = "gpt-5"
         messages = $messages
         temperature = $Temperature # GPT-5 only supports 1.0
-        top_p = $TopP # Not supported by GPT-5 but included for completeness
+        top_p = $TopP              # Not supported by GPT-5 but included for completeness
         n = $N
         presence_penalty = $PresencePenalty
         frequency_penalty = $FrequencyPenalty
@@ -313,454 +391,428 @@ $response = Invoke-GPT5Prompt -Prompt "Generate a JSON object with user details.
                               -ResponseFormat "json_object"
 ```
 
+## 4. Option 3: Run the console app
 
-### Option 3: Use the simple console app provided in the ```OpenAIApiClient.ConsoleApp``` project.
+From the repo root:
 
 ```powershell
 dotnet run --project .\OpenAIApiClient.ConsoleApp\OpenAIApiClient.ConsoleApp.csproj
 ```
 
-*(Tip: Remember to set your OPENAI_API_KEY environment variable first (see above))*
-
 If everything is configured correctly, you’ll see ChatGPT’s response in your console.
 
+The console app includes demos for:
+
+- Single‑model prompts  
+- Ensemble execution  
+- Custom response handling (including token + cost reporting)  
+- Model‑as‑judge evaluation and response synthesis  
+
+---
 
 # 📘 OpenAI Model Registry & Orchestration Framework
-This project establishes a unified, strongly typed, future‑proof foundation for working with OpenAI models in .NET. The work completed in this discussion consolidates model metadata, capabilities, pricing, and routing information into a single, extensible architecture designed for reliability, maintainability, and clarity.
+
+This branch introduces a unified, strongly typed, future‑proof foundation for working with OpenAI models in .NET. It consolidates model metadata, capabilities, pricing, and dispatch information into a single, extensible architecture designed for reliability, maintainability, and clarity.
 
 ## 🚀 1. Strongly Typed Model Enumeration
-A comprehensive ```OpenAIModel``` enum has been defined covering all relevant OpenAI model families:
-- GPT‑5 (5.2, 5.2 Pro, 5, Mini, Nano)
-- GPT‑4.1 (Standard, Mini, Reasoning, Critic, Turbo)
-- GPT‑4o (Standard, Mini)
-- GPT‑3.5 Turbo
-- Embedding models
-- TTS / Whisper audio models
-- DALL·E 3
-- Open‑weight models (O1, O1‑Mini)
-- Moderation models
+
+A comprehensive `OpenAIModel` (or equivalent) enum covers major OpenAI model families:
+
+- GPT‑5 (5.2, 5.2 Pro, 5, Mini, Nano)  
+- GPT‑4.1 (Standard, Mini, Reasoning, Critic, Turbo)  
+- GPT‑4o (Standard, Mini)  
+- GPT‑3.5 Turbo  
+- Embedding models  
+- TTS / Whisper audio models  
+- DALL·E 3  
+- Open‑weight models (O1, O1‑Mini, etc.)  
+- Moderation models  
 
 This enum forms the **backbone** of the entire registry system.
 
 ## 🔗 2. Model Endpoint Mapping
+
 There is a strongly typed mapping from each enum value to its actual OpenAI API endpoint string, ensuring:
-- No magic strings
-- Centralized control
-- Easy updates when OpenAI releases new versions
+
+- No magic strings  
+- Centralized control  
+- Easy updates when OpenAI releases new versions  
 
 Example:
-OpenAIModel.GPT4_1 → "gpt-4.1"
+
+```csharp
+OpenAIModel.GPT4_1 => "gpt-4.1";
+```
 
 ## 🧠 3. Capability System
-A flexible ```AiModelCapability``` enum has been defined to represent what each model can do:
-- Text / Chat
-- Reasoning
-- Vision
-- Audio In / Out
-- Embedding
-- Image Generation
-- Moderation
-- Low‑Cost
-- High‑Performance
-- Open‑Weight
 
-This enables intelligent routing, filtering, and orchestration decisions.
+A flexible capability enum (e.g., `ModelCapability` / `AiModelCapability`) represents what each model can do:
 
-## 🧩 4. ModelDescriptor Class
+- Text / Chat  
+- Reasoning  
+- Vision  
+- Audio In / Out  
+- Embedding  
+- Image Generation  
+- Moderation  
+- Low‑Cost  
+- High‑Performance  
+- Open‑Weight  
+
+This enables intelligent routing and orchestration decisions.
+
+## 🧩 4. Model Descriptor
+
 A unified descriptor object encapsulates:
-- Model enum
-- API endpoint
-- Capabilities
-- Pricing (per‑token)
 
-This becomes the single source of truth for all model metadata.
+- Model enum  
+- API endpoint  
+- Capabilities  
+- Pricing (per‑token)  
+
+This is the single source of truth for all model metadata.
 
 ## 💰 5. Pricing Model (Per‑Token)
-The ModelPricing class uses cost per token, not per‑1K, making cost calculations simpler and more accurate.
+
+Pricing is expressed as cost **per token**, not per‑1K tokens, which simplifies and clarifies cost calculations.
 
 Pricing fields include:
-- Input token cost
-- Output token cost
-- Cached input token cost
-- Reasoning token cost
-- Tool‑use token cost
 
-All values were left as placeholders to populate with real pricing when necessary.
+- Input token cost  
+- Output token cost  
+- Cached input token cost  
+- Reasoning token cost  
+- Tool‑use token cost  
+
+Values are defined in one place and can be updated whenever OpenAI’s pricing changes.
 
 ## 🗂️ 6. Combined Model Registry
-We end up with a fully integrated registry:
-```Dictionary<OpenAIModel, AiModelDescriptor>```
+
+A fully integrated registry like:
+
+```csharp
+Dictionary<OpenAIModel, AiModelDescriptor> ModelRegistry;
+```
 
 Each entry includes:
-- The model’s enum
-- The API endpoint
-- Its capabilities
-- Its pricing
 
-This registry is:
-- Immutable
-- Strongly typed
-- Extensible
-- Centralized
-- Perfect for orchestration, routing, and cost estimation
+- The model enum  
+- The API endpoint  
+- Its capabilities  
+- Its pricing  
 
-It is the authoritative source for all model-related metadata in this system.
+The registry is:
 
+- Immutable  
+- Strongly typed  
+- Extensible  
+- Centralized  
+
+It serves as the authoritative source for all model‑related metadata.
 
 ## 🧩 7. Combined Prompt and Format Registry
 
-We have a complete, extendable framework that unifies:
+The framework also defines an output format system with:
 
-- **Output formats** (TXT, JSON, CSV, XML, Markdown, YAML, HTML, SQL)
-- **System prompts** required for each format
-- **Format‑specific validators** to ensure compliance
-- **A unified `FormatDescriptor` registry** to hold it all together
-
-The result is a clean, deterministic, strongly‑typed architecture with zero duplication and a single source of truth.
-
-### 🧪 Format Validators
-
-Validators have been implemented for the following format:
-
-- **PlainTextValidator**  
-- **JsonValidator**  
-- **CsvValidator**  
-- **XmlValidator**  
-- **MarkdownValidator**  
-- **YamlValidator**  
-- **HtmlValidator**  
-- **SqlValidator** (dialect‑agnostic)
-
-Each validator implements a shared interface:
+- Output formats (`PlainText`, `Json`, `Csv`, `Xml`, `Markdown`, `Yaml`, `Html`, `Sql`, …)  
+- System prompts required for each format  
+- Format‑specific validators to ensure responses conform to the expected shape  
+- A unified `FormatDescriptor` that combines prompt and validator:
 
 ```csharp
 public interface IOutputFormatValidator
 {
     bool IsValidFormat(string content, out string? error);
 }
-```
-Prompts and validators are merged into a single atomic unit:
 
-```csharp
 public sealed record FormatDescriptor(
     string SystemPrompt,
     IOutputFormatValidator Validator
 );
 ```
 
-These are then stored in a strongly typed, immutable registry as a dictionary eliminating duplication and creating
-a single source of truth for all formatting metadata:
+These descriptors live in an immutable registry:
 
 ```csharp
-public static readonly Dictionary<OutputFormat, FormatDescriptor> FormatRegistry = 
+public static readonly Dictionary<OutputFormat, FormatDescriptor> FormatRegistry =
     new()
     {
         { OutputFormat.PlainText, new FormatDescriptor( ... ) },
-        { OutputFormat.Json, new FormatDescriptor( ... ) },
-        { OutputFormat.Csv, new FormatDescriptor( ... ) },
-        { OutputFormat.Xml, new FormatDescriptor( ... ) },
-        { OutputFormat.Markdown, new FormatDescriptor( ... ) },
-        { OutputFormat.Yaml, new FormatDescriptor( ... ) },
-        { OutputFormat.Html, new FormatDescriptor( ... ) },
-        { OutputFormat.Sql, new FormatDescriptor( ... ) },
+        { OutputFormat.Json,      new FormatDescriptor( ... ) },
+        { OutputFormat.Csv,       new FormatDescriptor( ... ) },
+        { OutputFormat.Xml,       new FormatDescriptor( ... ) },
+        { OutputFormat.Markdown,  new FormatDescriptor( ... ) },
+        { OutputFormat.Yaml,      new FormatDescriptor( ... ) },
+        { OutputFormat.Html,      new FormatDescriptor( ... ) },
+        { OutputFormat.Sql,       new FormatDescriptor( ... ) },
     };
 ```
 
+Validators such as `PlainTextValidator`, `JsonValidator`, `CsvValidator`, `XmlValidator`, `MarkdownValidator`, `YamlValidator`, `HtmlValidator`, and `SqlValidator` enforce output correctness.
+
+---
 
 # 🧭 Architectural Benefits
+
 This design provides:
 
-✔ Single‑source‑of‑truth
+✔ **Single source of truth**  
 - All model metadata lives in one place.
 
-✔ Zero duplication
+✔ **Zero duplication**  
 - Endpoints, capabilities, and pricing are defined once.
 
-✔ Strong typing everywhere
+✔ **Strong typing**  
 - No stringly‑typed model names or ad‑hoc metadata.
 
-✔ Future‑proofing
-- Adding GPT‑6 or new TTS models is trivial.
+✔ **Future‑proofing**  
+- Adding GPT‑6 or new audio/vision models is trivial.
 
-✔ Orchestration‑ready
+✔ **Orchestration‑ready**  
 - The system can route based on:
-    - Reasoning ability
-    - Cost tier
-    - Vision support
-    - Audio support
-    - Performance tier
+  - Reasoning ability  
+  - Cost tier  
+  - Vision support  
+  - Audio support  
+  - Performance tier  
 
-✔ Pricing‑ready
-Cost estimation becomes a simple lookup + multiplication.
+✔ **Pricing‑ready**  
+- Cost estimation is a simple lookup + multiplication.
 
+✔ **Judge‑/Heuristic‑/Synthesis‑ready**  
+- Supports model‑as‑judge flows, heuristic‑based decision logic, and synthesized responses across multiple models.
+
+---
 
 # 🏗️ Architecture Overview
-This project implements a strategy‑driven orchestration framework for selecting and executing OpenAI models. The design emphasizes extensibility, determinism, and clean separation of concerns. At its core, the system is built around three major layers:
-- Dispatching Layer — selects the appropriate model(s)
-- Orchestration Layer — builds execution context and prompt context
-- Execution Layer — runs the selected model(s) and aggregates responses
 
-- The architecture is fully declarative: adding new models or strategies requires no changes to the orchestrator or dispatchers.
+This project implements a **strategy‑driven orchestration framework** for selecting and executing OpenAI models. The design emphasizes extensibility, determinism, and clean separation of concerns.
+
+At a high level, there are three layers:
+
+- **Dispatching Layer** — selects the appropriate model(s)  
+- **Orchestration Layer** — builds execution context and prompt context  
+- **Execution Layer** — runs the selected model(s) and aggregates responses  
+
+The architecture is fully declarative: adding new models or strategies does **not** require changes to the orchestrator or dispatchers.
 
 ## 🔍 Dispatching Layer
-The dispatching layer is responsible for deciding which OpenAI model(s) to use for a given request.
-It contains two symmetrical components:
+
+The dispatching layer decides which OpenAI model(s) to use for a given request.
+
+It exposes two symmetrical components:
 
 ### Single Model Dispatcher
-Evaluates a ModelDispatcherRequest and selects one model using a strategy.
 
-Responsibilities
-- Consult the Single Model Strategy Registry
-- Apply the selected strategy handler
-- Return a single ModelDescriptor
+Evaluates a `SingleAiModelDispatchRequest` and selects **one** model using a strategy.
 
-Example Strategies
-- Best reasoning model
-- Lowest cost model
-- Vision‑capable model
-- Explicit model selection
+Responsibilities:
+
+- Consult the **Single Model Strategy Registry**  
+- Apply the chosen strategy handler  
+- Return a single model descriptor  
+
+Typical strategies:
+
+- Best reasoning model  
+- Lowest cost model  
+- Vision‑capable model  
+- Explicit model selection  
 
 ### Ensemble Dispatcher
-Evaluates an EnsembleDispatcherRequest and selects multiple models.
 
-Responsibilities
-- Consult the Ensemble Strategy Registry
-- Apply the selected ensemble strategy handler
-- Return a list of ModelDescriptor objects
+Evaluates an `EnsembleDispatcherRequest` and selects **multiple** models.
 
-Example Strategies
-- Reasoning ensemble
-- Cost‑optimized ensemble
-- Vision ensemble
-- Weighted ensemble
-- Explicit model list
+Responsibilities:
+
+- Consult the **Ensemble Strategy Registry**  
+- Apply the chosen ensemble strategy handler  
+- Return a list of model descriptors  
+
+Typical strategies:
+
+- Reasoning ensemble  
+- Cost‑optimized ensemble  
+- Vision ensemble  
+- Weighted ensemble  
+- Explicit model list  
 
 ## 🧠 Strategy Registries
-Both dispatchers rely on strategy registries, which map:
 
-```
+Both dispatchers rely on registries that map:
+
+```text
 Strategy → StrategyHandler
 ```
 
 A strategy handler is a pure function:
-```
-(registry, request) → AiModelDescriptor
-(registry, request) → List<AiModelDescriptor>
-```
-This design allows new strategies to be added without modifying dispatcher code.
 
-Benefits
-- Declarative and extensible
-- Zero duplication
-- Deterministic model selection
-- Easy to test and mock
+```csharp
+(registry, request) => ModelDescriptor
+(registry, request) => List<ModelDescriptor>
+```
+
+This allows new strategies to be added without modifying dispatcher code.
+
+Benefits:
+
+- Declarative and extensible  
+- Zero duplication  
+- Deterministic model selection  
+- Easy to test and mock  
+
+The current branch includes:
+
+- A complete set of built‑in strategies for single and ensemble dispatch  
+- **Fixes for custom strategy handlers** in both `SingleModelStrategies` and `EnsembleStrategies`  
+- **Improved unit tests** for dispatcher behavior and strategy registration  
+
+---
+
+## 🧠 Model‑as‑Judge, Heuristic Decisions & Response Synthesis
+
+The orchestration layer supports richer flows on top of basic dispatch:
+
+- **Model‑as‑Judge** – one or more “judge” models evaluate candidate responses from other models
+  and score/rank them based on quality, safety, or task‑specific criteria.
+
+- **Decision by Heuristic** – orchestration can select the “winning” model or response using
+  pluggable heuristics (e.g., cost, token usage, judge score, length constraints, or domain‑specific rules).
+
+- **Response Synthesis** – multiple candidate outputs can be combined into a single synthesized answer,
+  optionally with a synthesis pass handled by a separate model (or the same model with a different prompt).
+
+These behaviors are implemented via:
+
+- Ensemble strategies that return multiple candidate models  
+- Executors that run those models in parallel  
+- Response handlers that:
+  - Inspect all `AiModelResponse` instances  
+  - Apply judge prompts and/or heuristics  
+  - Produce a single final, synthesized output  
+
+The `AIModelBestResponseDemo` and `AIModelOrchestratorDemo` in the console app provide end‑to‑end usage examples for these patterns.
+
+---
 
 ## 🔧 Orchestration Layer
-The Orchestrator coordinates the entire flow:
-- Determines whether the request is single‑model or ensemble
-- Calls the appropriate dispatcher’s Evaluate method
-- Wraps the selected model(s) in an ExecutionContext
-- Builds a PromptContext containing a ChatCompletionRequest
-- Passes everything to the execution layer
 
-This layer is intentionally thin — it delegates all decision‑making to dispatchers and all execution to executors.
+The Orchestrator coordinates the full pipeline:
+
+- Determines whether the request should be **single‑model** or **ensemble**  
+- Calls the appropriate dispatcher’s `Evaluate` method  
+- Wraps the selected model(s) in an **ExecutionContext**  
+- Builds a **PromptContext** containing a `ChatCompletionRequest`  
+- Passes everything to the execution layer  
+
+The layer is intentionally thin: it delegates decisions to dispatchers and all actual calls to executors.
 
 ## ⚙️ Execution Layer
+
 The execution layer runs the selected model(s):
-- `ISingleAiModelExecutor`
-- `IEnsembleExecutor`
 
-Single‑model execution is straightforward.
-Ensemble execution runs models in parallel, then aggregates results.
+- `ISingleAiModelExecutor` – single model execution  
+- `IEnsembleExecutor` – ensemble execution (parallel models + aggregation)  
 
-All responses flow through an IResponseHandler, which formats or merges them into a final output
+Ensemble execution runs models in parallel, then aggregates the results.
+
+All responses flow through an `IResponseHandler` implementation, which can:
+
+- Inspect raw outputs  
+- Check token usage  
+- Calculate estimated cost  
+- Apply judge prompts and/or heuristics  
+- Generate a synthesized final answer  
+
+The `ResponseHandlerDemo` in the console app shows how to:
+
+- Log each model’s status  
+- Display token counts and estimated costs  
+- Print failures vs. successes  
+- Return the final list of responses (or a synthesized response).
 
 ## 🎯 Key Architectural Advantages
-- Strategy‑driven: All model selection logic is declarative and pluggable
-- Symmetrical design: Single and ensemble paths share the same structure
-- Extensible: Add new strategies or models without modifying core classes
-- Deterministic: Same request + registry → same model selection
-- Testable: Dispatchers, executors, and handlers are fully mockable
-- Future‑proof: Supports new model generations, capabilities, and pricing
 
+- **Strategy‑driven** – all model selection logic is declarative and pluggable.  
+- **Symmetrical design** – single and ensemble paths share the same structure.  
+- **Extensible** – new strategies or models can be added without modifying core classes.  
+- **Deterministic** – same request + registry → same selection.  
+- **Testable** – dispatchers, executors, and handlers are fully mockable; the branch includes expanded unit tests for dispatch and custom strategies.  
+- **Future‑proof** – supports new model generations, capabilities, and pricing with minimal changes.  
+- **Judge/Heuristic/Synthesis‑aware** – supports advanced patterns like model‑as‑judge, heuristic
+  decision‑making, and response synthesis out of the box.
 
- 
+---
+
 # 🚀 Strategy‑Driven Model Dispatching
 
-## The Single‑Model and Ensemble Dispatchers for OpenAI Model Selection
-This architecture has a robust, extensible, and deterministic model dispatching architecture. The system revolves around two key components:
-- Single Ai Model Dispatcher
-- Ensemble Dispatcher
+The **Single Model Dispatcher** and **Ensemble Dispatcher** form the heart of the orchestration system.
 
-- Both dispatchers use strategy registries to evaluate incoming requests and select the most appropriate OpenAI model(s) for execution.
-The result is a clean, declarative, and future‑proof orchestration pipeline.
+### Core Concepts
 
-### 🧩 Core Architectural Concepts
-1. Dispatchers
+1. **Dispatchers**
 
-    Dispatchers have these responsibilities:
-    - They evaluate a request
-    - They select the appropriate model(s)
-    - They do not execute the models
-    - They rely on strategy handlers to make decisions
+   - Evaluate a request  
+   - Select appropriate model(s)  
+   - Do *not* execute models themselves  
+   - Use strategy handlers registered in the strategy registries  
 
-2. Strategy Registries
+2. **Strategy Registries**
 
-    Both dispatchers use a registry of strategies, where each strategy is a function that:
-    - Receives the model registry
-    - Receives the dispatcher request
-    - Returns:
-        - A single `AiModelDescriptor`, or
-        - A list of `AiModelDescriptor` objects
-    
-        - This enables a wide range of selection behaviors without modifying dispatcher code.
+   Strategies are registered as pure functions that receive:
 
-#### Example Strategy Pattern
-```csharp
-SingleAiModelStrategies.Register(
-    AiModelDispatchingStrategy.BestReasoning,
-    (registry, request) =>
-        registry.Values
-            .Where(m => m.Capabilities.Contains(AiModelCapability.Reasoning))
-            .OrderByDescending(m => m.Generation)
-            .First());
-```
+   - The model registry  
+   - The dispatcher request  
 
+   and return:
 
-The dispatcher simply calls the registered handler.
+   - A single model descriptor, or  
+   - A list of model descriptors  
 
-### 🧠 Single Model Dispatcher
+   Example pattern (pseudo‑code):
 
-Purpose
-- Select one OpenAI model based on a strategy.
+   ```csharp
+   SingleAiModelStrategies.Register(
+       AiModelDispatchingStrategy.BestReasoning,
+       (registry, request) =>
+           registry.Values
+               .Where(m => m.Capabilities.Contains(AiModelCapability.Reasoning))
+               .OrderByDescending(m => m.Generation)
+               .First());
+   ```
 
-Interface:
+   In this branch, custom strategy handlers for both single and ensemble strategies have been corrected and verified with unit tests.
 
-    public interface ISingleAiModelDispatcher
-    {
-        SingleAiModelDispatchResult Evaluate(SingleAiModelDispatchRequest request);
-    }
-
-Implementation Highlights
-- Accepts a `SingleAiModelDispatchRequest`
-- Looks up the correct strategy handler from the registry
-- Returns a `SingleAiModelDispatchResult` containing the chosen `AiModelDescriptor`
-
-Benefits
-- Clean separation of concerns
-- Deterministic model selection
-- Easy to mock in unit tests
-- Extensible without modifying dispatcher code
-
-### 🧠 Ensemble Dispatcher
-
-Purpose
-- Select multiple OpenAI models for ensemble execution.
-
-Interface:
-
-    public interface IEnsembleDispatcher
-    {
-        EnsembleDispatcherResult Evaluate(EnsembleDispatcherRequest request);
-    }
-
-Implementation Highlights
-- Accepts an EnsembleDispatcherRequest
-- Uses the EnsembleDispatchingStrategyRegistry
-- Returns a list of ModelDescriptor objects
-
-Supported Ensemble Strategies
-- Reasoning ensembles
-- Vision ensembles
-- Cost‑optimized ensembles
-- Explicit model lists
-- Weighted ensembles
-- Capability‑filtered ensembles
-Benefits
-- Parallel model execution
-- Flexible ensemble composition
-- Strategy‑driven, not hard‑coded
-- Perfect symmetry with the single‑model dispatcher
-
-## 🧱 Orchestrator Integration
-
-The Orchestrator coordinates the entire flow:
-- Determines whether the request is single‑model or ensemble
-- Calls the appropriate dispatcher’s Evaluate method
-- Wraps the result in an ExecutionContext
-- Builds a PromptContext containing a ChatCompletionRequest
-- Executes via:
-    - `ISingleAiModelExecutor`
-    - `IEnsembleExecutor`
-- Passes results to an `IAiModelResponseHandler`
-
-This creates a clean pipeline:
-Dispatcher → ExecutionContext → OrchestrationContext → Executor → ResponseHandler
-
-🧪 Unit Testing Enhancements
- The test suite cotains:
-- Mocks dispatchers
-- Mocks executors
-- Verifies correct dispatcher selection
-- Ensures correct model selection
-- Confirms correct response handling
-- Uses reflection to construct ModelDescriptor safely
-
-This ensures the system is:
-- Deterministic
-- Predictable
-- Extensible
-- Fully testable
-
-# 🎯 Summary
-
-We have an extensible orchestration framework for OpenAI models, centered around:
-- Single Model Dispatcher
-- Ensemble Dispatcher
-- Strategy registries
-- Execution contexts
-- PromptContext with embedded ChatCompletionRequest
-- Clean orchestration pipeline
-- Comprehensive unit tests
-
-The dispatchers now serve as the decision‑making layer, selecting the best model(s) based on declarative strategies, while the orchestrator and executors handle execution and response processing.
-The result is a system that is:
-- Declarative
-- Strategy‑driven
-- Extensible
-- Testable
-- Architecturally symmetrical
-- Ready for production and future expansion
-
+---
 
 # 📊 Orchestration Flowchart
 
-```
+```text
 +--------------------------------------------------------------------+
 |                        OrchestrationRequest                        |
 +--------------------------------------------------------------------+
                                 |
                                 v
-                       +----------------------+
-                       |     UseEnsemble?     |
-                       +----------------------+
-                         |                |
-                        No               Yes
-                         |                |
-                         v                v
+                       +-----------------------+
+                       |     UseEnsemble?      |
+                       +-----------------------+
+                         |                 |
+                        No                Yes
+                         |                 |
+                         v                 v
 +----------------------------------+   +--------------------------------+
 | SingleAiModelDispatcher.Evaluate |   | EnsembleDispatcher.Evaluate    |
 +----------------------------------+   +--------------------------------+
-                         |                |
-                         v                v
+                         |                 |
+                         v                 v
 +-------------------------------+      +--------------------------------+
 | SingleAiModelExecutionContext |      |  EnsembleExecutionContext      |
 +-------------------------------+      +--------------------------------+
-                         |                |
-                         v                v
+                         |                 |
+                         v                 v
 
 ====================================================================
-||                        ORCHESTRATION LAYER                     ||
+||                        ORCHESTRATION LAYER                      ||
 ||                                                                ||
 ||   +--------------------------------------------------------+   ||
 ||   |                OrchestrationContext                    |   ||
@@ -768,130 +820,73 @@ The result is a system that is:
 ||   +--------------------------------------------------------+   ||
 ====================================================================
 
-                         |                |
-                         v                v
+                         |                 |
+                         v                 v
 +--------------------------------+   +--------------------------------+
 |   ISingleAiModelExecutor.Exec  |   |   IEnsembleExecutor.Exec       |
 +--------------------------------+   +--------------------------------+
-                         |                |
-                         v                v
+                         |                 |
+                         v                 v
 +--------------------------------+   +--------------------------------+
-|         AiModelResponse        |   |      List<AiModelResponse>     |
+|       AiModelResponse          |   |      List<AiModelResponse>     |
 +--------------------------------+   +--------------------------------+
-                         \                /
-                          \              /
-                           v            v
-                 +---------------------------------+
-                 | IAiModelResponseHandler.Respond |
-                 +---------------------------------+
+                         \                 /
+                          \               /
+                           v             v
+              +-----------------------------------------+
+              | IAiModelResponseHandler.HandleResponses |
+              +-----------------------------------------+
                                  |
                                  v
-                  +------------------------------+
-                  |          Final Output        |
-                  +------------------------------+
+                     +------------------------------+
+                     |          Final Output        |
+                     +------------------------------+
 ```
 
+---
 
 # Fluent Orchestrator Builder
-The Fluent Orchestrator Builder provides a clean, expressive, and extensible way to construct an AI orchestration pipeline. It combines a fluent configuration API with modular sub‑factories to keep the system flexible, testable, and easy to reason about.
 
-## Purpose
-The builder exists to:
-- Offer a single, fluent entry point for configuring orchestration
-- Allow easy overrides of internal components (registries, builders, dispatchers, executors)
-- Keep construction logic modular through small, focused sub‑factories
-- Maintain deterministic, registry‑driven orchestration
-- Support test isolation and dependency injection
+The **Fluent Orchestrator Builder** provides a clean and expressive way to construct an AI orchestration pipeline.
 
-## Key Features
-### Fluent API
-The builder exposes a chainable configuration surface, the fullest possible example of which 
-looks like this, where every component is overridden:
+It offers:
 
-```
+- A fluent configuration surface  
+- Modular sub‑factories for registries, dispatchers, executors, and request builders  
+- A default‑with‑override pattern so callers can use sensible defaults or plug in their own components  
+
+Example (maximum customization):
+
+```csharp
 var orchestrator = new OrchestratorBuilder()
-                       .WithClient(<ChatClient> client)
-                       .WithResponseHandler(<IResponseHandler> handler)
-                       .WithModelRegistry(<IAIModelRegistry> customRegistry)
-                       .WithRequestBuilder(<ClientRequestBuilder> customRequestBuilder)
-                       .WithSingleModelDispatcher(<ISingleModelDispatcher> customSingleModelDispatcher)
-                       .WithSingleModelExecutor(<ISingleModelExecutor> customSingleModelExecutor);
-                       .WithEnsembleDispatcher(<IEnsembleDispatcher> customEnsembleDispatcher)
-                       .WithEnsembleExecutor(<IEnsembleExecutor> customEnsembleExecutor);
-                       .Build();
+    .WithClient(client)
+    .WithResponseHandler(handler)
+    .WithModelRegistry(customRegistry)
+    .WithRequestBuilder(customRequestBuilder)
+    .WithSingleModelDispatcher(customSingleModelDispatcher)
+    .WithSingleModelExecutor(customSingleModelExecutor)
+    .WithEnsembleDispatcher(customEnsembleDispatcher)
+    .WithEnsembleExecutor(customEnsembleExecutor)
+    .Build();
 ```
 
-The minimum configuration is as simple as the following, with the other options being defaulted internally:
+Minimal configuration:
 
-```
+```csharp
 var orchestrator = new OrchestratorBuilder()
-                       .WithClient(client)
-                       .WithResponseHandler(handler)
-                       .Build();
+    .WithClient(client)
+    .WithResponseHandler(handler)
+    .Build();
 ```
 
-This makes orchestration setup readable and intuitive.
+This builder is ideal when you want:
 
-### Sub‑Factories
-The builder delegates construction of internal components to dedicated factories:
-- ModelRegistryFactory
-- DispatcherFactory
-- ExecutorFactory
-- RequestBuilderFactory
-Each factory encapsulates a single responsibility, keeping the builder clean and the system modular.
+- A single, expressive entry point  
+- Multiple orchestration “profiles”  
+- Test isolation through custom components  
 
-### Default‑with‑Override Pattern
-The builder provides sensible defaults for all components:
-- Default model registry
-- Default request builder
-- Default dispatchers
-- Default executors
-
-Users can override any component without affecting the rest of the pipeline.
-
-## Build Process
-The builder orchestrates the following steps:
-- Resolve the model registry
-- Use caller‑provided registry or default factory
-- Resolve the request builder
-- Use caller‑provided builder or default factory
-- Create dispatchers
-- Single‑model dispatcher
-- Ensemble dispatcher
-- Create executors
-- Single‑model executor
-- Ensemble executor
-- Assemble the orchestrator
-- Inject all components
-- Return a fully configured instance
-
-## Benefits
-### Readable and expressive
-The fluent API makes orchestration configuration easy to understand at a glance.
-
-### Modular and maintainable
-Sub‑factories isolate construction logic and reduce duplication.
-
-### Highly testable
-Each subsystem can be mocked or replaced independently.
-
-### Override‑friendly
-Users can plug in custom registries, request builders, dispatchers, or executors.
-
-### Deterministic
-The builder ensures consistent wiring of all components.
-
-### Extensible
-New factories or configuration steps can be added without breaking the API.
-
-## When to Use
-The Fluent Orchestrator Builder is ideal when:
-- You want a single, expressive entry point for orchestration setup
-- You need customizable orchestration profiles
-- You value architectural symmetry and clarity
-- You want to support multiple model registries or request builders
-- You require clean test isolation
-
+---
 
 # 📄 License
+
 MIT License — free to use, modify, and distribute.
