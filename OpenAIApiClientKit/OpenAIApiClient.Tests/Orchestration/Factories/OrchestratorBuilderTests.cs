@@ -102,11 +102,21 @@ namespace OpenAIApiClient.Tests.Orchestration.Factories
             Assert.IsTrue(singleModelExecutor.WasCalled);
         }
 
+        [TestMethod]
         public async Task Build_Uses_Custom_Ensemble_Components()
         {
-            MockEnsembleDispatcher ensembleDispatcher = new();
+            // Set up the mock dispatcher to return a list of model descriptors for the test.
+            AiModelDescriptor modelA = CreateModelDescriptor(OpenAIModel.GPT4o);
+            AiModelDescriptor modelB = CreateModelDescriptor(OpenAIModel.GPT4o_Mini);
+            MockEnsembleDispatcher ensembleDispatcher = new()
+            {
+                ReturnedModels = [modelA, modelB],
+            };
+
+            // Set up the mock executor to return a list of responses for the test.
             MockEnsembleExecutor ensembleExecutor = new();
 
+            // Build the orchestrator with the mock ensemble dispatcher and executor.
             OrchestratorBuilder builder = new OrchestratorBuilder()
                                               .WithClient(this.client)
                                               .WithResponseHandler(this.handler)
@@ -115,6 +125,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Factories
 
             Orchestrator orchestrator = builder.Build();
 
+            // Create a request that will trigger ensemble processing.
             OrchestrationRequest request = new()
             {
                 Prompt = "test",
@@ -124,6 +135,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Factories
 
             await orchestrator.ProcessAsync(request, CancellationToken.None);
 
+            // Verify that both the ensemble dispatcher and executor were called.
             Assert.IsTrue(ensembleDispatcher.WasCalled);
             Assert.IsTrue(ensembleExecutor.WasCalled);
         }
