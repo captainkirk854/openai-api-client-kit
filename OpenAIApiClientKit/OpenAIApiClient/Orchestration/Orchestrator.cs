@@ -50,22 +50,18 @@ namespace OpenAIApiClient.Orchestration
             this.requestBuilder.SetPromptAndFormat(prompt: request.Prompt, format: request.OutputFormat);
 
             // Determine execution context based on request type ..
-            IExecutionContext executionContext;
-            if (request.UseEnsemble)
-            {
-                EnsembleDispatchResult dispatchResult = this.ensembleDispatcher.Evaluate(request: request.EnsembleRequest!);
-                executionContext = new EnsembleExecutionContext(prompt: request.Prompt, outputFormat: request.OutputFormat, models: dispatchResult.Models);
-            }
-            else
-            {
-                SingleAiModelDispatchResult dispatchResult = this.singleModelDispatcher.Evaluate(request: request.SingleModelRequest!);
-                executionContext = new SingleAiModelExecutionContext(prompt: request.Prompt, outputFormat: request.OutputFormat, model: dispatchResult.Model);
-            }
+            IExecutionContext executionContext = request.UseEnsemble
+                ? new EnsembleExecutionContext(prompt: request.Prompt,
+                                               outputFormat: request.OutputFormat,
+                                               models: this.ensembleDispatcher.Evaluate(request.EnsembleRequest!).Models)
+                : new SingleAiModelExecutionContext(prompt: request.Prompt,
+                                                    outputFormat: request.OutputFormat,
+                                                    model: this.singleModelDispatcher.Evaluate(request.SingleModelRequest!).Model);
 
-            // Do we actually have more than one model to be used?
+            // Check if execution context contains multiple models (ensemble) or single model ..
             bool isEnsemble = executionContext.Models.Count > 1;
 
-            // Control Execution based on execution context (ensemble/single) ..
+            // Execute the request based on the determined execution context and handle the responses accordingly ..
             if (isEnsemble)
             {
                 IReadOnlyList<AiModelResponse> responses = await this.ensembleExecutor.ExecuteAsync(requestBuilder: this.requestBuilder, context: executionContext, cancelToken: cancelToken);
@@ -73,8 +69,11 @@ namespace OpenAIApiClient.Orchestration
             }
             else
             {
+                // In single model scenario, there is implicitly one model and so we set that model on the request builder before execution ..
                 AiModelDescriptor model = executionContext.Models[0];
                 ChatCompletionRequest chatRequest = this.requestBuilder.WithModel(input: model.Name).Build();
+
+                // Execute the request and handle the response ..
                 AiModelResponse response = await this.singleModelExecutor.ExecuteAsync(request: chatRequest, cancelToken: cancelToken);
                 return this.responseHandler.HandleResponses(modelResponses: AiModelResponse.WrapSingleResponseAsList(modelResponse: response));
             }

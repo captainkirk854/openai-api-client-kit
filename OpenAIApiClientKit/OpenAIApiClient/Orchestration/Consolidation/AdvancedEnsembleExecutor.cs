@@ -189,6 +189,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation
                     Latency = r.Latency,
                     TotalTokens = r.TotalTokens,
                     EstimatedCost = r.EstimatedCost,
+                    ChunkCount = r.ChunkCount,
                 }),
             ];
 

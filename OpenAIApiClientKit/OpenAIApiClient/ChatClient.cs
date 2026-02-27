@@ -78,7 +78,7 @@ namespace OpenAIApiClient
         /// <returns>The chat completion response.</returns>
         public async Task<ChatCompletionResponse?> CreateChatCompletionAsync(ChatCompletionRequest request, CancellationToken cancelToken = default)
         {
-            // Do not use streaming option ..
+            // Enforce non-streaming option ..
             request.Stream = false;
 
             // Serialise request payload convert it to Http content string ..
@@ -106,7 +106,7 @@ namespace OpenAIApiClient
         /// <returns>An asynchronous stream of chat completion chunks.</returns>
         public async IAsyncEnumerable<ChatCompletionChunk> CreateChatCompletionStreamAsync(ChatCompletionRequest request, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            // Use streaming option ..
+            // Enforce streaming option ..
             request.Stream = true;
 
             // Serialise request payload convert it to Http content string ..
