@@ -6,6 +6,7 @@ namespace OpenAIApiClient.Orchestration
 {
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Orchestration.Dispatch;
+    using OpenAIApiClient.Orchestration.Execution;
 
     public sealed class OrchestrationRequest
     {
@@ -35,6 +36,15 @@ namespace OpenAIApiClient.Orchestration
             get;
             init;
         }
+
+        /// <summary>
+        /// Gets the control for non-streaming / streaming behavior and callbacks.
+        /// </summary>
+        public AiCallOptions CallOptions
+        {
+            get;
+            init;
+        } = new();
 
         /// <summary>
         /// Gets the single model request details if <see cref="UseEnsemble"/> is false..

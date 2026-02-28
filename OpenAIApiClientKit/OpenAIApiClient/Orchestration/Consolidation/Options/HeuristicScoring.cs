@@ -35,15 +35,8 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
         {
             Console.WriteLine(" Scoring responses using heuristics...");
 
-            List<AiModelResponse> successfulResponses = [.. responses.Where(r => r.IsSuccessful)];
-
-            if (successfulResponses.Count == 0)
-            {
-                throw new InvalidOperationException("No successful model responses to score");
-            }
-
             // Score each response
-            List<ScoredResponse> scoredResponses = [.. successfulResponses
+            List<ScoredResponse> scoredResponses = [.. responses
                 .Select((response, idx) =>
                 {
                     int score = CalculateHeuristicScore(response.RawOutput, prompt);
@@ -63,7 +56,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
                 {
                     Content = x.Response.RawOutput,
                     TotalScore = x.Score,
-                    ScoreBreakdown = CalculateScoreBreakdown(x.Response.RawOutput, prompt),
+                    ScoreBreakdown = GetHeuristicScoresBreakdown(x.Response.RawOutput, prompt),
                 });
 
             return new HeuristicScoringResult
@@ -105,9 +98,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
             // These suggest the model is unsure or disclaiming responsibility for its answer
             // Basis: Each marker indicates lower confidence in the response content
             // Multiplier: -50 points per marker penalizes hedging language; these reduce perceived reliability
-            string[] hallucinationMarkers = ["as an ai", "cannot", "unable", "might", "perhaps", "possibly", "i think"];
-            int hallucinationCount = hallucinationMarkers.Count(marker => Regex.IsMatch(response, marker, RegexOptions.IgnoreCase));
-            score -= hallucinationCount * 50;
+            score += GetHallucinationMarkerCount(response: response) * -50;
 
             // 3. Bonus for factual claims (numbers, dates, statistics)
             // Regex patterns:
@@ -128,9 +119,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
             // These words suggest the model believes strongly in the content it's providing
             // Basis: Confident, assertive language (when combined with factual accuracy) is preferred over hedging
             // Multiplier: +30 points per marker; confidence language signals stronger, more reliable answers
-            string[] confidenceMarkers = ["clearly", "definitely", "certainly", "absolutely", "proven"];
-            int confidenceCount = confidenceMarkers.Count(marker => Regex.IsMatch(response, marker, RegexOptions.IgnoreCase));
-            score += confidenceCount * 30;
+            score += GetConfidenceMarkerCount(response: response) * 30;
 
             // 5. Domain-specific keywords (customize per use case)
             // Regex: Regex.Escape() ensures special characters in keywords are treated literally
@@ -138,9 +127,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
             // Keywords are extracted dynamically from the user's question to identify topical relevance
             // Basis: Responses that directly address the user's domain/topic are more relevant and useful
             // Multiplier: +20 points per keyword; shows the response is targeted and directly addresses the user's concern
-            List<string> domainKeywords = ExtractDomainKeywords(prompt);
-            int keywordMatches = domainKeywords.Count(kw => Regex.IsMatch(response, Regex.Escape(kw), RegexOptions.IgnoreCase));
-            score += keywordMatches * 20;
+            score += GetDomainKeywordCount(response: response, prompt: prompt) * 20;
 
             // 6. Structure score (sentences, paragraphs, lists)
             // Regex: response.Split(new[] { '.', '!', '?' }, StringSplitOptions.RemoveEmptyEntries)
@@ -148,42 +135,105 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
             // Well-structured responses with clear sentences are easier to read and understand
             // Basis: More sentences (up to a reasonable limit) indicate better organization and clarity
             // Multiplier: +10 points per sentence (capped at 200) rewards structure without penalizing brevity
-            int sentenceCount = GetSentenceCount(response: response);
-            score += Math.Min(sentenceCount * 10, 200);
+            score += Math.Min(GetSentenceCount(response: response) * 10, 200);
 
             return score;
         }
 
         /// <summary>
-        /// Calculates a detailed score breakdown for a response.
+        /// Gets the detailed score breakdown for a response.
         /// </summary>
         /// <param name="response">The response content to analyze.</param>
-        /// <param name="userPrompt">The original user prompt.</param>
+        /// <param name="prompt">The original user prompt.</param>
         /// <returns>
         /// A <see cref="Dictionary{TKey,TValue}"/> containing a breakdown of
         /// individual scoring components as <see cref="int"/> values.
         /// </returns>
-        private static Dictionary<string, int> CalculateScoreBreakdown(string response, string userPrompt)
+        private static Dictionary<string, int> GetHeuristicScoresBreakdown(string response, string prompt)
         {
             return new Dictionary<string, int>
             {
                 ["Length"] = Math.Min(response.Length / 20, 300),
-                ["HallucinationMarkers"] = -GetHallucinationMarkerCount(response) * 50,
-                ["FactualClaims"] = GetFactualClaimCount(response) * 15,
-                ["ConfidenceMarkers"] = GetConfidenceMarkerCount(response) * 30,
-                ["DomainKeywords"] = GetDomainKeywordCount(response, userPrompt) * 20,
-                ["Structure"] = Math.Min(GetSentenceCount(response) * 10, 200),
+                ["HallucinationMarkers"] = GetHallucinationMarkerCount(response: response) * -50,
+                ["FactualClaims"] = GetFactualClaimCount(response: response) * 15,
+                ["ConfidenceMarkers"] = GetConfidenceMarkerCount(response: response) * 30,
+                ["DomainKeywords"] = GetDomainKeywordCount(response: response, prompt: prompt) * 20,
+                ["Structure"] = Math.Min(GetSentenceCount(response: response) * 10, 200),
             };
         }
 
         /// <summary>
-        /// Gets the count of hallucination markers in a response.
+        /// Gets the distinct count of hallucination markers in a response.
         /// </summary>
         /// <param name="response">The response to analyze.</param>
         /// <returns>The <see cref="int"/> count of hallucination markers found.</returns>
         private static int GetHallucinationMarkerCount(string response)
         {
-            string[] markers = ["as an ai", "cannot", "unable", "might", "perhaps", "possibly", "i think"];
+            string[] markers = [
+                                "as an ai",
+                                "cannot",
+                                "unable",
+                                "might",
+                                "perhaps",
+                                "possibly",
+                                "i think",
+                                "you're correct",
+                                "that's what I meant",
+                                "it's well known that",
+                                "it is widely known that",
+                                "everyone knows that",
+                                "of course it",
+                                "clearly it",
+                                "obviously it",
+                                "it is obvious that",
+                                "without a doubt",
+                                "undoubtedly",
+                                "it always",
+                                "it never",
+                                "this will always",
+                                "it is guaranteed that",
+                                "this cannot fail",
+                                "this model cannot make mistakes",
+                                "there is no scenario where",
+                                "according to recent research",
+                                "recent studies have shown",
+                                "experts agree that",
+                                "many experts believe that",
+                                "it is generally accepted that",
+                                "this is documented as",
+                                "the documentation states that",
+                                "the official docs say that",
+                                "the standard practice is",
+                                "the best practice is always",
+                                "you can just",
+                                "simply",
+                                "just need to",
+                                "you only need to",
+                                "the endpoint is probably",
+                                "it should be under",
+                                "it should be located at",
+                                "it might be named something like",
+                                "it likely resides in",
+                                "for example in the file",
+                                "for instance in the class",
+                                "typically this is defined in",
+                                "you can assume that",
+                                "we can assume that",
+                                "in most cases this will",
+                                "almost certainly",
+                                "virtually always",
+                                "essentially the same as",
+                                "equivalent to",
+                                "identical to",
+                                "this is similar to",
+                                "this is basically",
+                                "in practice this means",
+                                "in other words it just",
+                                "as you already know",
+                                "as is commonly known",
+                                "as is obvious from",
+                                "as mentioned above"
+                               ];
             return markers.Count(marker => Regex.IsMatch(response, marker, RegexOptions.IgnoreCase));
         }
 
@@ -214,11 +264,11 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
         /// Gets the count of domain-specific keywords in a response.
         /// </summary>
         /// <param name="response">The response to analyze.</param>
-        /// <param name="userPrompt">The original user prompt for context.</param>
+        /// <param name="prompt">The original user prompt for context.</param>
         /// <returns>The <see cref="int"/> count of domain keywords found.</returns>
-        private static int GetDomainKeywordCount(string response, string userPrompt)
+        private static int GetDomainKeywordCount(string response, string prompt)
         {
-            List<string> keywords = ExtractDomainKeywords(userPrompt);
+            List<string> keywords = ExtractCustomDomainKeywords(prompt: prompt);
             return keywords.Count(kw => Regex.IsMatch(response, Regex.Escape(kw), RegexOptions.IgnoreCase));
         }
 
@@ -235,11 +285,12 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
         /// <summary>
         /// Extracts domain-specific keywords from the user prompt.
         /// </summary>
+        /// <remarks>
+        /// Customize this method to extract relevant keywords based on the expected domain of the prompt.
+        /// </remarks>
         /// <param name="prompt">The user prompt to extract keywords from.</param>
-        /// <returns>
-        /// A <see cref="List{T}"/> of domain keyword <see cref="string"/> values found in the prompt.
-        /// </returns>
-        private static List<string> ExtractDomainKeywords(string prompt)
+        /// <returns>A <see cref="List{T}"/> of domain keyword <see cref="string"/> values found in the prompt.</returns>
+        private static List<string> ExtractCustomDomainKeywords(string prompt)
         {
             string[] commonKeywords = ["machine learning", "deep learning", "neural network", "algorithm", "data", "model", "training"];
             return [.. commonKeywords.Where(kw => prompt.Contains(kw, StringComparison.OrdinalIgnoreCase))];

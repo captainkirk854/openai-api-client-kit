@@ -4,11 +4,12 @@
 
 namespace OpenAIApiClient.Interfaces.Orchestration.Execution
 {
-    using OpenAIApiClient.Helpers.General;
+    using OpenAIApiClient.Helpers;
+    using OpenAIApiClient.Orchestration.Execution;
     using OpenAIApiClient.Orchestration.Response;
 
     public interface IEnsembleExecutor
     {
-        Task<IReadOnlyList<AiModelResponse>> ExecuteAsync(ClientRequestBuilder requestBuilder, IExecutionContext context, CancellationToken cancelToken);
+        Task<IReadOnlyList<AiModelResponse>> ExecuteAsync(ChatClientRequestBuilder requestBuilder, IExecutionContext context, AiCallOptions execution, CancellationToken cancelToken);
     }
 }

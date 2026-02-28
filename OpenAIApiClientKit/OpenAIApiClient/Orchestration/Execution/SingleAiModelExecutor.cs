@@ -25,36 +25,23 @@ namespace OpenAIApiClient.Orchestration.Execution
         /// Executes the given model with the provided prompt context.
         /// </summary>
         /// <param name="request">Chat Completion request.</param>
+        /// <param name="options">Execution options, including mode and callbacks.</param>
         /// <param name="cancelToken">Cancellation token.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains the model response.</returns>
-        public async Task<AiModelResponse> ExecuteAsync(ChatCompletionRequest request, CancellationToken cancelToken)
+        public async Task<AiModelResponse> ExecuteAsync(ChatCompletionRequest request, AiCallOptions options, CancellationToken cancelToken)
         {
-            // Initialise ..
-            AiExecutionOptions execution = new()
-            {
-                // if Stream mode is false or null (i.e. non-stream)
-                Mode = request.Stream.GetValueOrDefault() ? AiExecutionMode.BufferedStreaming : AiExecutionMode.NonStreaming,
-                OnChunkDeltaContentToken = async (model, chunkDeltaContent) =>
-                {
-                    Console.Write(chunkDeltaContent);   // stream chunk delta(s) to console
-                    await Task.Yield();                 // keep it async
-                },
-                OnChunk = null,   // can be set by caller if they want chunk-level callbacks in streaming modes (e.g. for metadata extraction, tool-calling, etc.)
-                AggregateChunkContent = true,  // whether to aggregate output in streaming modes; can be set to false if caller only wants callbacks and doesn't care about final full output
-            };
-
             // Start timing ..
             Stopwatch sw = Stopwatch.StartNew();
 
             // Execute request ..
             try
             {
-                return execution.Mode switch
+                return options.Mode switch
                 {
-                    AiExecutionMode.NonStreaming => await this.ExecuteNonStreamingAsync(request, sw, cancelToken),
-                    AiExecutionMode.BufferedStreaming => await this.ExecuteBufferedStreamingAsync(request, sw, execution, cancelToken),
-                    AiExecutionMode.PushStreaming => await this.ExecutePushStreamingAsync(request, sw, execution, cancelToken),
-                    _ => throw new ArgumentOutOfRangeException(paramName: nameof(request), actualValue: execution.Mode, message: "Unknown execution mode."),
+                    AiCallMode.NonStreaming => await this.ExecuteNonStreamingAsync(request: request, sw: sw, cancelToken: cancelToken),
+                    AiCallMode.BufferedStreaming => await this.ExecuteBufferedStreamingAsync(request: request, sw: sw, options: options, cancelToken: cancelToken),
+                    AiCallMode.PushStreaming => await this.ExecutePushStreamingAsync(request: request, sw: sw, options: options, cancelToken: cancelToken),
+                    _ => throw new ArgumentOutOfRangeException(paramName: nameof(request), actualValue: options.Mode, message: "Unknown execution mode."),
                 };
             }
             catch (Exception ex)
@@ -81,9 +68,7 @@ namespace OpenAIApiClient.Orchestration.Execution
         /// <param name="cancelToken">A cancellation token to observe while waiting for the task to complete.</param>
         /// <returns>An <see cref="AiModelResponse"/> containing the result of the chat completion request.</returns>
         /// <exception cref="InvalidOperationException">Thrown when the response from the model is null or contains no choices.</exception>
-        private async Task<AiModelResponse> ExecuteNonStreamingAsync(ChatCompletionRequest request,
-                                                                     Stopwatch sw,
-                                                                     CancellationToken cancelToken)
+        private async Task<AiModelResponse> ExecuteNonStreamingAsync(ChatCompletionRequest request, Stopwatch sw, CancellationToken cancelToken)
         {
             // Initialise ..
             AiModelDescriptor model = request.ModelDescriptor;
@@ -119,17 +104,14 @@ namespace OpenAIApiClient.Orchestration.Execution
         /// </remarks>
         /// <param name="request">The chat completion request to process.</param>
         /// <param name="sw">A stopwatch used to measure the operation's latency.</param>
-        /// <param name="execution">Execution options, including optional callbacks for chunk content token and chunk processing.</param>
+        /// <param name="options">Execution options, including optional callbacks for chunk content token and chunk processing.</param>
         /// <param name="cancelToken">A cancellation token to observe while waiting for the task to complete.</param>
         /// <returns>A task that represents the asynchronous operation, containing the aggregated chat completion response as part of the <see cref="AiModelResponse"/>.</returns>
-        private async Task<AiModelResponse> ExecuteBufferedStreamingAsync(ChatCompletionRequest request,
-                                                                          Stopwatch sw,
-                                                                          AiExecutionOptions execution,
-                                                                          CancellationToken cancelToken)
+        private async Task<AiModelResponse> ExecuteBufferedStreamingAsync(ChatCompletionRequest request, Stopwatch sw, AiCallOptions options, CancellationToken cancelToken)
         {
             // Initialise ..
             AiModelDescriptor model = request.ModelDescriptor;
-            string response = string.Empty;
+            string output = string.Empty;
             int chunkCount = 0;
 
             // Process streaming chunks as they arrive, but buffer them and only push updates via callbacks once the full response is received at the end of the stream ..
@@ -141,19 +123,19 @@ namespace OpenAIApiClient.Orchestration.Execution
                 if (!string.IsNullOrEmpty(chunkDelta.Content))
                 {
                     // Aggregate the full response as the chunks arrive, and optionally also push those chunks through callbacks in buffered streaming mode if desired (e.g. for real-time UI updates, etc.) ..
-                    response += chunkDelta.Content;
+                    output += chunkDelta.Content;
 
                     // Optional: still allow per-token callback in buffered mode
-                    if (execution.OnChunkDeltaContentToken is not null)
+                    if (options.OnChunkDeltaContentToken is not null)
                     {
-                        await execution.OnChunkDeltaContentToken(model, chunkDelta.Content);
+                        await options.OnChunkDeltaContentToken(model, chunkDelta.Content);
                     }
+                }
 
-                    // Optional: per-chunk callback in buffered streaming mode (e.g. for metadata extraction, tool-calling, etc.)
-                    if (execution.OnChunk is not null)
-                    {
-                        await execution.OnChunk(model, chunk);
-                    }
+                // Optional: per-chunk callback in buffered streaming mode (e.g. for metadata extraction, tool-calling, etc.)
+                if (options.OnChunk is not null)
+                {
+                    await options.OnChunk(model, chunk, chunkCount);
                 }
             }
 
@@ -165,7 +147,7 @@ namespace OpenAIApiClient.Orchestration.Execution
             return new AiModelResponse
             {
                 Model = model,
-                RawOutput = response,
+                RawOutput = output,
                 IsSuccessful = true,
                 Latency = sw.Elapsed,
                 EstimatedCost = 0m,    // or some heuristic
@@ -183,17 +165,14 @@ namespace OpenAIApiClient.Orchestration.Execution
         /// </remarks>
         /// <param name="request">The chat completion request to send to the AI model.</param>
         /// <param name="sw">A stopwatch used to measure the latency of the operation.</param>
-        /// <param name="execution">Execution options, including optional callbacks for chunk content token and chunk processing.</param>
+        /// <param name="options">Execution options, including optional callbacks for chunk content token and chunk processing.</param>
         /// <param name="cancelToken">A cancellation token to observe while waiting for the task to complete.</param>
         /// <returns>An <see cref="AiModelResponse"/> containing the aggregated response, latency, and metadata.</returns>
-        private async Task<AiModelResponse> ExecutePushStreamingAsync(ChatCompletionRequest request,
-                                                                      Stopwatch sw,
-                                                                      AiExecutionOptions execution,
-                                                                      CancellationToken cancelToken)
+        private async Task<AiModelResponse> ExecutePushStreamingAsync(ChatCompletionRequest request, Stopwatch sw, AiCallOptions options, CancellationToken cancelToken)
         {
             // Initialise ..
             AiModelDescriptor model = request.ModelDescriptor;
-            string response = string.Empty;
+            string output = string.Empty;
             int chunkCount = 0;
 
             // Process streaming chunks as they arrive, pushing updates via callbacks without waiting for full response ..
@@ -205,22 +184,22 @@ namespace OpenAIApiClient.Orchestration.Execution
                 if (!string.IsNullOrEmpty(chunkDelta.Content))
                 {
                     // In this mode, choose to aggregate the full response as the chunks arrive, and/or just push each chunk through callbacks without aggregation ..
-                    if (execution.AggregateChunkContent)
+                    if (options.AggregateChunkContent)
                     {
-                        response += chunkDelta.Content;
+                        output += chunkDelta.Content;
                     }
 
                     // Optional: per-token callback in push streaming mode
-                    if (execution.OnChunkDeltaContentToken is not null)
+                    if (options.OnChunkDeltaContentToken is not null)
                     {
-                        await execution.OnChunkDeltaContentToken(model, chunkDelta.Content);
+                        await options.OnChunkDeltaContentToken(model, chunkDelta.Content);
                     }
                 }
 
                 // Optional: per-chunk callback in push streaming mode (e.g. for metadata extraction, tool-calling, etc.)
-                if (execution.OnChunk is not null)
+                if (options.OnChunk is not null)
                 {
-                    await execution.OnChunk(model, chunk);
+                    await options.OnChunk(model, chunk, chunkCount);
                 }
             }
 
@@ -229,7 +208,7 @@ namespace OpenAIApiClient.Orchestration.Execution
             return new AiModelResponse
             {
                 Model = model,
-                RawOutput = response,
+                RawOutput = output,
                 IsSuccessful = true,
                 Latency = sw.Elapsed,
                 EstimatedCost = 0m,    // or some heuristic

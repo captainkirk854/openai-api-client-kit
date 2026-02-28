@@ -5,7 +5,7 @@
 namespace OpenAIApiClient.Tests.Orchestration
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Helpers.General;
+    using OpenAIApiClient.Helpers;
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Orchestration;
     using OpenAIApiClient.Orchestration.Dispatch;
@@ -19,7 +19,7 @@ namespace OpenAIApiClient.Tests.Orchestration
     [TestClass]
     public class Orchestrator
     {
-        private ClientRequestBuilder requestBuilder = null!;
+        private ChatClientRequestBuilder requestBuilder = null!;
         private MockSingleAiModelDispatcher mockSingleModelDispatcher = null!;
         private MockEnsembleDispatcher mockEnsembleDispatcher = null!;
         private MockSingleAiModelExecutor mockSingleExecutor = null!;
@@ -36,7 +36,7 @@ namespace OpenAIApiClient.Tests.Orchestration
             this.modelA = CreateModelDescriptor(OpenAIModel.GPT4o);
             this.modelB = CreateModelDescriptor(OpenAIModel.GPT4o_Mini);
 
-            this.requestBuilder = new ClientRequestBuilder();
+            this.requestBuilder = new ChatClientRequestBuilder();
             this.mockSingleModelDispatcher = new MockSingleAiModelDispatcher();
             this.mockEnsembleDispatcher = new MockEnsembleDispatcher();
             this.mockSingleExecutor = new MockSingleAiModelExecutor();

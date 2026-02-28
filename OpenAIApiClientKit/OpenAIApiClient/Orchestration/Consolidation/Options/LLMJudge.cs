@@ -9,7 +9,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
     using System.Text.RegularExpressions;
     using OpenAIApiClient;
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Helpers.General;
+    using OpenAIApiClient.Helpers;
     using OpenAIApiClient.Models.Chat.Request;
     using OpenAIApiClient.Models.Consolidation.Options.LLMJudge;
     using OpenAIApiClient.Orchestration.Execution;
@@ -35,37 +35,30 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
         /// <param name="prompt">The original user prompt.</param>
         /// <param name="responses">The list of model responses to evaluate.</param>
         /// <param name="judgeModel">The model to use as judge.</param>
+        /// <param name="execution">Execution options for the judge model request.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>
         /// An instance of <see cref="LLMJudgeResult"/> containing the selected response,
         /// reasoning, and any associated scoring information.
         /// </returns>
-        public async Task<LLMJudgeResult> ConsolidateWithLLMJudgeAsync(string prompt, List<AiModelResponse> responses, OpenAIModel judgeModel, CancellationToken cancellationToken)
+        public async Task<LLMJudgeResult> ConsolidateWithLLMJudgeAsync(string prompt, List<AiModelResponse> responses, OpenAIModel judgeModel, AiCallOptions execution, CancellationToken cancellationToken)
         {
-            Console.WriteLine($" Asking {judgeModel} to judge the responses...");
-
-            // Filter out unsuccessful responses, as the judge should only evaluate successful outputs.
-            List<AiModelResponse> successfulResponses = [.. responses.Where(r => r.IsSuccessful)];
-
-            if (successfulResponses.Count == 0)
-            {
-                throw new InvalidOperationException("No successful model response(s) to judge");
-            }
+            Console.WriteLine($" Requesting model: [{judgeModel}] to judge the dispatched model response(s)...");
 
             // Create judgment request ..
-            string judgmentPrompt = BuildJudgmentPrompt(prompt, successfulResponses);
-            ChatCompletionRequest judgeRequest = new ClientRequestBuilder()
+            string judgmentPrompt = BuildJudgmentPrompt(prompt: prompt, responses: responses);
+            ChatCompletionRequest judgeRequest = new ChatClientRequestBuilder()
                                                      .WithModel(judgeModel)
                                                      .AddSystemMessage(PromptRegistry.Prompts[PromptId.SetModelJudgementMode])
                                                      .AddUserMessage(judgmentPrompt)
                                                      .Build();
 
             // .. and execute it
-            AiModelResponse judgeResponse = await this.singleModelExecutor.ExecuteAsync(request: judgeRequest, cancelToken: cancellationToken);
+            AiModelResponse judgeResponse = await this.singleModelExecutor.ExecuteAsync(request: judgeRequest, options: execution, cancelToken: cancellationToken);
             string judgeContent = judgeResponse.RawOutput ?? string.Empty;
 
             // Parse judgement response ..
-            ParsedJudgeResponse parseResult = ParseJudgeResponse(judgeContent, successfulResponses);
+            ParsedJudgeResponse parseResult = ParseJudgeResponse(judgeContent: judgeContent, responses: responses);
 
             // .. and return structured result
             return new LLMJudgeResult
@@ -138,7 +131,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
                         if (selectedIndex >= 0 && selectedIndex < responses.Count)
                         {
                             // Extract reasoning
-                            string reasoning = "Judge selected this response.";
+                            string reasoning = "Judge model selected this response: ";
                             if (rootElement.TryGetProperty(reasoningKey, out JsonElement reasoningElement))
                             {
                                 reasoning = reasoningElement.GetString() ?? reasoning;

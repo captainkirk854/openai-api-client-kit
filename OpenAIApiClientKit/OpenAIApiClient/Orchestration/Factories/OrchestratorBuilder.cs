@@ -5,7 +5,7 @@
 namespace OpenAIApiClient.Orchestration.Factories
 {
     using OpenAIApiClient;
-    using OpenAIApiClient.Helpers.General;
+    using OpenAIApiClient.Helpers;
     using OpenAIApiClient.Interfaces.Orchestration;
     using OpenAIApiClient.Interfaces.Orchestration.Dispatch;
     using OpenAIApiClient.Interfaces.Orchestration.Execution;
@@ -53,7 +53,7 @@ namespace OpenAIApiClient.Orchestration.Factories
         private ChatClient client = default!;
         private IAiModelResponseHandler responseHandler = default!;
         private IAiModelRegistry? registry;
-        private ClientRequestBuilder? requestBuilder;
+        private ChatClientRequestBuilder? requestBuilder;
         private ISingleAiModelDispatcher? singleModelDispatcher;
         private IEnsembleDispatcher? ensembleDispatcher;
         private ISingleAiModelExecutor? singleModelExecutor;
@@ -102,7 +102,7 @@ namespace OpenAIApiClient.Orchestration.Factories
         /// </summary>
         /// <param name="builder">The ClientRequestBuilder instance to use for building API requests. If not set, a default builder that maps directly from OrchestratorRequest to OpenAI API requests will be used.</param>
         /// <returns see cref="OrchestratorBuilder">The builder instance, for chaining.</returns>
-        public OrchestratorBuilder WithRequestBuilder(ClientRequestBuilder builder)
+        public OrchestratorBuilder WithRequestBuilder(ChatClientRequestBuilder builder)
         {
             this.requestBuilder = builder;
             return this;
@@ -170,7 +170,7 @@ namespace OpenAIApiClient.Orchestration.Factories
 
             // Use factory defaults if caller didn’t override
             IAiModelRegistry registry = this.registry ?? AiModelRegistryFactory.Create();
-            ClientRequestBuilder requestBuilder = this.requestBuilder ?? RequestBuilderFactory.CreateDefault();
+            ChatClientRequestBuilder requestBuilder = this.requestBuilder ?? RequestBuilderFactory.CreateDefault();
 
             // Create Dispatchers - Use overrides if provided, otherwise fall back to DispatcherFactory ..
             (SingleAiModelDispatcher factorySingleModelDispatcher, EnsembleDispatcher defaultEnsembleDispatcher) = DispatcherFactory.Create(registry: registry);

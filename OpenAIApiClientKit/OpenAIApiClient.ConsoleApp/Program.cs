@@ -233,9 +233,17 @@ namespace OpenAIApiClient.ConsoleApp
             Console.WriteLine($"Using Prompt: {prompt}");
             Console.WriteLine();
 
-            // Run AI Orchestrator demo ..
-            await Demos.AiAdvancedEnsembleConsolidationDemo.GetBestModelResponseAsync(client: client, prompt: prompt, cts: cts);
+            Console.WriteLine("This demo will use multiple OpenAI models to generate responses to the same prompt and then apply an advanced consolidation strategy ");
+            Console.WriteLine("to evaluate and determine the best response based on multiple criteria such as relevance, coherence, creativity, and informativeness.");
 
+            // Prompt user for streaming and reasoning options ..
+            bool useStreaming = SetBooleanPrompt(message: "Use streaming mode for this demo? (y/n)", setTrue: 'y', setFalse: 'n');
+            bool useReasoning = SetBooleanPrompt(message: "Use reasoning models for this demo? (y/n)", setTrue: 'y', setFalse: 'n');
+
+            // Run demo ..
+            await Demos.AiAdvancedEnsembleConsolidationDemo.GetAdvancedResponsesAsync(client: client, prompt: prompt, useStreaming: useStreaming, useReasoningModels: useReasoning, cts: cts);
+
+            Console.WriteLine();
             Console.WriteLine("Press Enter to continue..");
             Console.ReadLine();
         }
@@ -251,7 +259,7 @@ namespace OpenAIApiClient.ConsoleApp
         private static bool SetBooleanPrompt(string message, char setTrue, char setFalse, char setDefault = 'n')
         {
             // Prompt user ..
-            Console.Write($"{message} ({setTrue}/{setFalse}) ({setDefault}) ");
+            Console.Write($"{message} (default is {setDefault}) ({setTrue}/{setFalse}) ({setDefault}) ");
 
             // Read input and determine choice ..
             string? input = Console.ReadLine();

@@ -2,7 +2,7 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Helpers.General
+namespace OpenAIApiClient.Helpers
 {
     using System.Threading.Tasks;
     using OpenAIApiClient.Models.Chat.Request;
@@ -40,7 +40,7 @@ namespace OpenAIApiClient.Helpers.General
         public static async Task<(string?, int)> GetChatCompletionStreamingMessageContentAsync(ChatClient client, ChatCompletionRequest request, CancellationTokenSource cancelTokenSource)
         {
             // Initialise variables ..
-            string? response = string.Empty;
+            string? output = string.Empty;
             int chunkCount = 0;
 
             // Stream the response chunk(s) ..
@@ -48,12 +48,12 @@ namespace OpenAIApiClient.Helpers.General
             {
                 // Extract delta content from chunk and concatenate to final response ..
                 ChatDelta chunkDelta = chunk.Choices[0].Delta;
-                response += chunkDelta.Content;
+                output += chunkDelta.Content;
                 chunkCount++;
             }
 
             // Return the finalised response ..
-            return (response, chunkCount);
+            return (output, chunkCount);
         }
     }
 }

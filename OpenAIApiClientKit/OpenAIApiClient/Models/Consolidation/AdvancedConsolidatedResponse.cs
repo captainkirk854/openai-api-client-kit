@@ -31,9 +31,9 @@ namespace OpenAIApiClient.Models.Consolidation
         } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the list of fan-out responses from all models.
+        /// Gets or sets the list of responses from all models.
         /// </summary>
-        public List<AiModelResponse> FanoutResponses
+        public List<AiModelResponse> ModelResponses
         {
             get;
             set;

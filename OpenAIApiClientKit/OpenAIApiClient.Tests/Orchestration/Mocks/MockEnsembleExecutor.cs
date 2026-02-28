@@ -4,8 +4,9 @@
 
 namespace OpenAIApiClient.Tests.Orchestration.Mocks
 {
-    using OpenAIApiClient.Helpers.General;
+    using OpenAIApiClient.Helpers;
     using OpenAIApiClient.Interfaces.Orchestration.Execution;
+    using OpenAIApiClient.Orchestration.Execution;
     using OpenAIApiClient.Orchestration.Response;
 
     public sealed class MockEnsembleExecutor : IEnsembleExecutor
@@ -37,7 +38,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
             set;
         } = default!;
 
-        public Task<IReadOnlyList<AiModelResponse>> ExecuteAsync(ClientRequestBuilder requestBuilder, IExecutionContext context, CancellationToken cancelToken)
+        public Task<IReadOnlyList<AiModelResponse>> ExecuteAsync(ChatClientRequestBuilder requestBuilder, IExecutionContext context, AiCallOptions execution, CancellationToken cancelToken)
         {
             this.WasCalled = true;
             this.LastContext = context;

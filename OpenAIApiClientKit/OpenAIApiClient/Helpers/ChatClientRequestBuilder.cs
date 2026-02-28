@@ -1,8 +1,8 @@
-﻿// <copyright file="ClientRequestBuilder.cs" company="854 Things (tm)">
+﻿// <copyright file="ChatClientRequestBuilder.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Helpers.General
+namespace OpenAIApiClient.Helpers
 {
     using System.Collections.Generic;
     using OpenAIApiClient.Enums;
@@ -16,7 +16,7 @@ namespace OpenAIApiClient.Helpers.General
     /// tool calls, and generation parameters.
     /// </summary>
     /// <remarks>
-    /// Use <see cref="ClientRequestBuilder"/> to incrementally configure all aspects of a
+    /// Use <see cref="ChatClientRequestBuilder"/> to incrementally configure all aspects of a
     /// chat completion request for OpenAI-compatible APIs. The builder supports adding system, user, assistant, tool,
     /// and developer messages, as well as setting advanced generation parameters such as temperature, top-p, presence
     /// penalty, and frequency penalty. Tool calls can be included to enable function calling capabilities. After
@@ -24,24 +24,23 @@ namespace OpenAIApiClient.Helpers.General
     /// submission. The builder is designed for method chaining and does not modify the returned request after
     /// <c>Build()</c> is called.
     /// Sample usage:
-    ///     <see cref="ChatCompletionRequest"/> request = new <see cref="ClientRequestBuilder"/>().WithModel(input: OpenAIModels.GPT4o_Mini)
-    ///                                                                                           .AddDeveloperMessage(input: "Always answer concisely.")
-    ///                                                                                           .AddSystemMessage(input: "You are a helpful assistant that answers concisely.")
-    ///                                                                                           .AddUserMessage(input: userPrompt)
-    ///                                                                                           .EnableStreaming(input: isStreaming)
-    ///                                                                                           .WithTemperature(input: 1.0)
-    ///                                                                                           .WithMaxTokens(input: 100)
-    ///                                                                                           .WithTopP(input: 0.5)
-    ///                                                                                           .WithPresencePenalty(input: 2.0)
-    ///                                                                                           .WithFrequencyPenalty(input: 2.0)
-    ///                                                                                           .SetOutputFormat(input: OutputFormat.Csv)
-    ///                                                                                           .AddToolCall(id: "weather-1", name: "getWeather", args: new Dictionary string, object
-    ///                                                                                            {
-    ///                                                                                               { "city", "London" },
-    ///                                                                                            })
-    ///                                                                                           .Build();.
+    ///     <see cref="ChatCompletionRequest"/> request = new <see cref="ChatClientRequestBuilder"/>().WithModel(input: OpenAIModels.GPT4o_Mini)
+    ///                                                                                               .AddDeveloperMessage(input: "Always answer concisely.")
+    ///                                                                                               .AddSystemMessage(input: "You are a helpful assistant that answers concisely.")
+    ///                                                                                               .AddUserMessage(input: userPrompt)
+    ///                                                                                               .WithTemperature(input: 1.0)
+    ///                                                                                               .WithMaxTokens(input: 100)
+    ///                                                                                               .WithTopP(input: 0.5)
+    ///                                                                                               .WithPresencePenalty(input: 2.0)
+    ///                                                                                               .WithFrequencyPenalty(input: 2.0)
+    ///                                                                                               .SetOutputFormat(input: OutputFormat.Csv)
+    ///                                                                                               .AddToolCall(id: "weather-1", name: "getWeather", args: new Dictionary string, object
+    ///                                                                                                {
+    ///                                                                                                   { "city", "London" },
+    ///                                                                                                })
+    ///                                                                                               .Build();.
     /// </remarks>
-    public class ClientRequestBuilder
+    public class ChatClientRequestBuilder
     {
         // Initialise ..
         private readonly List<ChatMessage> messages = [];
@@ -51,7 +50,6 @@ namespace OpenAIApiClient.Helpers.General
 
         // Optional parameters ..
         private int? maxTokens;
-        private bool stream;
         private double? frequencyPenalty;
         private double? presencePenalty;
         private double? temperature;
@@ -62,8 +60,8 @@ namespace OpenAIApiClient.Helpers.General
         /// Define the OpenAI model to use.
         /// </summary>
         /// <param name="input">The OpenAI model to be used for the request.</param>
-        /// <returns>The current instance of <see cref="ClientRequestBuilder"/> with the updated Model setting.</returns>
-        public ClientRequestBuilder WithModel(OpenAIModel input)
+        /// <returns>The current instance of <see cref="ChatClientRequestBuilder"/> with the updated Model setting.</returns>
+        public ChatClientRequestBuilder WithModel(OpenAIModel input)
         {
             this.model = input.ToApiString();
             return this;
@@ -73,8 +71,8 @@ namespace OpenAIApiClient.Helpers.General
         /// Add message for system role.
         /// </summary>
         /// <param name="input">The system input prompt to include in the chat message sequence.</param>
-        /// <returns>The current instance of <see cref="ClientRequestBuilder"/> with the updated System Message setting.</returns>
-        public ClientRequestBuilder AddSystemMessage(string input)
+        /// <returns>The current instance of <see cref="ChatClientRequestBuilder"/> with the updated System Message setting.</returns>
+        public ChatClientRequestBuilder AddSystemMessage(string input)
         {
             this.messages.Add(new ChatMessage { RoleAsEnum = OpenAIRole.System, Content = input });
             return this;
@@ -85,7 +83,7 @@ namespace OpenAIApiClient.Helpers.General
         /// </summary>
         /// <param name="input">The desired output format to use for the request.</param>
         /// <returns>The updated ClientRequestBuilder instance.</returns>
-        public ClientRequestBuilder SetOutputFormat(OutputFormat input)
+        public ChatClientRequestBuilder SetOutputFormat(OutputFormat input)
         {
             this.messages.Add(new ChatMessage { RoleAsEnum = OpenAIRole.System, Content = OutputFormats.FormattingPrompts[input].SystemPrompt });
             this.outputFormatEnabled = true;
@@ -96,8 +94,8 @@ namespace OpenAIApiClient.Helpers.General
         /// Add message for user role.
         /// </summary>
         /// <param name="input">The user input prompt to include in the chat message sequence.</param>
-        /// <returns>The current instance of <see cref="ClientRequestBuilder"/> with the updated User Message setting.</returns>
-        public ClientRequestBuilder AddUserMessage(string input)
+        /// <returns>The current instance of <see cref="ChatClientRequestBuilder"/> with the updated User Message setting.</returns>
+        public ChatClientRequestBuilder AddUserMessage(string input)
         {
             this.messages.Add(new ChatMessage { RoleAsEnum = OpenAIRole.User, Content = input });
             return this;
@@ -107,8 +105,8 @@ namespace OpenAIApiClient.Helpers.General
         /// Add message for assistant role.
         /// </summary>
         /// <param name="input">The assistant input prompt to include in the chat message sequence.</param>
-        /// <returns>The current instance of <see cref="ClientRequestBuilder"/> with the updated Assistant Message setting.</returns>
-        public ClientRequestBuilder AddAssistantMessage(string input)
+        /// <returns>The current instance of <see cref="ChatClientRequestBuilder"/> with the updated Assistant Message setting.</returns>
+        public ChatClientRequestBuilder AddAssistantMessage(string input)
         {
             this.messages.Add(new ChatMessage { RoleAsEnum = OpenAIRole.Assistant, Content = input });
             return this;
@@ -118,8 +116,8 @@ namespace OpenAIApiClient.Helpers.General
         /// Add message for tool role.
         /// </summary>
         /// <param name="input">The tool input prompt to include in the chat message sequence.</param>
-        /// <returns>The current instance of <see cref="ClientRequestBuilder"/> with the updated Tool Message setting.</returns>
-        public ClientRequestBuilder AddToolMessage(string input)
+        /// <returns>The current instance of <see cref="ChatClientRequestBuilder"/> with the updated Tool Message setting.</returns>
+        public ChatClientRequestBuilder AddToolMessage(string input)
         {
             this.messages.Add(new ChatMessage { RoleAsEnum = OpenAIRole.Tool, Content = input });
             return this;
@@ -133,8 +131,8 @@ namespace OpenAIApiClient.Helpers.General
         /// Developer messages are typically used to provide system-level instructions or context to the AI model.
         /// </remarks>
         /// <param name="input">The developer input prompt to include in the chat message sequence.</param>
-        /// <returns>The current <see cref="ClientRequestBuilder"/> instance with the developer message added.</returns>
-        public ClientRequestBuilder AddDeveloperMessage(string input)
+        /// <returns>The current <see cref="ChatClientRequestBuilder"/> instance with the developer message added.</returns>
+        public ChatClientRequestBuilder AddDeveloperMessage(string input)
         {
             this.developerMessages.Add(new ChatMessage { RoleAsEnum = OpenAIRole.Developer, Content = input });
             return this;
@@ -145,17 +143,6 @@ namespace OpenAIApiClient.Helpers.General
         // -----------------------------
 
         /// <summary>
-        /// Enables or disables streaming responses for the chat completion request.
-        /// </summary>
-        /// <param name="input">Set to <see langword="true"/> to enable streaming; otherwise, <see langword="false"/>.</param>
-        /// <returns>The current instance of <see cref="ClientRequestBuilder"/> with the updated streaming setting.</returns>
-        public ClientRequestBuilder EnableStreaming(bool input)
-        {
-            this.stream = input;
-            return this;
-        }
-
-        /// <summary>
         /// Sets the temperature parameter for the chat completion request, controlling the randomness of generated responses.
         /// </summary>
         /// <remarks>
@@ -164,8 +151,8 @@ namespace OpenAIApiClient.Helpers.General
         /// Higher values produce more diverse and creative outputs; lower values result in more focused and deterministic responses.
         /// </remarks>
         /// <param name="input">A value between 0.0 and 2.0 that determines the sampling temperature.</param>
-        /// <returns>The current instance of <see cref="ClientRequestBuilder"/> with the updated temperature setting.</returns>
-        public ClientRequestBuilder WithTemperature(double input)
+        /// <returns>The current instance of <see cref="ChatClientRequestBuilder"/> with the updated temperature setting.</returns>
+        public ChatClientRequestBuilder WithTemperature(double input)
         {
             // Check within valid range: 0 - 2.0 ..
             input = input < 0 ? 0 : input > 2.0 ? 2.0 : input;
@@ -183,8 +170,8 @@ namespace OpenAIApiClient.Helpers.General
         /// Must be a positive integer.
         /// </remarks>
         /// <param name="input">The maximum number of tokens to generate in the response. Default is 1000.</param>
-        /// <returns>The current <see cref="ClientRequestBuilder"/> instance with the updated maximum token setting.</returns>
-        public ClientRequestBuilder UsingMaxTokens(int input = 1000)
+        /// <returns>The current <see cref="ChatClientRequestBuilder"/> instance with the updated maximum token setting.</returns>
+        public ChatClientRequestBuilder UsingMaxTokens(int input = 1000)
         {
             // Ensure positive integer ..
             input = input < 1 ? 1 : Math.Abs(input); // Ensure at least 1 token ..
@@ -203,8 +190,8 @@ namespace OpenAIApiClient.Helpers.General
         /// Must be a value between 0.0 and 1.0, where lower values limit the model to more likely tokens and higher values allow for more diverse outputs.
         /// </remarks>
         /// <param name="input">The probability threshold for nucleus sampling.</param>
-        /// <returns>The current <see cref="ClientRequestBuilder"/> instance with the updated top-p value.</returns>
-        public ClientRequestBuilder WithTopP(double input)
+        /// <returns>The current <see cref="ChatClientRequestBuilder"/> instance with the updated top-p value.</returns>
+        public ChatClientRequestBuilder WithTopP(double input)
         {
             // Check within valid range: 0.0 and 1.0 ..
             input = input < 0.0 ? 0.0 : input > 1.0 ? 1.0 : input;
@@ -223,8 +210,8 @@ namespace OpenAIApiClient.Helpers.General
         /// Values range from -2.0 to 2.0.
         /// </remarks>
         /// <param name="input">The presence penalty to apply. Higher values encourage the model to generate more novel responses. </param>
-        /// <returns>The current <see cref="ClientRequestBuilder"/> instance with the updated presence penalty.</returns>
-        public ClientRequestBuilder WithPresencePenalty(double input)
+        /// <returns>The current <see cref="ChatClientRequestBuilder"/> instance with the updated presence penalty.</returns>
+        public ChatClientRequestBuilder WithPresencePenalty(double input)
         {
             // Check within valid range: -2.0 - 2.0 ..
             input = input < -2.0 ? -2.0 : input > 2.0 ? 2.0 : input;
@@ -243,9 +230,9 @@ namespace OpenAIApiClient.Helpers.General
         /// Values range from 0.0 (no penalty) to 2.0.
         /// </remarks>
         /// <param name="input">The frequency penalty to apply. Higher values decrease the likelihood of repeated tokens in the generated output.</param>
-        /// <returns>The current <see cref="ClientRequestBuilder"/> instance with the specified frequency penalty
+        /// <returns>The current <see cref="ChatClientRequestBuilder"/> instance with the specified frequency penalty
         /// applied.</returns>
-        public ClientRequestBuilder WithFrequencyPenalty(double input)
+        public ChatClientRequestBuilder WithFrequencyPenalty(double input)
         {
             // Check within valid range: 0.0 - 2.0 ..
             input = input < 0.0 ? 0.0 : input > 2.0 ? 2.0 : input;
@@ -269,8 +256,8 @@ namespace OpenAIApiClient.Helpers.General
         /// <param name="id">The unique identifier for the tool call. Cannot be null or empty.</param>
         /// <param name="name">The name of the tool to invoke. Cannot be null or empty.</param>
         /// <param name="args">A dictionary containing the arguments to pass to the tool. Cannot be null.</param>
-        /// <returns>The current <see cref="ClientRequestBuilder"/> instance, enabling method chaining.</returns>
-        public ClientRequestBuilder AddToolCall(string id, string name, Dictionary<string, object> args)
+        /// <returns>The current <see cref="ChatClientRequestBuilder"/> instance, enabling method chaining.</returns>
+        public ChatClientRequestBuilder AddToolCall(string id, string name, Dictionary<string, object> args)
         {
             this.toolCalls.Add(new ToolCall
             {
@@ -289,12 +276,12 @@ namespace OpenAIApiClient.Helpers.General
         /// <summary>
         /// Helper method to quick-set defaults.
         /// </summary>
-        /// <returns>The current <see cref="ClientRequestBuilder"/> instance, enabling method chaining.</returns>
-        public ClientRequestBuilder WithDefaults()
+        /// <returns>The current <see cref="ChatClientRequestBuilder"/> instance, enabling method chaining.</returns>
+        public ChatClientRequestBuilder WithDefaults()
         {
-            return this
-                .AddSystemMessage("You are a helpful assistant that answers concisely.")
-                .UsingMaxTokens(1000);
+            return
+                this.AddSystemMessage("You are a helpful assistant that answers concisely.")
+                    .UsingMaxTokens(1000);
         }
 
         /// <summary>
@@ -302,12 +289,12 @@ namespace OpenAIApiClient.Helpers.General
         /// </summary>
         /// <param name="prompt"></param>
         /// <param name="format"></param>
-        /// <returns>The current <see cref="ClientRequestBuilder"/> instance, enabling method chaining.</returns>
-        public ClientRequestBuilder SetPromptAndFormat(string prompt, OutputFormat format)
+        /// <returns>The current <see cref="ChatClientRequestBuilder"/> instance, enabling method chaining.</returns>
+        public ChatClientRequestBuilder SetPromptAndFormat(string prompt, OutputFormat format)
         {
-            return this
-                .AddUserMessage(input: prompt)
-                .SetOutputFormat(input: format);
+            return
+                this.AddUserMessage(input: prompt)
+                    .SetOutputFormat(input: format);
         }
 
         // -----------------------------
@@ -326,7 +313,7 @@ namespace OpenAIApiClient.Helpers.General
         {
             if(!this.outputFormatEnabled)
             {
-                 // Default to plain text output if no output format specified ..
+                // Default to plain text output if no output format specified ..
                 this.messages.Add(new ChatMessage { RoleAsEnum = OpenAIRole.System, Content = OutputFormats.FormattingPrompts[OutputFormat.PlainText].SystemPrompt });
             }
 
@@ -357,7 +344,6 @@ namespace OpenAIApiClient.Helpers.General
                 TopP = this.topP,
                 PresencePenalty = this.presencePenalty,
                 FrequencyPenalty = this.frequencyPenalty,
-                Stream = this.stream,
             };
         }
     }

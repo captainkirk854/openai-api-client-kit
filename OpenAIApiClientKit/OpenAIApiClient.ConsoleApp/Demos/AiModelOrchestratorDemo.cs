@@ -5,9 +5,10 @@
 namespace OpenAIApiClient.ConsoleApp.Demos
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Helpers.General;
+    using OpenAIApiClient.Helpers;
     using OpenAIApiClient.Orchestration;
     using OpenAIApiClient.Orchestration.Dispatch;
+    using OpenAIApiClient.Orchestration.Execution;
     using OpenAIApiClient.Orchestration.Factories;
     using OpenAIApiClient.Registries.AiModels;
 
@@ -23,7 +24,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                                             .WithClient(client)
                                             .WithResponseHandler(new AiModelResponseHandlerDemo())
                                             .WithModelRegistry(new OpenAIModels())
-                                            .WithRequestBuilder(new ClientRequestBuilder().WithDefaults())
+                                            .WithRequestBuilder(new ChatClientRequestBuilder().WithDefaults())
                                             .Build();
 
             // ------------------------------------------------------------
@@ -39,9 +40,19 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 {
                     Strategy = SingleAiModelStrategy.BestReasoning,
                 },
+                CallOptions = new AiCallOptions
+                {
+                    Mode = AiCallMode.BufferedStreaming,
+                    OnChunkDeltaContentToken = async (model, chunkDeltaContent) =>
+                    {
+                        Console.WriteLine($" => {chunkDeltaContent}");   // stream chunk delta(s) to console
+                        await Task.Yield();                              // keep it async
+                    },
+                    AggregateChunkContent = true,
+                },
             };
 
-            _ = await orchestrator.ProcessAsync(singleModelRequest, cancelToken);
+            _ = await orchestrator.ProcessAsync(request: singleModelRequest, cancelToken: cancelToken);
 
             // ------------------------------------------------------------
             // Run an explicitly defined single-model request
@@ -59,7 +70,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 },
             };
 
-            _ = await orchestrator.ProcessAsync(singleExplicitlyDefinedModelRequest, cancelToken);
+            _ = await orchestrator.ProcessAsync(request: singleExplicitlyDefinedModelRequest, cancelToken: cancelToken);
 
             // ------------------------------------------------------------
             // Run an ensemble request
@@ -76,7 +87,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 },
             };
 
-            _ = await orchestrator.ProcessAsync(ensembleRequest, cancelToken);
+            _ = await orchestrator.ProcessAsync(request: ensembleRequest, cancelToken: cancelToken);
 
             // ------------------------------------------------------------
             // Run a custom capability ensemble request
@@ -98,7 +109,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 },
             };
 
-            _ = await orchestrator.ProcessAsync(ensembleCustomRequest, cancelToken);
+            _ = await orchestrator.ProcessAsync(request: ensembleCustomRequest, cancelToken: cancelToken);
 
             // ------------------------------------------------------------
             // Complete

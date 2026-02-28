@@ -7,7 +7,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
     using System.Text;
     using OpenAIApiClient;
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Helpers.General;
+    using OpenAIApiClient.Helpers;
     using OpenAIApiClient.Models.Chat.Request;
     using OpenAIApiClient.Models.Consolidation.Options.ResponseFusion;
     using OpenAIApiClient.Orchestration.Execution;
@@ -33,40 +33,39 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
         /// <param name="prompt">The original user prompt.</param>
         /// <param name="responses">The list of <see cref="AiModelResponse"/> instances to synthesize.</param>
         /// <param name="judgeModel">The judge model for synthesis.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="options">The <see cref="AiCallOptions"/> for executing the judge model.</param>
+        /// <param name="cancelToken">The cancellation token.</param>
         /// <returns>
         /// A <see cref="ResponseFusionResult"/> containing the synthesized response
         /// and information about the contributing source responses.
         /// </returns>
-        public async Task<ResponseFusionResult> ConsolidateWithResponseFusionAsync(string prompt, List<AiModelResponse> responses, OpenAIModel judgeModel, CancellationToken cancellationToken)
+        public async Task<ResponseFusionResult> ConsolidateWithResponseFusionAsync(string prompt,
+                                                                                   List<AiModelResponse> responses,
+                                                                                   OpenAIModel judgeModel,
+                                                                                   AiCallOptions options,
+                                                                                   CancellationToken cancelToken)
         {
-            Console.WriteLine($" Asking {judgeModel} to synthesize responses...");
-
-            List<AiModelResponse> successfulResponses = [.. responses.Where(r => r.IsSuccessful)];
-
-            if (successfulResponses.Count == 0)
-            {
-                throw new InvalidOperationException("No successful model responses to fuse");
-            }
+            Console.WriteLine($" Asking [{judgeModel}] to synthesize new response...");
 
             // Build fusion prompt
-            string fusionPrompt = BuildFusionPrompt(prompt, successfulResponses);
+            string fusionPrompt = BuildFusionPrompt(prompt: prompt, responses: responses);
 
-            ChatCompletionRequest fusionRequest = new ClientRequestBuilder()
+            // Create fusion request ..
+            ChatCompletionRequest fusionRequest = new ChatClientRequestBuilder()
                 .WithModel(judgeModel)
                 .AddSystemMessage(PromptRegistry.Prompts[PromptId.SetModelSynthesisMode])
                 .AddUserMessage(fusionPrompt)
                 .Build();
 
-            AiModelResponse fusionResponse = await this.singleModelExecutor.ExecuteAsync(request: fusionRequest, cancelToken: cancellationToken);
-
+            // Execute fusion request using judge model to synthesize the best elements from all responses into one excellent response ..
+            AiModelResponse fusionResponse = await this.singleModelExecutor.ExecuteAsync(request: fusionRequest, options: options, cancelToken: cancelToken);
             string synthesizedContent = fusionResponse.RawOutput ?? string.Empty;
 
             return new ResponseFusionResult
             {
                 JudgeModel = judgeModel,
                 SynthesizedResponse = synthesizedContent,
-                SourceResponses = successfulResponses,
+                SourceResponses = responses,
                 RawFusionOutput = synthesizedContent,
             };
         }

@@ -4,7 +4,7 @@
 
 namespace OpenAIApiClient.Orchestration
 {
-    using OpenAIApiClient.Helpers.General;
+    using OpenAIApiClient.Helpers;
     using OpenAIApiClient.Interfaces.Orchestration;
     using OpenAIApiClient.Interfaces.Orchestration.Dispatch;
     using OpenAIApiClient.Interfaces.Orchestration.Execution;
@@ -24,14 +24,14 @@ namespace OpenAIApiClient.Orchestration
     /// <param name="singleModelExecutor">Single model executor.</param>
     /// <param name="ensembleExecutor">Ensemble model executor.</param>
     /// <param name="responseHandler">Response handler.</param>
-    public sealed class Orchestrator(ClientRequestBuilder requestBuilder,
+    public sealed class Orchestrator(ChatClientRequestBuilder requestBuilder,
                                      ISingleAiModelDispatcher singleModelDispatcher,
                                      IEnsembleDispatcher ensembleDispatcher,
                                      ISingleAiModelExecutor singleModelExecutor,
                                      IEnsembleExecutor ensembleExecutor,
                                      IAiModelResponseHandler responseHandler)
     {
-        private readonly ClientRequestBuilder requestBuilder = requestBuilder;
+        private readonly ChatClientRequestBuilder requestBuilder = requestBuilder;
         private readonly ISingleAiModelDispatcher singleModelDispatcher = singleModelDispatcher;
         private readonly IEnsembleDispatcher ensembleDispatcher = ensembleDispatcher;
         private readonly ISingleAiModelExecutor singleModelExecutor = singleModelExecutor;
@@ -64,7 +64,7 @@ namespace OpenAIApiClient.Orchestration
             // Execute the request based on the determined execution context and handle the responses accordingly ..
             if (isEnsemble)
             {
-                IReadOnlyList<AiModelResponse> responses = await this.ensembleExecutor.ExecuteAsync(requestBuilder: this.requestBuilder, context: executionContext, cancelToken: cancelToken);
+                IReadOnlyList<AiModelResponse> responses = await this.ensembleExecutor.ExecuteAsync(requestBuilder: this.requestBuilder, context: executionContext, execution: request.CallOptions, cancelToken: cancelToken);
                 return this.responseHandler.HandleResponses(modelResponses: responses);
             }
             else
@@ -74,7 +74,7 @@ namespace OpenAIApiClient.Orchestration
                 ChatCompletionRequest chatRequest = this.requestBuilder.WithModel(input: model.Name).Build();
 
                 // Execute the request and handle the response ..
-                AiModelResponse response = await this.singleModelExecutor.ExecuteAsync(request: chatRequest, cancelToken: cancelToken);
+                AiModelResponse response = await this.singleModelExecutor.ExecuteAsync(request: chatRequest, execution: request.CallOptions, cancelToken: cancelToken);
                 return this.responseHandler.HandleResponses(modelResponses: AiModelResponse.WrapSingleResponseAsList(modelResponse: response));
             }
         }

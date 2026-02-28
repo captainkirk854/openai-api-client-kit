@@ -4,7 +4,7 @@
 
 namespace OpenAIApiClient.Orchestration.Factories
 {
-    using OpenAIApiClient.Helpers.General;
+    using OpenAIApiClient.Helpers;
 
     /// <summary>
     /// Provides factory methods for creating instances of ClientRequestBuilder with predefined configurations.
@@ -14,8 +14,8 @@ namespace OpenAIApiClient.Orchestration.Factories
         /// <summary>
         /// Creates a new instance of ClientRequestBuilder initialized with default settings.
         /// </summary>
-        /// <returns see cref="ClientRequestBuilder">A ClientRequestBuilder configured with default values.</returns>
-        public static ClientRequestBuilder CreateDefault()
-            => new ClientRequestBuilder().WithDefaults();
+        /// <returns see cref="ChatClientRequestBuilder">A ClientRequestBuilder configured with default values.</returns>
+        public static ChatClientRequestBuilder CreateDefault()
+            => new ChatClientRequestBuilder().WithDefaults();
     }
 }

@@ -9,54 +9,87 @@ namespace OpenAIApiClient.ConsoleApp.Demos
     using OpenAIApiClient.Models.Consolidation.Options.HeuristicScoring;
     using OpenAIApiClient.Models.Consolidation.Options.LLMJudge;
     using OpenAIApiClient.Orchestration.Consolidation;
+    using OpenAIApiClient.Orchestration.Dispatch;
+    using OpenAIApiClient.Orchestration.Execution;
     using OpenAIApiClient.Orchestration.Response;
+    using OpenAIApiClient.Registries.AiModels;
 
     public static class AiAdvancedEnsembleConsolidationDemo
     {
-        public static async Task GetBestModelResponseAsync(ChatClient client, string prompt, CancellationTokenSource cts)
+        /// <summary>
+        /// Demonstrates advanced strategies for consolidating ensemble LLM responses using LLM-as-judge, heuristic
+        /// scoring, and response fusion approaches.
+        /// </summary>
+        /// <remarks>This method showcases three advanced ensemble response consolidation strategies and
+        /// outputs results to the console for demonstration purposes.</remarks>
+        /// <param name="client">The chat client used to interact with language models.</param>
+        /// <param name="prompt">The prompt to dispatch to the selected models.</param>
+        /// <param name="useStreaming">Indicates whether to use streaming mode for responses.</param>
+        /// <param name="useReasoningModels">Indicates whether to use reasoning-optimized models for dispatch.</param>
+        /// <param name="cts">A cancellation token source to observe while awaiting the operation.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public static async Task GetAdvancedResponsesAsync(ChatClient client, string prompt, bool useStreaming, bool useReasoningModels, CancellationTokenSource cts)
         {
-            // This demo showcases three advanced consolidation strategies for ensemble LLM responses:
+            // This demo showcases three advanced consolidation strategies for ensemble LLM responses ..
             DefaultAiModelResponseHandler responseHandler = new();
             AdvancedEnsembleExecutor executor = new(client: client, responseHandler: responseHandler);
 
-            // We will fan-out the same prompt to multiple models and then consolidate their responses using different strategies:
-            OpenAIModel[] fanoutModels =
-            [
-                OpenAIModel.GPT5_2,
-                OpenAIModel.GPT4o,
-                OpenAIModel.GPT4_1_Mini,
-                OpenAIModel.O4_Mini,
-            ];
+            // Define AI call options for this demo; can be customized per call if needed. Note: the callbacks only work when using AiCallMode modes: BufferedStreaming or PushStreaming
+            AiCallMode callMode = useStreaming ? AiCallMode.BufferedStreaming : AiCallMode.NonStreaming;
+            AiCallOptions options = ConfigureCallOptions(callMode: callMode, isChunkContentCallback: true, isChunkCallback: false);
 
-            // For the LLM-as-Judge and Response Fusion strategies, we need to specify a model that will act as the judge and fusion engine:
+            // Initalise a list of models to dispatch the prompt to; can be any combination of models based on caller's needs and preferences ..
+            OpenAIModel[] dispatchModels;
+            if (useReasoningModels)
+            {
+                dispatchModels = GetOpenAIModelEnums(strategy: EnsembleStrategy.Reasoning);
+            }
+            else
+            {
+                // Provide a custom list of models to dispatch to; for best results, include a mix of models with strong reasoning capabilities as well as some cost effective models for diversity (e.g. GPT5_2, GPT4o, GPT4_1_Mini, O4_Mini, etc ..)
+                dispatchModels =
+                [
+                    OpenAIModel.GPT5_2,
+                    OpenAIModel.GPT4o,
+                    OpenAIModel.GPT4_1_Mini,
+                    OpenAIModel.O4_Mini,
+                ];
+            }
+
+            // Specify the judge models to use for LLM-as-judge and response fusion strategies; models should have good reasoning capabilities for best results (e.g. GPT5 or GPT5_2)
             OpenAIModel judgeModel = OpenAIModel.GPT5;
-            OpenAIModel fusionModel = OpenAIModel.O4_Mini;
+            OpenAIModel fusionModel = OpenAIModel.GPT5_2;
 
-            // OPTION 1: LLM AS JUDGE
-            Console.WriteLine("\nOPTION 1: LLM AS JUDGE\n");
+            // Option 1: LLM AS JUDGE
+            Console.WriteLine();
+            Console.WriteLine("Option 1: LLM AS JUDGE\n");
             try
             {
-                AdvancedConsolidatedResponse llmJudgeResponse = await executor.FanOutAndConsolidateAdvancedAsync(prompt: prompt,
-                                                                                                                 models: fanoutModels,
-                                                                                                                 consolidationMode: ConsolidationMode.LLMAsJudge,
-                                                                                                                 judgeModel: judgeModel,
-                                                                                                                 cancelToken: cts.Token);
+                AdvancedConsolidatedResponse llmJudgeResponse = await executor.AdvancedDispatchAndConsolidateAsync(prompt: prompt,
+                                                                                                                   models: dispatchModels,
+                                                                                                                   consolidationMode: ConsolidationMode.LLMAsJudge,
+                                                                                                                   options: options,
+                                                                                                                   judgeModel: judgeModel,
+                                                                                                                   cancelToken: cts.Token);
 
-                Console.WriteLine("Fan-out Responses:");
-                foreach (AiModelResponse resp in llmJudgeResponse.FanoutResponses)
+                Console.WriteLine(" Dispatched Model Response(s):");
+                foreach (AiModelResponse resp in llmJudgeResponse.ModelResponses)
                 {
-                    Console.WriteLine($"  {resp.Model.Name}: {resp.RawOutput[..80]}...");
+                    Console.WriteLine($"  [{resp.Model.Name}]: {resp.RawOutput[..80]}...");
                 }
 
-                Console.WriteLine("\nJudge Decision:");
+                Console.WriteLine($" Response selected by Judge Model [{judgeModel}]:");
                 if (llmJudgeResponse.ConsolidationMetadata is LLMJudgeResult judgeResult)
                 {
                     Console.WriteLine($"  Selected: Response #{judgeResult.SelectedIndex}");
                     Console.WriteLine($"  Reasoning: {judgeResult.JudgeReasoning}");
-                    Console.WriteLine($"  Scores: Correctness={judgeResult.JudgeScores.GetValueOrDefault("correctness")}, " + $"Completeness={judgeResult.JudgeScores.GetValueOrDefault("completeness")}");
+                    Console.WriteLine($"  Scores: Correctness={judgeResult.JudgeScores.GetValueOrDefault("correctness")}," +
+                                      $"Completeness={judgeResult.JudgeScores.GetValueOrDefault("completeness")}," +
+                                      $"Alignment={judgeResult.JudgeScores.GetValueOrDefault("alignment")}," +
+                                      $"Clarity={judgeResult.JudgeScores.GetValueOrDefault("clarity")}");
                 }
 
-                Console.WriteLine("\nFinal Answer:");
+                Console.WriteLine("Final Answer:");
                 Console.WriteLine(llmJudgeResponse.ConsolidatedContent);
             }
             catch (Exception ex)
@@ -64,14 +97,16 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 Console.WriteLine($"Error: {ex.Message}");
             }
 
-            // OPTION 2: HEURISTIC SCORING
-            Console.WriteLine("\n\nOPTION 2: HEURISTIC SCORING\n");
+            // Option 2: HEURISTIC SCORING
+            Console.WriteLine();
+            Console.WriteLine("Option 2: HEURISTIC SCORING\n");
             try
             {
-                AdvancedConsolidatedResponse heuristicResponse = await executor.FanOutAndConsolidateAdvancedAsync(prompt: prompt,
-                                                                                                                  models: fanoutModels,
-                                                                                                                  consolidationMode: ConsolidationMode.HeuristicScoring,
-                                                                                                                  cancelToken: cts.Token);
+                AdvancedConsolidatedResponse heuristicResponse = await executor.AdvancedDispatchAndConsolidateAsync(prompt: prompt,
+                                                                                                                    models: dispatchModels,
+                                                                                                                    consolidationMode: ConsolidationMode.HeuristicScoring,
+                                                                                                                    options: options,
+                                                                                                                    cancelToken: cts.Token);
 
                 if (heuristicResponse.ConsolidationMetadata is HeuristicScoringResult heuristicResult)
                 {
@@ -96,27 +131,101 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 Console.WriteLine($"Error: {ex.Message}");
             }
 
-            // OPTION 3: RESPONSE FUSION
-            Console.WriteLine("\n\nOPTION 3: RESPONSE FUSION\n");
+            // Option 3: RESPONSE FUSION
+            Console.WriteLine();
+            Console.WriteLine("Option 3: RESPONSE FUSION\n");
             try
             {
-                AdvancedConsolidatedResponse fusionResponse = await executor.FanOutAndConsolidateAdvancedAsync(prompt: prompt,
-                                                                                                               models: fanoutModels,
-                                                                                                               consolidationMode: ConsolidationMode.ResponseFusion,
-                                                                                                               judgeModel: fusionModel,
-                                                                                                               cancelToken: cts.Token);
+                Console.WriteLine($"Analysing the response(s)..");
+                AdvancedConsolidatedResponse fusionResponse = await executor.AdvancedDispatchAndConsolidateAsync(prompt: prompt,
+                                                                                                                 models: dispatchModels,
+                                                                                                                 consolidationMode: ConsolidationMode.ResponseFusion,
+                                                                                                                 options: options,
+                                                                                                                 judgeModel: fusionModel,
+                                                                                                                 cancelToken: cts.Token);
 
-                Console.WriteLine("Synthesizing all responses...");
-                Console.WriteLine("\nSynthesized Answer:");
+                Console.WriteLine("Synthesized Answer:");
                 Console.WriteLine(fusionResponse.ConsolidatedContent);
 
-                Console.WriteLine($"\n  Total latency: {fusionResponse.TotalLatency.TotalMilliseconds:F2}ms");
+                Console.WriteLine($" Total latency: {fusionResponse.TotalLatency.TotalMilliseconds:F2}ms");
                 Console.WriteLine($" Success rate: {fusionResponse.SuccessCount}/{fusionResponse.SuccessCount + fusionResponse.FailureCount}");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($" Error: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Creates and configures an AiCallOptions instance based on the specified call mode and callback flags.
+        /// </summary>
+        /// <param name="callMode">The mode to use for the AI call.</param>
+        /// <param name="isChunkContentCallback">Indicates whether to set a callback for chunk delta content tokens.</param>
+        /// <param name="isChunkCallback">Indicates whether to set a callback for full chunk objects.</param>
+        /// <returns>A configured <see cref="AiCallOptions"/> instance with the appropriate callbacks and settings based on the provided parameters.</returns>
+        private static AiCallOptions ConfigureCallOptions(AiCallMode callMode = AiCallMode.NonStreaming, bool isChunkContentCallback = false, bool isChunkCallback = false)
+        {
+            if(isChunkContentCallback == false && isChunkCallback == false)
+            {
+                return new AiCallOptions
+                {
+                    Mode = callMode,
+                };
+            }
+            else
+            {
+                if(isChunkContentCallback == true && isChunkCallback == false)
+                {
+                    return new AiCallOptions
+                    {
+                        Mode = callMode,
+
+                        // Define callback to receive chunk delta content tokens and chunks as they arrive from the API and print to console; can be used for live streaming scenarios or to build custom progress indicators, etc ..
+                        OnChunkDeltaContentToken = async (model, chunkDeltaContent) =>
+                        {
+                            Console.WriteLine($"chunk content: {chunkDeltaContent}");
+                            await Task.Yield(); // keep it async
+                        },
+                        AggregateChunkContent = true,
+                    };
+                }
+
+                return new AiCallOptions
+                {
+                    Mode = callMode,
+
+                    // Define callback to receive chunk delta content tokens and chunks as they arrive from the API and print to console; can be used for live streaming scenarios or to build custom progress indicators, etc ..
+                    OnChunkDeltaContentToken = isChunkContentCallback ? async (model, chunkDeltaContent) =>
+                    {
+                        Console.WriteLine($"chunk content: {chunkDeltaContent}");
+                        await Task.Yield(); // keep it async
+                    } : null,
+
+                    // Define callback to receive the full chunk object as it arrives from the API ..
+                    OnChunk = isChunkCallback ? async (model, chunk, chunkIndex) =>
+                    {
+                        Console.WriteLine($"Index: {chunkIndex}  Id: {chunk.Id}");
+                        await Task.Yield(); // keep it async
+                    } : null,
+                    AggregateChunkContent = true,
+                };
+            }
+        }
+
+        /// <summary>
+        /// Retrieves an array of OpenAI model enums based on the specified ensemble strategy.
+        /// </summary>
+        /// <param name="strategy">The ensemble strategy used to determine which OpenAI models to include.</param>
+        /// <returns>An array of <see cref="OpenAIModel"/> enums corresponding to the models selected for the strategy.</returns>
+        private static OpenAIModel[] GetOpenAIModelEnums(EnsembleStrategy strategy)
+        {
+            EnsembleDispatcher ensembleDispatcher = new(registry: new OpenAIModels());
+            EnsembleDispatchResult result = ensembleDispatcher.Evaluate(new EnsembleDispatchRequest
+            {
+                Strategy = strategy,
+            });
+
+            return [.. result.Models.Select(m => m.Name)];
         }
     }
 }

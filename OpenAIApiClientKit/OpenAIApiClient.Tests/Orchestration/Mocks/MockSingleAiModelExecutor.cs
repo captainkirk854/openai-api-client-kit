@@ -7,6 +7,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
     using OpenAIApiClient.Interfaces.Orchestration.Execution;
     using OpenAIApiClient.Models.Chat.Request;
     using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Orchestration.Execution;
     using OpenAIApiClient.Orchestration.Response;
 
     public sealed class MockSingleAiModelExecutor : ISingleAiModelExecutor
@@ -42,9 +43,10 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         /// Executes the model with the given prompt context.
         /// </summary>
         /// <param name="request"></param>
+        /// <param name="execution"></param>
         /// <param name="token"></param>
         /// <returns see cref="AiModelResponse">.</returns>
-        public Task<AiModelResponse> ExecuteAsync(ChatCompletionRequest request, CancellationToken token)
+        public Task<AiModelResponse> ExecuteAsync(ChatCompletionRequest request, AiCallOptions execution, CancellationToken token)
         {
             this.WasCalled = true;
             this.LastCall = (request.ModelDescriptor, request);

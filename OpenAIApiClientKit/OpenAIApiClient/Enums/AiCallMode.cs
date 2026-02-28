@@ -1,10 +1,10 @@
-﻿// <copyright file="AiExecutionMode.cs" company="854 Things (tm)">
+﻿// <copyright file="AiCallMode.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
 namespace OpenAIApiClient.Enums
 {
-    public enum AiExecutionMode
+    public enum AiCallMode
     {
         /// <summary>
         /// Use non-streaming Chat Completions (single response only).

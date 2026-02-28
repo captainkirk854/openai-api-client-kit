@@ -203,14 +203,14 @@ namespace OpenAIApiClient.ConsoleApp.Demos
 
             List<string> rawParts = [.. input.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim())];
 
-            List<AiModelCapability> parsed = [];
+            List<AiModelCapability> parsedCapabilities = [];
             List<string> invalid = [];
 
             foreach (string part in rawParts)
             {
                 if (Enum.TryParse(part, ignoreCase: true, out AiModelCapability cap))
                 {
-                    parsed.Add(cap);
+                    parsedCapabilities.Add(cap);
                 }
                 else
                 {
@@ -224,7 +224,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 return;
             }
 
-            if (parsed.Count == 0)
+            if (parsedCapabilities.Count == 0)
             {
                 Console.WriteLine("No valid capability(s) provided.");
                 return;
@@ -239,7 +239,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             }
 
             // Validate that enough models exist BEFORE routing ..
-            List<AiModelDescriptor> matchingModels = [.. Models.GetRegistry().Values.Where(m => parsed.All(c => m.Capabilities.Contains(c)))];
+            List<AiModelDescriptor> matchingModels = [.. Models.GetRegistry().Values.Where(m => parsedCapabilities.All(c => m.Capabilities.Contains(c)))];
             if (matchingModels.Count < minRequiredCount)
             {
                 Console.WriteLine($"Only {matchingModels.Count} model(s) match those capabilities, but a minimum of {minRequiredCount} model(s) were requested.");
@@ -251,7 +251,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             {
                 Strategy = EnsembleStrategy.Custom,
                 ModelCount = minRequiredCount,
-                RequiredCapabilities = parsed,
+                RequiredCapabilities = parsedCapabilities,
             });
 
             PrintEnsembleResult("Custom Ensemble", result);
