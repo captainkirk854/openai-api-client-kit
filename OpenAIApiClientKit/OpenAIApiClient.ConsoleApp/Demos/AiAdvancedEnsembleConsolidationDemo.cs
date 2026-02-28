@@ -32,13 +32,14 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         {
             // This demo showcases three advanced consolidation strategies for ensemble LLM responses ..
             DefaultAiModelResponseHandler responseHandler = new();
-            AdvancedEnsembleExecutor executor = new(client: client, responseHandler: responseHandler);
+            OrchestratedEnsembleExecutor orchestratedExecutor = new(client: client, responseHandler: responseHandler);
+            AdvancedEnsembleExecutor advancedExecutor = new(client: client, responseHandler: responseHandler);
 
             // Define AI call options for this demo; can be customized per call if needed. Note: the callbacks only work when using AiCallMode modes: BufferedStreaming or PushStreaming
             AiCallMode callMode = useStreaming ? AiCallMode.BufferedStreaming : AiCallMode.NonStreaming;
             AiCallOptions options = ConfigureCallOptions(callMode: callMode, isChunkContentCallback: true, isChunkCallback: false);
 
-            // Initalise a list of models to dispatch the prompt to; can be any combination of models based on caller's needs and preferences ..
+            // Initialise a list of model(s) to dispatch the prompt to; can be any combination of models based on caller's needs and preferences ..
             OpenAIModel[] dispatchModels;
             if (useReasoningModels)
             {
@@ -60,17 +61,22 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             OpenAIModel judgeModel = OpenAIModel.GPT5;
             OpenAIModel fusionModel = OpenAIModel.GPT5_2;
 
+            // Dispatch the prompt to the selected model(s) and get their response(s); these will be used as input for the different consolidation strategies below.#
+            // Note: in a real application, you might want to implement some retry logic here to handle potential API errors or timeouts when calling multiple models, especially if using a large ensemble.
+            Console.WriteLine($" Dispatching to {dispatchModels.Length} model(s)...");
+            List<AiModelResponse> responses = await orchestratedExecutor.ProcessAsync(prompt: prompt, models: dispatchModels, options: options, outputFormat: OutputFormat.PlainText, cancelToken: cts.Token);
+
             // Option 1: LLM AS JUDGE
             Console.WriteLine();
             Console.WriteLine("Option 1: LLM AS JUDGE\n");
             try
             {
-                AdvancedConsolidatedResponse llmJudgeResponse = await executor.AdvancedDispatchAndConsolidateAsync(prompt: prompt,
-                                                                                                                   models: dispatchModels,
-                                                                                                                   consolidationMode: ConsolidationMode.LLMAsJudge,
-                                                                                                                   options: options,
-                                                                                                                   judgeModel: judgeModel,
-                                                                                                                   cancelToken: cts.Token);
+                AdvancedConsolidatedResponse llmJudgeResponse = await advancedExecutor.AdvancedConsolidatationAsync(prompt: prompt,
+                                                                                                                    responses: responses,
+                                                                                                                    consolidationMode: ConsolidationMode.LLMAsJudge,
+                                                                                                                    options: options,
+                                                                                                                    operationalModel: judgeModel,
+                                                                                                                    cancelToken: cts.Token);
 
                 Console.WriteLine(" Dispatched Model Response(s):");
                 foreach (AiModelResponse resp in llmJudgeResponse.ModelResponses)
@@ -102,18 +108,18 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             Console.WriteLine("Option 2: HEURISTIC SCORING\n");
             try
             {
-                AdvancedConsolidatedResponse heuristicResponse = await executor.AdvancedDispatchAndConsolidateAsync(prompt: prompt,
-                                                                                                                    models: dispatchModels,
-                                                                                                                    consolidationMode: ConsolidationMode.HeuristicScoring,
-                                                                                                                    options: options,
-                                                                                                                    cancelToken: cts.Token);
+                AdvancedConsolidatedResponse heuristicResponse = await advancedExecutor.AdvancedConsolidatationAsync(prompt: prompt,
+                                                                                                                     responses: responses,
+                                                                                                                     consolidationMode: ConsolidationMode.HeuristicScoring,
+                                                                                                                     options: options,
+                                                                                                                     cancelToken: cts.Token);
 
                 if (heuristicResponse.ConsolidationMetadata is HeuristicScoringResult heuristicResult)
                 {
                     Console.WriteLine("Heuristic Scores:");
                     foreach ((string modelName, ScoredResponseDetail detail) in heuristicResult.ScoredResponses)
                     {
-                        Console.WriteLine($"  {modelName}: {detail.TotalScore} points");
+                        Console.WriteLine($"  {modelName}: {detail.TotalScore} point(s)");
                         foreach ((string factor, int score) in detail.ScoreBreakdown)
                         {
                             Console.WriteLine($"    - {factor}: {score}");
@@ -131,24 +137,24 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 Console.WriteLine($"Error: {ex.Message}");
             }
 
-            // Option 3: RESPONSE FUSION
+            // Option 3: RESPONSE SYNTHESIS
             Console.WriteLine();
-            Console.WriteLine("Option 3: RESPONSE FUSION\n");
+            Console.WriteLine("Option 3: RESPONSE SYNTHESIS\n");
             try
             {
-                Console.WriteLine($"Analysing the response(s)..");
-                AdvancedConsolidatedResponse fusionResponse = await executor.AdvancedDispatchAndConsolidateAsync(prompt: prompt,
-                                                                                                                 models: dispatchModels,
-                                                                                                                 consolidationMode: ConsolidationMode.ResponseFusion,
-                                                                                                                 options: options,
-                                                                                                                 judgeModel: fusionModel,
-                                                                                                                 cancelToken: cts.Token);
+                Console.WriteLine($"Using input response(s) to synthesise ..");
+                AdvancedConsolidatedResponse synthesisResponse = await advancedExecutor.AdvancedConsolidatationAsync(prompt: prompt,
+                                                                                                                     responses: responses,
+                                                                                                                     consolidationMode: ConsolidationMode.ResponseSynthesis,
+                                                                                                                     options: options,
+                                                                                                                     operationalModel: fusionModel,
+                                                                                                                     cancelToken: cts.Token);
 
-                Console.WriteLine("Synthesized Answer:");
-                Console.WriteLine(fusionResponse.ConsolidatedContent);
+                Console.WriteLine("Synthesised Answer:");
+                Console.WriteLine(synthesisResponse.ConsolidatedContent);
 
-                Console.WriteLine($" Total latency: {fusionResponse.TotalLatency.TotalMilliseconds:F2}ms");
-                Console.WriteLine($" Success rate: {fusionResponse.SuccessCount}/{fusionResponse.SuccessCount + fusionResponse.FailureCount}");
+                Console.WriteLine($" Total latency: {synthesisResponse.TotalLatency.TotalMilliseconds:F2}ms");
+                Console.WriteLine($" Success rate: {synthesisResponse.SuccessCount}/{synthesisResponse.SuccessCount + synthesisResponse.FailureCount}");
             }
             catch (Exception ex)
             {

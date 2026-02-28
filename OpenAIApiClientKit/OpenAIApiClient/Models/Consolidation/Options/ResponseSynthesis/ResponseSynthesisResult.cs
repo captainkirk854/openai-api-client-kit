@@ -1,8 +1,8 @@
-﻿// <copyright file="ResponseFusionResult.cs" company="854 Things (tm)">
+﻿// <copyright file="ResponseSynthesisResult.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Models.Consolidation.Options.ResponseFusion
+namespace OpenAIApiClient.Models.Consolidation.Options.ResponseSynthesis
 {
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Orchestration.Response;
@@ -10,12 +10,12 @@ namespace OpenAIApiClient.Models.Consolidation.Options.ResponseFusion
     /// <summary>
     /// Represents the result of response fusion consolidation strategy.
     /// </summary>
-    public class ResponseFusionResult
+    public class ResponseSynthesisResult
     {
         /// <summary>
         /// Gets or sets the judge model used for synthesis.
         /// </summary>
-        public OpenAIModel JudgeModel
+        public OpenAIModel SynthesisModel
         {
             get;
             set;
@@ -24,7 +24,7 @@ namespace OpenAIApiClient.Models.Consolidation.Options.ResponseFusion
         /// <summary>
         /// Gets or sets the synthesized response combining all inputs.
         /// </summary>
-        public string SynthesizedResponse
+        public string SynthesisedResponse
         {
             get;
             set;

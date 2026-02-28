@@ -11,10 +11,8 @@ namespace OpenAIApiClient.Orchestration.Consolidation
     using OpenAIApiClient.Models.Consolidation;
     using OpenAIApiClient.Models.Consolidation.Options.HeuristicScoring;
     using OpenAIApiClient.Models.Consolidation.Options.LLMJudge;
-    using OpenAIApiClient.Models.Consolidation.Options.ResponseFusion;
-    using OpenAIApiClient.Orchestration;
+    using OpenAIApiClient.Models.Consolidation.Options.ResponseSynthesis;
     using OpenAIApiClient.Orchestration.Consolidation.Options;
-    using OpenAIApiClient.Orchestration.Dispatch;
     using OpenAIApiClient.Orchestration.Execution;
     using OpenAIApiClient.Orchestration.Factories;
     using OpenAIApiClient.Orchestration.Response;
@@ -37,24 +35,19 @@ namespace OpenAIApiClient.Orchestration.Consolidation
     /// </param>
     public class AdvancedEnsembleExecutor(ChatClient client, IAiModelResponseHandler responseHandler)
     {
-        // Use the Orchestrator for fan-out to leverage its parallel dispatch and response handling capabilities.
-        private readonly Orchestrator orchestrator = new OrchestratorBuilder()
-                                                         .WithClient(client)
-                                                         .WithResponseHandler(responseHandler)
-                                                         .Build();
-
         // Specialized consolidation strategy classes that encapsulate the logic for each approach.
+        private readonly OrchestratedEnsembleExecutor orchestratedEnsembleExecutor = new(client: client, responseHandler: responseHandler);
         private readonly LLMJudge llmJudgeStrategy = new(client: client);
-        private readonly ResponseFusion responseFusionStrategy = new(client: client);
+        private readonly ResponseSynthesis responseSynthesisStrategy = new(client: client);
 
         /// <summary>
-        /// Fan-out to N models and consolidate using specified strategy.
+        /// Performs advanced consolidation of multiple model responses based on the specified consolidation mode.
         /// </summary>
-        /// <param name="prompt">The user prompt to send to all models.</param>
-        /// <param name="models">The array of <see cref="OpenAIModel"/> values to use to evaluate prompt.</param>
         /// <param name="consolidationMode">The <see cref="ConsolidationMode"/> strategy to use.</param>
+        /// <param name="prompt">The user prompt to send to all models.</param>
+        /// <param name="responses">The list of <see cref="AiModelResponse"/> objects from the ensemble model calls.</param>
         /// <param name="options">Options for execution, such as chunk handling and aggregation (optional).</param>
-        /// <param name="judgeModel">The judge <see cref="OpenAIModel"/> for LLM-based strategies (optional).</param>
+        /// <param name="operationalModel">The judge <see cref="OpenAIModel"/> for LLM-based strategies (optional).</param>
         /// <param name="cancelToken">The cancellation token for the operation.</param>
         /// <returns>
         /// An <see cref="AdvancedConsolidatedResponse"/> containing the consolidated content,
@@ -68,61 +61,45 @@ namespace OpenAIApiClient.Orchestration.Consolidation
         /// <exception cref="InvalidOperationException">
         /// Thrown when advanced fan-out and consolidation fails.
         /// </exception>
-        public async Task<AdvancedConsolidatedResponse> AdvancedDispatchAndConsolidateAsync(string prompt,
-                                                                                            OpenAIModel[] models,
-                                                                                            ConsolidationMode consolidationMode,
-                                                                                            AiCallOptions options,
-                                                                                            OpenAIModel? judgeModel = null,
-                                                                                            CancellationToken cancelToken = default)
+        public async Task<AdvancedConsolidatedResponse> AdvancedConsolidatationAsync(ConsolidationMode consolidationMode,
+                                                                                     string prompt,
+                                                                                     List<AiModelResponse> responses,
+                                                                                     AiCallOptions options,
+                                                                                     OpenAIModel? operationalModel = null,
+                                                                                     CancellationToken cancelToken = default)
         {
-            if (string.IsNullOrWhiteSpace(prompt))
+            // Filter out unsuccessful or blank model response(s) ..
+            List<AiModelResponse> successfulResponses = [.. responses.Where(r => r.IsSuccessful && !string.IsNullOrEmpty(r.RawOutput))];
+            Console.WriteLine($" Received {successfulResponses.Count} response(s) from {responses.Count} model(s)...");
+            if (successfulResponses.Count == 0)
             {
-                throw new ArgumentException("Prompt cannot be empty", nameof(prompt));
+                throw new InvalidOperationException("No successful model response(s) found!");
             }
 
-            if (models.Length == 0)
-            {
-                throw new ArgumentException("At least one model must be specified", nameof(models));
-            }
-
+            // Begin consolidation process based on consolidation mode using successful response(s) ..
             Stopwatch stopwatch = Stopwatch.StartNew();
-
             try
             {
-                // Step 1: Submit prompt to all models using the orchestrator.
-                Console.WriteLine($" Dispatching to {models.Length} model(s)...");
-                List<AiModelResponse> responses = await this.ExecuteCustomEnsembleAsync(prompt: prompt, models: models, options: options, cancelToken: cancelToken);
-
-                // Filter out any unsuccessful response(s), as the judge model should only evaluate successful, meaningful outputs.
-                List<AiModelResponse> successfulResponses = [.. responses.Where(r => r.IsSuccessful && !string.IsNullOrEmpty(r.RawOutput)) ];
-
-                Console.WriteLine($" Received {successfulResponses.Count} response(s) from {models.Length} model(s)...");
-                if (successfulResponses.Count == 0)
-                {
-                    throw new InvalidOperationException("No successful model response(s) to process");
-                }
-
-                // Step 2: Consolidate based on strategy.
                 string consolidatedContent;
                 object? consolidationMetadata = null;
                 switch (consolidationMode)
                 {
-                    // LLM Judge strategy uses a separate LLM to evaluate the outputs of the ensemble models and select the best one based on the prompt and responses.
+                    // LLM Judge consolidation mode uses a separate LLM to evaluate the successful model response(s) and select the best one based on the prompt ..
                     case ConsolidationMode.LLMAsJudge:
-                        if (judgeModel is null)
+                        if (operationalModel is null)
                         {
-                            throw new ArgumentException("A Judge model is required for LLM Judge consolidation!", nameof(judgeModel));
+                            throw new ArgumentException("An operational LLM is required for LLM Judge consolidation!", nameof(operationalModel));
                         }
                         LLMJudgeResult judgeResult = await this.llmJudgeStrategy.ConsolidateWithLLMJudgeAsync(prompt: prompt,
                                                                                                               responses: successfulResponses,
-                                                                                                              judgeModel: judgeModel.Value,
+                                                                                                              judgeModel: operationalModel.Value,
                                                                                                               execution: options,
                                                                                                               cancellationToken: cancelToken);
                         consolidatedContent = judgeResult.SelectedResponse;
                         consolidationMetadata = judgeResult;
                         break;
 
-                    // Heuristic Scoring strategy applies a set of predefined heuristics to score and select the best response without using an additional LLM.
+                    // Heuristic Scoring consolidation mode applies a set of predefined heuristics to score and select the best response without using an additional LLM.
                     case ConsolidationMode.HeuristicScoring:
                         HeuristicScoringResult heuristicResult = HeuristicScoring.ConsolidateWithHeuristicScoring(prompt: prompt,
                                                                                                                   responses: successfulResponses);
@@ -130,19 +107,19 @@ namespace OpenAIApiClient.Orchestration.Consolidation
                         consolidationMetadata = heuristicResult;
                         break;
 
-                    // Response Fusion strategy uses an LLM to synthesize a new response that combines the information from all successful model responses, rather than selecting just one.
-                    case ConsolidationMode.ResponseFusion:
-                        if (judgeModel is null)
+                    // Response Synthesis consolidation mode uses a separate LLM to synthesise a new response that optimally blends the information from all input model response(s) ..
+                    case ConsolidationMode.ResponseSynthesis:
+                        if (operationalModel is null)
                         {
-                            throw new ArgumentException("A Judge model is required for Response Fusion", nameof(judgeModel));
+                            throw new ArgumentException("An operational LLM is required for Response Synthesis", nameof(operationalModel));
                         }
-                        ResponseFusionResult fusionResult = await this.responseFusionStrategy.ConsolidateWithResponseFusionAsync(prompt: prompt,
-                                                                                                                                 responses: successfulResponses,
-                                                                                                                                 judgeModel: judgeModel.Value,
-                                                                                                                                 options: options,
-                                                                                                                                 cancelToken: cancelToken);
-                        consolidatedContent = fusionResult.SynthesizedResponse;
-                        consolidationMetadata = fusionResult;
+                        ResponseSynthesisResult synthesisResult = await this.responseSynthesisStrategy.ConsolidateWithResponseSynthesisAsync(prompt: prompt,
+                                                                                                                                               responses: successfulResponses,
+                                                                                                                                               synthesisModel: operationalModel.Value,
+                                                                                                                                               options: options,
+                                                                                                                                               cancelToken: cancelToken);
+                        consolidatedContent = synthesisResult.SynthesisedResponse;
+                        consolidationMetadata = synthesisResult;
                         break;
 
                     default:
@@ -151,7 +128,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation
 
                 stopwatch.Stop();
 
-                // Step 3: Return a comprehensive response object with all relevant data and metadata.
+                // Return a comprehensive response object with all relevant data and metadata ..
                 return new AdvancedConsolidatedResponse
                 {
                     UserPrompt = prompt,
@@ -169,55 +146,6 @@ namespace OpenAIApiClient.Orchestration.Consolidation
                 stopwatch.Stop();
                 throw new InvalidOperationException($"Advanced consolidation failed after {stopwatch.ElapsedMilliseconds}ms: {ex.Message}", ex);
             }
-        }
-
-        /// <summary>
-        /// Send the prompt to the specified models using the orchestrator,
-        /// then load results into <see cref="AiModelResponse"/> objects for advanced consolidation.
-        /// </summary>
-        /// <param name="prompt">The prompt to send to all models.</param>
-        /// <param name="models">The <see cref="OpenAIModel"/> values to query in parallel.</param>
-        /// param name="execution">The <see cref="AiCallOptions"/> for executing the requests (e.g. for streaming).</param>
-        /// <param name="cancelToken">The cancellation token.</param>
-        /// <returns>
-        /// A <see cref="List{T}"/> of <see cref="AiModelResponse"/> objects from all models.
-        /// </returns>
-        private async Task<List<AiModelResponse>> ExecuteCustomEnsembleAsync(string prompt, OpenAIModel[] models, AiCallOptions options, CancellationToken cancelToken)
-        {
-            // Define an ensemble orchestration request with explicit models or required capabilities.
-            OrchestrationRequest request = new()
-            {
-                UseEnsemble = true,
-                Prompt = prompt,
-                OutputFormat = OutputFormat.PlainText,
-                EnsembleRequest = new EnsembleDispatchRequest
-                {
-                    Strategy = EnsembleStrategy.Custom,
-                    ExplicitModels = models,
-                },
-                CallOptions = options,
-            };
-
-            // Distribute request to all specified models in parallel using the orchestrator.
-            IReadOnlyList<AiModelResponse> orchestratorResponses = await this.orchestrator.ProcessAsync(request: request, cancelToken: cancelToken);
-
-            // Map Orchestrator's ModelResponse objects to AiModelResponse for consolidation strategies.
-            List<AiModelResponse> results =
-            [
-                .. orchestratorResponses.Select(r => new AiModelResponse
-                {
-                    Model = r.Model,
-                    RawOutput = r.RawOutput ?? string.Empty,
-                    IsSuccessful = r.IsSuccessful,
-                    ErrorMessage = r.ErrorMessage,
-                    Latency = r.Latency,
-                    TotalTokens = r.TotalTokens,
-                    EstimatedCost = r.EstimatedCost,
-                    ChunkCount = r.ChunkCount,
-                }),
-            ];
-
-            return results;
         }
     }
 }
