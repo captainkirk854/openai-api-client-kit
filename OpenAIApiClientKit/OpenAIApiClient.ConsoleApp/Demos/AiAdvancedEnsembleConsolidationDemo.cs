@@ -5,23 +5,24 @@
 namespace OpenAIApiClient.ConsoleApp.Demos
 {
     using OpenAIApiClient.Enums;
+    using OpenAIApiClient.Helpers.Extensions;
     using OpenAIApiClient.Models.Consolidation;
     using OpenAIApiClient.Models.Consolidation.Options.HeuristicScoring;
     using OpenAIApiClient.Models.Consolidation.Options.LLMJudge;
     using OpenAIApiClient.Orchestration.Consolidation;
-    using OpenAIApiClient.Orchestration.Dispatch;
     using OpenAIApiClient.Orchestration.Execution;
     using OpenAIApiClient.Orchestration.Response;
-    using OpenAIApiClient.Registries.AiModels;
 
     public static class AiAdvancedEnsembleConsolidationDemo
     {
         /// <summary>
-        /// Demonstrates advanced strategies for consolidating ensemble LLM responses using LLM-as-judge, heuristic
-        /// scoring, and response fusion approaches.
+        /// Demonstrates advanced strategies for consolidating ensemble LLM responses using LLM-as-judge,
+        /// Heuristic Scoring, and Response Synthesis approaches.
         /// </summary>
-        /// <remarks>This method showcases three advanced ensemble response consolidation strategies and
-        /// outputs results to the console for demonstration purposes.</remarks>
+        /// <remarks>
+        /// This method showcases three advanced ensemble response consolidation strategies and
+        /// outputs results to the console for demonstration purposes.
+        /// </remarks>
         /// <param name="client">The chat client used to interact with language models.</param>
         /// <param name="prompt">The prompt to dispatch to the selected models.</param>
         /// <param name="useStreaming">Indicates whether to use streaming mode for responses.</param>
@@ -43,7 +44,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             OpenAIModel[] dispatchModels;
             if (useReasoningModels)
             {
-                dispatchModels = GetOpenAIModelEnums(strategy: EnsembleStrategy.Reasoning);
+                dispatchModels = EnsembleStrategy.Reasoning.GetOpenAIModels();
             }
             else
             {
@@ -59,16 +60,16 @@ namespace OpenAIApiClient.ConsoleApp.Demos
 
             // Specify the judge models to use for LLM-as-judge and response fusion strategies; models should have good reasoning capabilities for best results (e.g. GPT5 or GPT5_2)
             OpenAIModel judgeModel = OpenAIModel.GPT5;
-            OpenAIModel fusionModel = OpenAIModel.GPT5_2;
+            OpenAIModel synthesisModel = OpenAIModel.GPT5_2;
 
             // Dispatch the prompt to the selected model(s) and get their response(s); these will be used as input for the different consolidation strategies below.#
             // Note: in a real application, you might want to implement some retry logic here to handle potential API errors or timeouts when calling multiple models, especially if using a large ensemble.
             Console.WriteLine($" Dispatching to {dispatchModels.Length} model(s)...");
             List<AiModelResponse> responses = await orchestratedExecutor.ProcessAsync(prompt: prompt, models: dispatchModels, options: options, outputFormat: OutputFormat.PlainText, cancelToken: cts.Token);
 
-            // Option 1: LLM AS JUDGE
+            // Option: LLM AS JUDGE
             Console.WriteLine();
-            Console.WriteLine("Option 1: LLM AS JUDGE\n");
+            Console.WriteLine("Option: LLM AS JUDGE\n");
             try
             {
                 AdvancedConsolidatedResponse llmJudgeResponse = await advancedExecutor.AdvancedConsolidatationAsync(prompt: prompt,
@@ -103,9 +104,9 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 Console.WriteLine($"Error: {ex.Message}");
             }
 
-            // Option 2: HEURISTIC SCORING
+            // Option: HEURISTIC SCORING
             Console.WriteLine();
-            Console.WriteLine("Option 2: HEURISTIC SCORING\n");
+            Console.WriteLine("Option: HEURISTIC SCORING\n");
             try
             {
                 AdvancedConsolidatedResponse heuristicResponse = await advancedExecutor.AdvancedConsolidatationAsync(prompt: prompt,
@@ -137,9 +138,9 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 Console.WriteLine($"Error: {ex.Message}");
             }
 
-            // Option 3: RESPONSE SYNTHESIS
+            // Option: RESPONSE SYNTHESIS
             Console.WriteLine();
-            Console.WriteLine("Option 3: RESPONSE SYNTHESIS\n");
+            Console.WriteLine("Option: RESPONSE SYNTHESIS\n");
             try
             {
                 Console.WriteLine($"Using input response(s) to synthesise ..");
@@ -147,7 +148,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                                                                                                                      responses: responses,
                                                                                                                      consolidationMode: ConsolidationMode.ResponseSynthesis,
                                                                                                                      options: options,
-                                                                                                                     operationalModel: fusionModel,
+                                                                                                                     operationalModel: synthesisModel,
                                                                                                                      cancelToken: cts.Token);
 
                 Console.WriteLine("Synthesised Answer:");
@@ -216,22 +217,6 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                     AggregateChunkContent = true,
                 };
             }
-        }
-
-        /// <summary>
-        /// Retrieves an array of OpenAI model enums based on the specified ensemble strategy.
-        /// </summary>
-        /// <param name="strategy">The ensemble strategy used to determine which OpenAI models to include.</param>
-        /// <returns>An array of <see cref="OpenAIModel"/> enums corresponding to the models selected for the strategy.</returns>
-        private static OpenAIModel[] GetOpenAIModelEnums(EnsembleStrategy strategy)
-        {
-            EnsembleDispatcher ensembleDispatcher = new(registry: new OpenAIModels());
-            EnsembleDispatchResult result = ensembleDispatcher.Evaluate(new EnsembleDispatchRequest
-            {
-                Strategy = strategy,
-            });
-
-            return [.. result.Models.Select(m => m.Name)];
         }
     }
 }
