@@ -74,7 +74,7 @@ namespace OpenAIApiClient.Orchestration
                 ChatCompletionRequest chatRequest = this.requestBuilder.WithModel(input: model.Name).Build();
 
                 // Execute the request and handle the response ..
-                AiModelResponse response = await this.singleModelExecutor.ExecuteAsync(request: chatRequest, execution: request.CallOptions, cancelToken: cancelToken);
+                AiModelResponse response = await this.singleModelExecutor.ExecuteAsync(request: chatRequest, options: request.CallOptions, cancelToken: cancelToken);
                 return this.responseHandler.HandleResponses(modelResponses: AiModelResponse.WrapSingleResponseAsList(modelResponse: response));
             }
         }

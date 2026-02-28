@@ -20,10 +20,10 @@ namespace OpenAIApiClient.Orchestration.Execution
         /// </summary>
         /// <param name="requestBuilder"></param>
         /// <param name="context"></param>
-        /// <param name="execution"></param>
+        /// <param name="options"></param>
         /// <param name="cancelToken"></param>
         /// <returns see cref="IReadOnlyList{AiModelResponse}">Model responses for each model in the context.</returns>
-        public async Task<IReadOnlyList<AiModelResponse>> ExecuteAsync(ChatClientRequestBuilder requestBuilder, IExecutionContext context, AiCallOptions execution, CancellationToken cancelToken)
+        public async Task<IReadOnlyList<AiModelResponse>> ExecuteAsync(ChatClientRequestBuilder requestBuilder, IExecutionContext context, AiCallOptions options, CancellationToken cancelToken)
         {
             IEnumerable<Task<AiModelResponse>> tasks = context.Models.Select(model =>
             {
@@ -33,7 +33,7 @@ namespace OpenAIApiClient.Orchestration.Execution
                     .Build();
 
                 // Execute the request on this model ..
-                return this.singleModelExecutor.ExecuteAsync(request: chatRequest, execution: execution, cancelToken: cancelToken);
+                return this.singleModelExecutor.ExecuteAsync(request: chatRequest, options: options, cancelToken: cancelToken);
             });
 
             // Await all tasks to complete and gather the responses into a list to return ..
