@@ -31,6 +31,15 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         }
 
         /// <summary>
+        /// Gets the last <see cref="AiCallOptions"/> passed to the executor - only in mock for test verification purposes.
+        /// </summary>
+        public AiCallOptions? LastOptions
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Gets or sets the response to be returned by the executor - only in mock for test verification purposes.
         /// </summary>
         public AiModelResponse ResponseToReturn
@@ -50,6 +59,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         {
             this.WasCalled = true;
             this.LastCall = (request.ModelDescriptor, request);
+            this.LastOptions = execution;
             return Task.FromResult(this.ResponseToReturn);
         }
     }
