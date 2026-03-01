@@ -7,6 +7,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
     using OpenAIApiClient.Interfaces.Orchestration.Execution;
     using OpenAIApiClient.Models.Chat.Request;
     using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Orchestration.Execution;
     using OpenAIApiClient.Orchestration.Response;
 
     public sealed class MockSingleAiModelExecutor : ISingleAiModelExecutor
@@ -30,6 +31,15 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         }
 
         /// <summary>
+        /// Gets the last <see cref="AiCallOptions"/> passed to the executor - only in mock for test verification purposes.
+        /// </summary>
+        public AiCallOptions? LastOptions
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Gets or sets the response to be returned by the executor - only in mock for test verification purposes.
         /// </summary>
         public AiModelResponse ResponseToReturn
@@ -42,12 +52,14 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         /// Executes the model with the given prompt context.
         /// </summary>
         /// <param name="request"></param>
+        /// <param name="execution"></param>
         /// <param name="token"></param>
         /// <returns see cref="AiModelResponse">.</returns>
-        public Task<AiModelResponse> ExecuteAsync(ChatCompletionRequest request, CancellationToken token)
+        public Task<AiModelResponse> ExecuteAsync(ChatCompletionRequest request, AiCallOptions execution, CancellationToken token)
         {
             this.WasCalled = true;
             this.LastCall = (request.ModelDescriptor, request);
+            this.LastOptions = execution;
             return Task.FromResult(this.ResponseToReturn);
         }
     }

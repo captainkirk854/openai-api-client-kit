@@ -4,7 +4,9 @@
 
 namespace OpenAIApiClient.ConsoleApp
 {
+    using System;
     using OpenAIApiClient.Enums;
+    using OpenAIApiClient.Helpers.Extensions;
 
     public class Program
     {
@@ -74,7 +76,7 @@ namespace OpenAIApiClient.ConsoleApp
 
                 // Prompt to continue or exit ..
                 Console.WriteLine();
-                bool continuePrompting = SetBooleanPrompt(message: "Do you want to try again?", setTrue: 'y', setFalse: 'n');
+                bool continuePrompting = SetBooleanPrompt(message: "Do you want to try again?", setTrue: 'y', setFalse: 'n', setDefault: 'y');
                 if (!continuePrompting)
                 {
                     break;
@@ -228,14 +230,55 @@ namespace OpenAIApiClient.ConsoleApp
         private static async Task AiAdvancedGetBestModelResponseDemo(ChatClient client, CancellationTokenSource cts)
         {
             string prompt = @"Explain Mahalanobis distance in simple terms suitable for a high school student.
-        //Focus on: what it is, why it matters, and its application in maths and statistics.";
+                              Focus on: what it is, why it matters, and its application in maths and statistics.
+                              If possible, include any examples of uses in fraud detection.";
 
             Console.WriteLine($"Using Prompt: {prompt}");
             Console.WriteLine();
 
-            // Run AI Orchestrator demo ..
-            await Demos.AiAdvancedEnsembleConsolidationDemo.GetBestModelResponseAsync(client: client, prompt: prompt, cts: cts);
+            Console.WriteLine("This demo will use multiple OpenAI models to generate responses to the same prompt and then apply an advanced consolidation strategy ");
+            Console.WriteLine("to evaluate and determine the best response based on multiple criteria such as relevance, coherence, creativity, and informativeness.");
 
+            // Prompt user for streaming and reasoning options ..
+            bool useStreaming = SetBooleanPrompt(message: "Use streaming mode for this demo? (y/n)", setTrue: 'y', setFalse: 'n');
+            bool useReasoning = SetBooleanPrompt(message: "Use reasoning model(s) for this demo? (y/n)", setTrue: 'y', setFalse: 'n');
+
+            // Determine call mode based on streaming choice ..
+            AiCallMode callMode = useStreaming ? AiCallMode.BufferedStreaming : AiCallMode.NonStreaming;
+
+            // Initialise a list of model(s) to dispatch the prompt to; can be any combination of models based on caller's needs and preferences ..
+            OpenAIModel[] workerModels;
+            if (useReasoning)
+            {
+                workerModels = EnsembleStrategy.Reasoning.GetOpenAIModels();
+            }
+            else
+            {
+                // Define an arbitrary list of models to use as workers for response generation; in a real application, this could be based on user selection, specific model capabilities, or other criteria ..
+                workerModels =
+                [
+                    OpenAIModel.GPT5_2,
+                    OpenAIModel.GPT4o,
+                    OpenAIModel.GPT4_1_Mini,
+                    OpenAIModel.O4_Mini,
+                ];
+            }
+
+            // Define randomly-picked models to use for LLM-as-judge and response synthesis strategies; models should have good reasoning capabilities for best results ..
+            OpenAIModel[] reasoningModels = EnsembleStrategy.Reasoning.GetOpenAIModels();
+            OpenAIModel judgeModel = reasoningModels[Random.Shared.Next(reasoningModels.Length)];
+            OpenAIModel synthesisModel = reasoningModels[Random.Shared.Next(reasoningModels.Length)];
+
+            // Run demo ..
+            await Demos.AiAdvancedEnsembleConsolidationDemo.GetAdvancedResponsesAsync(client: client,
+                                                                                      prompt: prompt,
+                                                                                      workers: workerModels,
+                                                                                      judge: judgeModel,
+                                                                                      synthesiser: synthesisModel,
+                                                                                      callMode: callMode,
+                                                                                      cts: cts);
+
+            Console.WriteLine();
             Console.WriteLine("Press Enter to continue..");
             Console.ReadLine();
         }
@@ -251,7 +294,7 @@ namespace OpenAIApiClient.ConsoleApp
         private static bool SetBooleanPrompt(string message, char setTrue, char setFalse, char setDefault = 'n')
         {
             // Prompt user ..
-            Console.Write($"{message} ({setTrue}/{setFalse}) ({setDefault}) ");
+            Console.Write($"{message} (default is {setDefault}) ({setTrue}/{setFalse}) ({setDefault}) ");
 
             // Read input and determine choice ..
             string? input = Console.ReadLine();

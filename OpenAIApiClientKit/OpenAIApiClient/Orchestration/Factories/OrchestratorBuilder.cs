@@ -5,7 +5,7 @@
 namespace OpenAIApiClient.Orchestration.Factories
 {
     using OpenAIApiClient;
-    using OpenAIApiClient.Helpers.General;
+    using OpenAIApiClient.Helpers;
     using OpenAIApiClient.Interfaces.Orchestration;
     using OpenAIApiClient.Interfaces.Orchestration.Dispatch;
     using OpenAIApiClient.Interfaces.Orchestration.Execution;
@@ -37,7 +37,7 @@ namespace OpenAIApiClient.Orchestration.Factories
     /// var orchestrator = new OrchestratorBuilder()
     ///                        .WithClient(client)
     ///                        .WithResponseHandler(handler)
-    ///                        .WithRequestBuilder(new ClientRequestBuilder().WithDefaults().UsingMaxTokens(2000))
+    ///                        .WithRequestBuilder(() => new <see cref="ChatClientRequestBuilder"/>().WithDefaults().UsingMaxTokens(2000))
     ///                        .Build();.
     ///
     /// 4. Override everything (full control):
@@ -45,7 +45,7 @@ namespace OpenAIApiClient.Orchestration.Factories
     ///                        .WithClient(client)
     ///                        .WithResponseHandler(handler)
     ///                        .WithModelRegistry(myRegistry)
-    ///                        .WithRequestBuilder(myBuilder)
+    ///                        .WithRequestBuilder(() => new <see cref="ChatClientRequestBuilder"/>().WithMyConfig())
     ///                        .Build();.
     /// <./remarks>
     public sealed class OrchestratorBuilder
@@ -53,21 +53,21 @@ namespace OpenAIApiClient.Orchestration.Factories
         private ChatClient client = default!;
         private IAiModelResponseHandler responseHandler = default!;
         private IAiModelRegistry? registry;
-        private ClientRequestBuilder? requestBuilder;
+        private Func<ChatClientRequestBuilder>? requestBuilderFactory;
         private ISingleAiModelDispatcher? singleModelDispatcher;
         private IEnsembleDispatcher? ensembleDispatcher;
         private ISingleAiModelExecutor? singleModelExecutor;
         private IEnsembleExecutor? ensembleExecutor;
 
         /// <summary>
-        /// The ChatClient the orchestrator should use to send requests to the OpenAI API.
+        /// The <see cref="ChatClient"/> instance the orchestrator should use to send requests to the OpenAI API.
         /// </summary>
         /// <remarks>
         /// This is required, and must be set by the caller (or an exception will be thrown when Build() is called).
         /// The builder does not create a default ChatClient because it has required constructor parameters (e.g. API key)
         /// that the builder cannot know how to populate.
         /// </remarks>
-        /// <param name="client">The ChatClient instance to use for API calls.</param>
+        /// <param name="client">The <see cref="ChatClient"/> instance to use for API calls.</param>
         /// <returns see cref="OrchestratorBuilder">The builder instance, for chaining.</returns>
         public OrchestratorBuilder WithClient(ChatClient client)
         {
@@ -76,9 +76,9 @@ namespace OpenAIApiClient.Orchestration.Factories
         }
 
         /// <summary>
-        /// The IResponseHandler the orchestrator should use to process model responses before returning them to the caller.
+        /// The <see cref="IAiModelResponseHandler"/> the orchestrator should use to process model responses before returning them to the caller.
         /// </summary>
-        /// <param name="handler">The IResponseHandler instance to use for processing model responses. If not set, a default handler that returns raw model responses will be used.</param>
+        /// <param name="handler">The <see cref="IAiModelResponseHandler"/> instance to use for processing model responses. If not set, a default handler that returns raw model responses will be used.</param>
         /// <returns see cref="OrchestratorBuilder">The builder instance, for chaining.</returns>
         public OrchestratorBuilder WithResponseHandler(IAiModelResponseHandler handler)
         {
@@ -87,9 +87,9 @@ namespace OpenAIApiClient.Orchestration.Factories
         }
 
         /// <summary>
-        /// The IModelRegistry the orchestrator should use to look up model capabilities and metadata when dispatching requests.
+        /// The <see cref="IAiModelRegistry"/> the orchestrator should use to look up model capabilities and metadata when dispatching requests.
         /// </summary>
-        /// <param name="registry">The IModelRegistry instance to use for model lookups. If not set, a default registry containing OpenAI models will be used.</param>
+        /// <param name="registry">The <see cref="IAiModelRegistry"/> instance to use for model lookups. If not set, a default registry containing OpenAI models will be used.</param>
         /// <returns see cref="OrchestratorBuilder">The builder instance, for chaining.</returns>
         public OrchestratorBuilder WithModelRegistry(IAiModelRegistry registry)
         {
@@ -98,20 +98,24 @@ namespace OpenAIApiClient.Orchestration.Factories
         }
 
         /// <summary>
-        /// The ClientRequestBuilder the orchestrator should use to build requests to send to the OpenAI API.
+        /// The factory used to produce a fresh <see cref="ChatClientRequestBuilder"/> for each request processed by the orchestrator.
         /// </summary>
-        /// <param name="builder">The ClientRequestBuilder instance to use for building API requests. If not set, a default builder that maps directly from OrchestratorRequest to OpenAI API requests will be used.</param>
+        /// <remarks>
+        /// Providing a factory ensures that each call to <c>ProcessAsync</c> starts with a clean builder, preventing
+        /// messages or state from leaking between requests.
+        /// </remarks>
+        /// <param name="builderFactory">A factory that returns a new, pre-configured <see cref="ChatClientRequestBuilder"/> each time it is called/invoked. If not set, a default factory is used.</param>
         /// <returns see cref="OrchestratorBuilder">The builder instance, for chaining.</returns>
-        public OrchestratorBuilder WithRequestBuilder(ClientRequestBuilder builder)
+        public OrchestratorBuilder WithRequestBuilderFactory(Func<ChatClientRequestBuilder> builderFactory)
         {
-            this.requestBuilder = builder;
+            this.requestBuilderFactory = builderFactory;
             return this;
         }
 
         /// <summary>
-        /// The ISingleModelDispatcher the orchestrator should use to determine which model to send single-model requests to, and how to structure those requests.
+        /// The  <see cref="ISingleAiModelDispatcher"/> the orchestrator should use to determine which model to send single-model requests to, and how to structure those requests.
         /// </summary>
-        /// <param name="dispatcher">The ISingleModelDispatcher instance to use for dispatching single-model requests. If not set, a default dispatcher that uses the model registry to find the most capable model for the request will be used.</param>
+        /// <param name="dispatcher">The <see cref="ISingleAiModelDispatcher"/> instance to use for dispatching single-model requests. If not set, a default dispatcher that uses the model registry to find the most capable model for the request will be used.</param>
         /// <returns see cref="OrchestratorBuilder">The builder instance, for chaining.</returns>
         public OrchestratorBuilder WithSingleModelDispatcher(ISingleAiModelDispatcher dispatcher)
         {
@@ -120,9 +124,9 @@ namespace OpenAIApiClient.Orchestration.Factories
         }
 
         /// <summary>
-        /// The IEnsembleDispatcher the orchestrator should use to determine which models to send ensemble requests to, how to structure those requests, and how to combine the results.
+        /// The <see cref="IEnsembleDispatcher"/> the orchestrator should use to determine which models to send ensemble requests to, how to structure those requests, and how to combine the results.
         /// </summary>
-        /// <param name="dispatcher">The IEnsembleDispatcher instance to use for dispatching ensemble requests. If not set, a default dispatcher that uses the model registry to find a set of complementary models for the request and combines their results using a simple heuristic will be used.</param>
+        /// <param name="dispatcher">The <see cref="IEnsembleDispatcher"/> instance to use for dispatching ensemble requests. If not set, a default dispatcher that uses the model registry to find a set of complementary models for the request and combines their results using a simple heuristic will be used.</param>
         /// <returns see cref="OrchestratorBuilder">The builder instance, for chaining.</returns>
         public OrchestratorBuilder WithEnsembleDispatcher(IEnsembleDispatcher dispatcher)
         {
@@ -131,9 +135,9 @@ namespace OpenAIApiClient.Orchestration.Factories
         }
 
         /// <summary>
-        /// The ISingleModelExecutor the orchestrator should use to execute requests that have been dispatched to a single model.
+        /// The <see cref="ISingleAiModelExecutor"/> the orchestrator should use to execute requests that have been dispatched to a single model.
         /// </summary>
-        /// <param name="executor">The ISingleModelExecutor instance to use for executing single-model requests. If not set, a default executor that sends requests to the OpenAI API using the provided ChatClient will be used.</param>
+        /// <param name="executor">The <see cref="ISingleAiModelExecutor"/> instance to use for executing single-model requests. If not set, a default executor that sends requests to the OpenAI API using the provided ChatClient will be used.</param>
         /// <returns see cref="OrchestratorBuilder">The builder instance, for chaining.</returns>
         public OrchestratorBuilder WithSingleModelExecutor(ISingleAiModelExecutor executor)
         {
@@ -142,9 +146,9 @@ namespace OpenAIApiClient.Orchestration.Factories
         }
 
         /// <summary>
-        /// The IEnsembleExecutor the orchestrator should use to execute requests that have been dispatched to multiple models as an ensemble.
+        /// The <see cref="IEnsembleExecutor"/> the orchestrator should use to execute requests that have been dispatched to multiple models as an ensemble.
         /// </summary>
-        /// <param name="executor">The IEnsembleExecutor instance to use for executing ensemble requests. If not set, a default executor that sends requests to the OpenAI API using the provided ChatClient and combines results using a simple heuristic will be used.</param>
+        /// <param name="executor">The <see cref="IEnsembleExecutor"/> instance to use for executing ensemble requests. If not set, a default executor that sends requests to the OpenAI API using the provided ChatClient and combines results using a simple heuristic will be used.</param>
         /// <returns see cref="OrchestratorBuilder">The builder instance, for chaining.</returns>
         public OrchestratorBuilder WithEnsembleExecutor(IEnsembleExecutor executor)
         {
@@ -153,7 +157,7 @@ namespace OpenAIApiClient.Orchestration.Factories
         }
 
         /// <summary>
-        /// Creates and configures a new instance of the Orchestrator using the specified or default components.
+        /// Creates and configures a new <see cref="Orchestrator"/> instance using the specified or default components.
         /// </summary>
         /// <returns see cref="Orchestrator">A configured Orchestrator instance.</returns>
         public Orchestrator Build()
@@ -168,9 +172,9 @@ namespace OpenAIApiClient.Orchestration.Factories
                 throw new InvalidOperationException("A <IAiModelResponseHandler> must be provided.");
             }
 
-            // Use factory defaults if caller didn’t override
+            // Use factory defaults if caller didn’t override ..
             IAiModelRegistry registry = this.registry ?? AiModelRegistryFactory.Create();
-            ClientRequestBuilder requestBuilder = this.requestBuilder ?? RequestBuilderFactory.CreateDefault();
+            Func<ChatClientRequestBuilder> requestBuilderFactory = this.requestBuilderFactory ?? ChatClientRequestBuilderFactory.CreateDefaultFactory();
 
             // Create Dispatchers - Use overrides if provided, otherwise fall back to DispatcherFactory ..
             (SingleAiModelDispatcher factorySingleModelDispatcher, EnsembleDispatcher defaultEnsembleDispatcher) = DispatcherFactory.Create(registry: registry);
@@ -183,7 +187,7 @@ namespace OpenAIApiClient.Orchestration.Factories
             IEnsembleExecutor ensembleExecutor = this.ensembleExecutor ?? defaultEnsembleExecutor;
 
             // Now that we have all the components (either from the caller or from defaults), create the Orchestrator instance ..
-            return new Orchestrator(requestBuilder,
+            return new Orchestrator(requestBuilderFactory,
                                     singleModelDispatcher,
                                     ensembleDispatcher,
                                     singleModelExecutor,

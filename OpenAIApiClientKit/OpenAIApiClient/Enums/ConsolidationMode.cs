@@ -17,8 +17,8 @@ namespace OpenAIApiClient.Enums
         HeuristicScoring,
 
         /// <summary>
-        /// Judge model synthesizes all responses into one
+        /// Synthesis model synthesizes all response(s) into one
         /// </summary>
-        ResponseFusion,
+        ResponseSynthesis,
     }
 }

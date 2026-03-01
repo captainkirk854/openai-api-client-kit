@@ -5,10 +5,9 @@
 namespace OpenAIApiClient.ConsoleApp.Demos
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Helpers.General;
-    using OpenAIApiClient.Interfaces.Validators;
+    using OpenAIApiClient.Helpers;
+    using OpenAIApiClient.Helpers.Extensions;
     using OpenAIApiClient.Models.Chat.Request;
-    using OpenAIApiClient.Registries.Output;
 
     /// <summary>
     /// Console App Demo to demonstrate implementation example for processing user prompts with various models.
@@ -47,12 +46,11 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             }
 
             // Build request payload ..
-            ChatCompletionRequest request = new ClientRequestBuilder()
+            ChatCompletionRequest request = new ChatClientRequestBuilder()
                 .WithModel(input: model)
                 .AddSystemMessage(input: "You are a helpful assistant that answers concisely.")
                 .AddUserMessage(input: userPrompt)
                 .UsingMaxTokens(input: 1000)
-                .EnableStreaming(input: isStreaming)
                 .WithTemperature(input: temperature)
                 .WithTopP(input: topP)
                 .WithPresencePenalty(input: presencePenalty)
@@ -99,9 +97,9 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 Console.WriteLine("Waiting for Streaming Response ..");
                 try
                 {
-                    (string?, int) response = await ChatClientResponseHandler.GetChatCompletionStreamingMessageContentAsync(client: client, request: request, cancelTokenSource: cts);
-                    string content = response.Item1 ?? string.Empty;
-                    int chunkCount = response.Item2;
+                    (string?, int) output = await ChatClientResponseHandler.GetChatCompletionStreamingMessageContentAsync(client: client, request: request, cancelTokenSource: cts);
+                    string content = output.Item1 ?? string.Empty;
+                    int chunkCount = output.Item2;
 
                     // Validate response format ..
                     if (!content.IsValidFormat(outputFormat: outputFormat))
@@ -125,24 +123,6 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                     Console.WriteLine($"Error: {ex.Message}");
                 }
             }
-        }
-
-        /// <summary>
-        /// Helper method to validate if the content matches the expected output format.
-        /// </summary>
-        /// <param name="content"></param>
-        /// <param name="outputFormat"></param>
-        private static bool IsValidFormat(this string? content, OutputFormat outputFormat)
-        {
-            IOutputFormatValidator validator = OutputFormats.FormattingPrompts[outputFormat].Validator;
-            if (!validator.IsValidFormat(content: content ?? string.Empty, out string? error))
-            {
-                Console.WriteLine();
-                Console.WriteLine($"Warning: The response format is invalid based on the {error}.");
-                return false;
-            }
-
-            return true;
         }
     }
 }

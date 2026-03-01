@@ -76,6 +76,15 @@ namespace OpenAIApiClient.Orchestration.Response
         }
 
         /// <summary>
+        /// Gets the number of chunks received in a streaming response, if applicable.
+        /// </summary>
+        public int? ChunkCount
+        {
+            get;
+            init;
+        }
+
+        /// <summary>
         /// Wraps a single ModelResponse into a list.
         /// </summary>
         /// <param name="modelResponse"></param>

@@ -5,10 +5,11 @@
 namespace OpenAIApiClient.Tests.Orchestration
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Helpers.General;
+    using OpenAIApiClient.Helpers;
     using OpenAIApiClient.Models.Registries;
     using OpenAIApiClient.Orchestration;
     using OpenAIApiClient.Orchestration.Dispatch;
+    using OpenAIApiClient.Orchestration.Execution;
     using OpenAIApiClient.Orchestration.Response;
     using OpenAIApiClient.Tests.Orchestration.Mocks;
     using testClass = OpenAIApiClient.Orchestration.Orchestrator;
@@ -19,7 +20,6 @@ namespace OpenAIApiClient.Tests.Orchestration
     [TestClass]
     public class Orchestrator
     {
-        private ClientRequestBuilder requestBuilder = null!;
         private MockSingleAiModelDispatcher mockSingleModelDispatcher = null!;
         private MockEnsembleDispatcher mockEnsembleDispatcher = null!;
         private MockSingleAiModelExecutor mockSingleExecutor = null!;
@@ -36,14 +36,13 @@ namespace OpenAIApiClient.Tests.Orchestration
             this.modelA = CreateModelDescriptor(OpenAIModel.GPT4o);
             this.modelB = CreateModelDescriptor(OpenAIModel.GPT4o_Mini);
 
-            this.requestBuilder = new ClientRequestBuilder();
             this.mockSingleModelDispatcher = new MockSingleAiModelDispatcher();
             this.mockEnsembleDispatcher = new MockEnsembleDispatcher();
             this.mockSingleExecutor = new MockSingleAiModelExecutor();
             this.mockEnsembleExecutor = new MockEnsembleExecutor();
             this.mockModelResponseHandler = new MockAiModelResponseHandler();
 
-            this.orchestrator = new testClass(requestBuilder: this.requestBuilder,
+            this.orchestrator = new testClass(requestBuilderFactory: () => new ChatClientRequestBuilder(),
                                               singleModelDispatcher: this.mockSingleModelDispatcher,
                                               ensembleDispatcher: this.mockEnsembleDispatcher,
                                               singleModelExecutor: this.mockSingleExecutor,
@@ -209,6 +208,243 @@ namespace OpenAIApiClient.Tests.Orchestration
             Assert.AreEqual(this.mockModelResponseHandler.ResponsesToReturn, result);
             Assert.AreEqual(responses[0], this.mockModelResponseHandler.LastResponses![0]);
             Assert.AreEqual(responses[1], this.mockModelResponseHandler.LastResponses![1]);
+        }
+
+        [TestMethod]
+        public async Task ProcessAsync_DoesNotLeakMessages_AcrossConsecutiveCalls()
+        {
+            // Arrange: two separate requests with distinct prompts
+            this.mockSingleModelDispatcher.ReturnedModel = this.modelA;
+            AiModelResponse response = new() { Model = this.modelA, RawOutput = "ok", IsSuccessful = true };
+            this.mockSingleExecutor.ResponseToReturn = response;
+            this.mockModelResponseHandler.ResponsesToReturn = [response];
+
+            OrchestrationRequest firstRequest = new()
+            {
+                UseEnsemble = false,
+                Prompt = "First prompt",
+                OutputFormat = OutputFormat.PlainText,
+                SingleModelRequest = new SingleAiModelDispatchRequest { Strategy = SingleAiModelStrategy.BestReasoning },
+            };
+
+            OrchestrationRequest secondRequest = new()
+            {
+                UseEnsemble = false,
+                Prompt = "Second prompt",
+                OutputFormat = OutputFormat.PlainText,
+                SingleModelRequest = new SingleAiModelDispatchRequest { Strategy = SingleAiModelStrategy.BestReasoning },
+            };
+
+            // Act
+            _ = await this.orchestrator.ProcessAsync(firstRequest, CancellationToken.None);
+            _ = await this.orchestrator.ProcessAsync(secondRequest, CancellationToken.None);
+
+            // Assert: the second request should only contain its own prompt, not the first prompt
+            Assert.IsNotNull(this.mockSingleExecutor.LastCall);
+            IReadOnlyList<OpenAIApiClient.Models.Chat.Common.ChatMessage> messages = this.mockSingleExecutor.LastCall.Value.request.Messages;
+            Assert.IsTrue(messages.Any(m => m.Content == "Second prompt"), "Second request should contain its own prompt.");
+            Assert.IsFalse(messages.Any(m => m.Content == "First prompt"), "Second request must not contain the first prompt.");
+        }
+
+        // ------------------------------------------------------------
+        // CALL OPTIONS PASSTHROUGH TESTS
+        // ------------------------------------------------------------
+        [TestMethod]
+        public async Task ProcessAsync_SingleAiModel_PassesDefaultCallOptionsToExecutor()
+        {
+            // Arrange
+            this.mockSingleModelDispatcher.ReturnedModel = this.modelA;
+            AiModelResponse response = new() { Model = this.modelA, RawOutput = "ok", IsSuccessful = true };
+            this.mockSingleExecutor.ResponseToReturn = response;
+            this.mockModelResponseHandler.ResponsesToReturn = [response];
+
+            AiCallOptions callOptions = new() { Mode = AiCallMode.NonStreaming };
+
+            OrchestrationRequest request = new()
+            {
+                UseEnsemble = false,
+                Prompt = "Hello",
+                OutputFormat = OutputFormat.PlainText,
+                SingleModelRequest = new SingleAiModelDispatchRequest { Strategy = SingleAiModelStrategy.BestReasoning },
+                CallOptions = callOptions,
+            };
+
+            // Act
+            _ = await this.orchestrator.ProcessAsync(request, CancellationToken.None);
+
+            // Assert
+            Assert.IsNotNull(this.mockSingleExecutor.LastOptions);
+            Assert.AreEqual(AiCallMode.NonStreaming, this.mockSingleExecutor.LastOptions.Mode);
+            Assert.AreSame(callOptions, this.mockSingleExecutor.LastOptions);
+        }
+
+        [TestMethod]
+        public async Task ProcessAsync_SingleAiModel_PassesBufferedStreamingCallOptionsToExecutor()
+        {
+            // Arrange
+            this.mockSingleModelDispatcher.ReturnedModel = this.modelA;
+            AiModelResponse response = new() { Model = this.modelA, RawOutput = "ok", IsSuccessful = true };
+            this.mockSingleExecutor.ResponseToReturn = response;
+            this.mockModelResponseHandler.ResponsesToReturn = [response];
+
+            AiCallOptions callOptions = new() { Mode = AiCallMode.BufferedStreaming };
+
+            OrchestrationRequest request = new()
+            {
+                UseEnsemble = false,
+                Prompt = "Hello",
+                OutputFormat = OutputFormat.PlainText,
+                SingleModelRequest = new SingleAiModelDispatchRequest { Strategy = SingleAiModelStrategy.BestReasoning },
+                CallOptions = callOptions,
+            };
+
+            // Act
+            _ = await this.orchestrator.ProcessAsync(request, CancellationToken.None);
+
+            // Assert
+            Assert.IsNotNull(this.mockSingleExecutor.LastOptions);
+            Assert.AreEqual(AiCallMode.BufferedStreaming, this.mockSingleExecutor.LastOptions.Mode);
+        }
+
+        [TestMethod]
+        public async Task ProcessAsync_SingleAiModel_PassesPushStreamingCallOptionsToExecutor()
+        {
+            // Arrange
+            this.mockSingleModelDispatcher.ReturnedModel = this.modelA;
+            AiModelResponse response = new() { Model = this.modelA, RawOutput = "ok", IsSuccessful = true };
+            this.mockSingleExecutor.ResponseToReturn = response;
+            this.mockModelResponseHandler.ResponsesToReturn = [response];
+
+            AiCallOptions callOptions = new()
+            {
+                Mode = AiCallMode.PushStreaming,
+                OnChunkDeltaContentToken = (_, _) => Task.CompletedTask,
+            };
+
+            OrchestrationRequest request = new()
+            {
+                UseEnsemble = false,
+                Prompt = "Hello",
+                OutputFormat = OutputFormat.PlainText,
+                SingleModelRequest = new SingleAiModelDispatchRequest { Strategy = SingleAiModelStrategy.BestReasoning },
+                CallOptions = callOptions,
+            };
+
+            // Act
+            _ = await this.orchestrator.ProcessAsync(request, CancellationToken.None);
+
+            // Assert
+            Assert.IsNotNull(this.mockSingleExecutor.LastOptions);
+            Assert.AreEqual(AiCallMode.PushStreaming, this.mockSingleExecutor.LastOptions.Mode);
+            Assert.IsNotNull(this.mockSingleExecutor.LastOptions.OnChunkDeltaContentToken);
+        }
+
+        [TestMethod]
+        public async Task ProcessAsync_Ensemble_PassesDefaultCallOptionsToExecutor()
+        {
+            // Arrange
+            this.mockEnsembleDispatcher.ReturnedModels = [this.modelA, this.modelB];
+
+            AiModelResponse[] responses =
+            [
+                new AiModelResponse { Model = this.modelA, RawOutput = "A", IsSuccessful = true },
+                new AiModelResponse { Model = this.modelB, RawOutput = "B", IsSuccessful = true },
+            ];
+
+            this.mockEnsembleExecutor.ResponsesToReturn = responses;
+            this.mockModelResponseHandler.ResponsesToReturn = responses;
+
+            AiCallOptions callOptions = new() { Mode = AiCallMode.NonStreaming };
+
+            OrchestrationRequest request = new()
+            {
+                UseEnsemble = true,
+                Prompt = "Explain",
+                OutputFormat = OutputFormat.PlainText,
+                EnsembleRequest = new EnsembleDispatchRequest { Strategy = EnsembleStrategy.Reasoning },
+                CallOptions = callOptions,
+            };
+
+            // Act
+            _ = await this.orchestrator.ProcessAsync(request, CancellationToken.None);
+
+            // Assert
+            Assert.IsNotNull(this.mockEnsembleExecutor.LastOptions);
+            Assert.AreEqual(AiCallMode.NonStreaming, this.mockEnsembleExecutor.LastOptions.Mode);
+            Assert.AreSame(callOptions, this.mockEnsembleExecutor.LastOptions);
+        }
+
+        [TestMethod]
+        public async Task ProcessAsync_Ensemble_PassesBufferedStreamingCallOptionsToExecutor()
+        {
+            // Arrange
+            this.mockEnsembleDispatcher.ReturnedModels = [this.modelA, this.modelB];
+
+            AiModelResponse[] responses =
+            [
+                new AiModelResponse { Model = this.modelA, RawOutput = "A", IsSuccessful = true },
+                new AiModelResponse { Model = this.modelB, RawOutput = "B", IsSuccessful = true },
+            ];
+
+            this.mockEnsembleExecutor.ResponsesToReturn = responses;
+            this.mockModelResponseHandler.ResponsesToReturn = responses;
+
+            AiCallOptions callOptions = new() { Mode = AiCallMode.BufferedStreaming };
+
+            OrchestrationRequest request = new()
+            {
+                UseEnsemble = true,
+                Prompt = "Explain",
+                OutputFormat = OutputFormat.PlainText,
+                EnsembleRequest = new EnsembleDispatchRequest { Strategy = EnsembleStrategy.Reasoning },
+                CallOptions = callOptions,
+            };
+
+            // Act
+            _ = await this.orchestrator.ProcessAsync(request, CancellationToken.None);
+
+            // Assert
+            Assert.IsNotNull(this.mockEnsembleExecutor.LastOptions);
+            Assert.AreEqual(AiCallMode.BufferedStreaming, this.mockEnsembleExecutor.LastOptions.Mode);
+        }
+
+        [TestMethod]
+        public async Task ProcessAsync_Ensemble_PassesPushStreamingCallOptionsToExecutor()
+        {
+            // Arrange
+            this.mockEnsembleDispatcher.ReturnedModels = [this.modelA, this.modelB];
+
+            AiModelResponse[] responses =
+            [
+                new AiModelResponse { Model = this.modelA, RawOutput = "A", IsSuccessful = true },
+                new AiModelResponse { Model = this.modelB, RawOutput = "B", IsSuccessful = true },
+            ];
+
+            this.mockEnsembleExecutor.ResponsesToReturn = responses;
+            this.mockModelResponseHandler.ResponsesToReturn = responses;
+
+            AiCallOptions callOptions = new()
+            {
+                Mode = AiCallMode.PushStreaming,
+                OnChunkDeltaContentToken = (_, _) => Task.CompletedTask,
+            };
+
+            OrchestrationRequest request = new()
+            {
+                UseEnsemble = true,
+                Prompt = "Explain",
+                OutputFormat = OutputFormat.PlainText,
+                EnsembleRequest = new EnsembleDispatchRequest { Strategy = EnsembleStrategy.Reasoning },
+                CallOptions = callOptions,
+            };
+
+            // Act
+            _ = await this.orchestrator.ProcessAsync(request, CancellationToken.None);
+
+            // Assert
+            Assert.IsNotNull(this.mockEnsembleExecutor.LastOptions);
+            Assert.AreEqual(AiCallMode.PushStreaming, this.mockEnsembleExecutor.LastOptions.Mode);
+            Assert.IsNotNull(this.mockEnsembleExecutor.LastOptions.OnChunkDeltaContentToken);
         }
 
         /// <summary>

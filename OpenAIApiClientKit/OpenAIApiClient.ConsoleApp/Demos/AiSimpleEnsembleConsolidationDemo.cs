@@ -5,7 +5,8 @@
 namespace OpenAIApiClient.ConsoleApp.Demos
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Helpers.General;
+    using OpenAIApiClient.Helpers;
+    using OpenAIApiClient.Helpers.Extensions;
     using OpenAIApiClient.Orchestration;
     using OpenAIApiClient.Orchestration.Consolidation;
     using OpenAIApiClient.Orchestration.Dispatch;
@@ -24,7 +25,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             OpenAIModels models = new();
 
             // Initialise base definition for request builder ..
-            ClientRequestBuilder requestBuilder = new ClientRequestBuilder().WithDefaults();
+            ChatClientRequestBuilder requestBuilder = new ChatClientRequestBuilder().WithDefaults();
 
             // Initialise Dispatchers to select which model(s) to use ..
             SingleAiModelDispatcher singleModelDispatcher = new(registry: models);
@@ -38,7 +39,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             AiModelResponseHandlerDemo responseHandlerDemo = new();
 
             // Create the orchestrator using all the components ..
-            Orchestrator orchestrator = new(requestBuilder: requestBuilder,
+            Orchestrator orchestrator = new(requestBuilderFactory: () => requestBuilder,
                                             singleModelDispatcher: singleModelDispatcher,
                                             ensembleDispatcher: ensembleDispatcher,
                                             singleModelExecutor: singleModelExecutor,
@@ -60,11 +61,26 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                         AiModelCapability.FastInference,
                     ],
                 },
+                CallOptions = new AiCallOptions
+                {
+                    Mode = AiCallMode.BufferedStreaming,
+                    OnChunkDeltaContentToken = async (model, chunkDeltaContent) =>
+                    {
+                        Console.Write(chunkDeltaContent);   // stream chunk delta(s) to console
+                        await Task.Yield();                 // keep it async
+                    },
+                    AggregateChunkContent = true,
+                },
             };
 
             // Execute selected model(s) in asynchronous pipelines ..
             IReadOnlyList<AiModelResponse> responses = await orchestrator.ProcessAsync(request: ensembleRequest, cancelToken: cts.Token);
             AiModelResponseCollator final = AiModelHeuristicResponseSelector.GetBestHeuristicResponse(prompt: prompt, responses: responses);
+
+            if (!final.Content.IsValidFormat(outputFormat: ensembleRequest.OutputFormat))
+            {
+                throw new FormatException($"Best response content is not in the expected format: {ensembleRequest.OutputFormat}");
+            }
 
             // Output computed best response information ..
             Console.WriteLine();
