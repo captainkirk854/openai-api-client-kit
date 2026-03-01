@@ -71,7 +71,9 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 int sampleOutputLength = 120;
                 foreach (AiModelResponse resp in llmJudgeResponse.ModelResponses)
                 {
-                    Console.WriteLine($"  [{resp.Model.Name}]: {resp.RawOutput[..sampleOutputLength]}...");
+                    string raw = resp.RawOutput ?? string.Empty;
+                    int previewLength = Math.Min(raw.Length, sampleOutputLength);
+                    Console.WriteLine($"  [{resp.Model.Name}]: {raw[..previewLength]}...");
                 }
 
                 Console.WriteLine($" Response selected by Judge Model:");
