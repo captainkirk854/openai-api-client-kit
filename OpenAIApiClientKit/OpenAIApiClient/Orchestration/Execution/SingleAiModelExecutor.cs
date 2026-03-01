@@ -6,6 +6,7 @@ namespace OpenAIApiClient.Orchestration.Execution
 {
     using System;
     using System.Diagnostics;
+    using System.Text;
     using System.Threading.Tasks;
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Interfaces.Orchestration.Execution;
@@ -111,7 +112,7 @@ namespace OpenAIApiClient.Orchestration.Execution
         {
             // Initialise ..
             AiModelDescriptor model = request.ModelDescriptor;
-            string output = string.Empty;
+            StringBuilder outputBuilder = new StringBuilder();
             int chunkCount = 0;
 
             // Process streaming chunks as they arrive and invoke OnChunkDeltaContentToken and OnChunk on every chunk as it arrives ..
@@ -123,7 +124,7 @@ namespace OpenAIApiClient.Orchestration.Execution
                 if (!string.IsNullOrEmpty(chunkDelta.Content))
                 {
                     // Aggregate the full response as the chunks arrive, and optionally also push those chunks through callbacks in buffered streaming mode if desired (e.g. for real-time UI updates, etc.) ..
-                    output += chunkDelta.Content;
+                    outputBuilder.Append(chunkDelta.Content);
 
                     // Optional: still allow per-token callback in buffered mode
                     if (options.OnChunkDeltaContentToken is not null)
@@ -147,7 +148,7 @@ namespace OpenAIApiClient.Orchestration.Execution
             return new AiModelResponse
             {
                 Model = model,
-                RawOutput = output,
+                RawOutput = outputBuilder.ToString(),
                 IsSuccessful = true,
                 Latency = sw.Elapsed,
                 EstimatedCost = 0m,    // or some heuristic
@@ -172,7 +173,7 @@ namespace OpenAIApiClient.Orchestration.Execution
         {
             // Initialise ..
             AiModelDescriptor model = request.ModelDescriptor;
-            string output = string.Empty;
+            StringBuilder outputBuilder = new StringBuilder();
             int chunkCount = 0;
 
             // Process streaming chunks as they arrive, pushing updates via callbacks without waiting for full response ..
@@ -186,7 +187,7 @@ namespace OpenAIApiClient.Orchestration.Execution
                     // In this mode, choose to aggregate the full response as the chunks arrive, and/or just push each chunk through callbacks without aggregation ..
                     if (options.AggregateChunkContent)
                     {
-                        output += chunkDelta.Content;
+                        outputBuilder.Append(chunkDelta.Content);
                     }
 
                     // Optional: per-token callback in push streaming mode
@@ -208,7 +209,7 @@ namespace OpenAIApiClient.Orchestration.Execution
             return new AiModelResponse
             {
                 Model = model,
-                RawOutput = output,
+                RawOutput = outputBuilder.ToString(),
                 IsSuccessful = true,
                 Latency = sw.Elapsed,
                 EstimatedCost = 0m,    // or some heuristic
