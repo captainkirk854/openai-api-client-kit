@@ -112,7 +112,7 @@ namespace OpenAIApiClient.Orchestration.Execution
         {
             // Initialise ..
             AiModelDescriptor model = request.ModelDescriptor;
-            StringBuilder outputBuilder = new StringBuilder();
+            StringBuilder outputBuilder = new();
             int chunkCount = 0;
 
             // Process streaming chunks as they arrive and invoke OnChunkDeltaContentToken and OnChunk on every chunk as it arrives ..
@@ -173,7 +173,7 @@ namespace OpenAIApiClient.Orchestration.Execution
         {
             // Initialise ..
             AiModelDescriptor model = request.ModelDescriptor;
-            StringBuilder outputBuilder = new StringBuilder();
+            StringBuilder outputBuilder = new();
             int chunkCount = 0;
 
             // Process streaming chunks as they arrive, pushing updates via callbacks without waiting for full response ..
