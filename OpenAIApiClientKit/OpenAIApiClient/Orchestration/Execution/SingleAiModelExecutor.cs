@@ -114,7 +114,7 @@ namespace OpenAIApiClient.Orchestration.Execution
             string output = string.Empty;
             int chunkCount = 0;
 
-            // Process streaming chunks as they arrive, but buffer them and only push updates via callbacks once the full response is received at the end of the stream ..
+            // Process streaming chunks as they arrive and invoke OnChunkDeltaContentToken and OnChunk on every chunk as it arrives ..
             await foreach (ChatCompletionChunk chunk in client.CreateChatCompletionStreamAsync(request: request, cancelToken: cancelToken))
             {
                 ChatDelta chunkDelta = chunk.Choices[0].Delta;

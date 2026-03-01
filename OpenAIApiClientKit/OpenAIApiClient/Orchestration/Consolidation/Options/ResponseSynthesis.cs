@@ -12,7 +12,6 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
     using OpenAIApiClient.Models.Consolidation.Options.ResponseSynthesis;
     using OpenAIApiClient.Orchestration.Execution;
     using OpenAIApiClient.Orchestration.Response;
-    using OpenAIApiClient.Registries.AiModels;
     using OpenAIApiClient.Registries.Prompts;
 
     /// <summary>
@@ -23,7 +22,6 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
     /// <param name="client">The <see cref="ChatClient"/> instance for making API calls.</param>
     public sealed class ResponseSynthesis(ChatClient client)
     {
-        private readonly OpenAIModels modelRegistry = new();
         private readonly SingleAiModelExecutor singleModelExecutor = new(client: client);
 
         /// <summary>

@@ -60,12 +60,12 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             Console.WriteLine("Option: LLM AS JUDGE\n");
             try
             {
-                AdvancedConsolidatedResponse llmJudgeResponse = await advancedExecutor.AdvancedConsolidatationAsync(consolidationMode: ConsolidationMode.LLMAsJudge,
-                                                                                                                    prompt: prompt,
-                                                                                                                    responses: responses,
-                                                                                                                    options: options,
-                                                                                                                    operatorModel: judge,
-                                                                                                                    cancelToken: cts.Token);
+                AdvancedConsolidatedResponse llmJudgeResponse = await advancedExecutor.AdvancedConsolidationAsync(consolidationMode: ConsolidationMode.LLMAsJudge,
+                                                                                                                  prompt: prompt,
+                                                                                                                  responses: responses,
+                                                                                                                  options: options,
+                                                                                                                  operatorModel: judge,
+                                                                                                                  cancelToken: cts.Token);
 
                 Console.WriteLine(" Dispatched Model Response(s):");
                 int sampleOutputLength = 120;
@@ -100,11 +100,11 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             Console.WriteLine("Option: HEURISTIC SCORING\n");
             try
             {
-                AdvancedConsolidatedResponse heuristicResponse = await advancedExecutor.AdvancedConsolidatationAsync(consolidationMode: ConsolidationMode.HeuristicScoring,
-                                                                                                                     prompt: prompt,
-                                                                                                                     responses: responses,
-                                                                                                                     options: options,
-                                                                                                                     cancelToken: cts.Token);
+                AdvancedConsolidatedResponse heuristicResponse = await advancedExecutor.AdvancedConsolidationAsync(consolidationMode: ConsolidationMode.HeuristicScoring,
+                                                                                                                   prompt: prompt,
+                                                                                                                   responses: responses,
+                                                                                                                   options: options,
+                                                                                                                   cancelToken: cts.Token);
 
                 if (heuristicResponse.ConsolidationMetadata is HeuristicScoringResult heuristicResult)
                 {
@@ -135,12 +135,12 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             try
             {
                 Console.WriteLine($"Using input response(s) to synthesise ..");
-                AdvancedConsolidatedResponse synthesisResponse = await advancedExecutor.AdvancedConsolidatationAsync(consolidationMode: ConsolidationMode.ResponseSynthesis,
-                                                                                                                     prompt: prompt,
-                                                                                                                     responses: responses,
-                                                                                                                     options: options,
-                                                                                                                     operatorModel: synthesiser,
-                                                                                                                     cancelToken: cts.Token);
+                AdvancedConsolidatedResponse synthesisResponse = await advancedExecutor.AdvancedConsolidationAsync(consolidationMode: ConsolidationMode.ResponseSynthesis,
+                                                                                                                   prompt: prompt,
+                                                                                                                   responses: responses,
+                                                                                                                   options: options,
+                                                                                                                   operatorModel: synthesiser,
+                                                                                                                   cancelToken: cts.Token);
 
                 Console.WriteLine("Synthesised Answer:");
                 Console.WriteLine(synthesisResponse.ConsolidatedContent);

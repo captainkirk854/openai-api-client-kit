@@ -13,13 +13,13 @@ namespace OpenAIApiClient.Enums
 
         /// <summary>
         /// Use streaming Chat Completions but buffer all chunk content tokens and only return them
-        /// as a final concatenated string in <see cref="AiModelResponse.RawOutput"/>.
+        /// as a final concatenated string in <see cref="Orchestration.Response.AiModelResponse.RawOutput"/>.
         /// </summary>
         BufferedStreaming,
 
         /// <summary>
         /// Use streaming Chat Completions and push chunk content tokens to a callback as they arrive.
-        /// The final <see cref="AiModelResponse.RawOutput"/> is still aggregated unless specified otherwise.
+        /// The final <see cref="Orchestration.Response.AiModelResponse.RawOutput"/> is still aggregated unless specified otherwise.
         /// </summary>
         PushStreaming,
     }

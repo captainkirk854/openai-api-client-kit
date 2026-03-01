@@ -35,6 +35,7 @@ namespace OpenAIApiClient.Orchestration.Execution
         /// <summary>
         /// Gets the Optional per-chunk callback for push streaming (if the actual full chunks are desired).
         /// Signature: (<see cref="AiModelDescriptor"/>, chunk) => Task.
+        /// </summary>
         /// <remarks>
         /// Example: OnChunk = (modelDescriptor, chunk) => { Console.WriteLine($"Received chunk with content: {chunk}"); await Task.Yield(); }.
         /// Can be set by caller if they want chunk-level callbacks in streaming modes (e.g. for metadata extraction, tool-calling, etc.).
@@ -42,7 +43,6 @@ namespace OpenAIApiClient.Orchestration.Execution
         /// This callback will be triggered for every chunk received during push streaming, so it may be called multiple times per response.
         /// Ensure that the implementation is efficient and can handle the potential high frequency of calls without causing performance issues.
         /// </remarks>
-        /// </summary>
         public Func<AiModelDescriptor, ChatCompletionChunk, int, Task>? OnChunk
         {
             get;

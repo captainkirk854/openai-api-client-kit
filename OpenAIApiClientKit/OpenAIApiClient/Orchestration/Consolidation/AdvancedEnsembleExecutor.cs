@@ -7,7 +7,6 @@ namespace OpenAIApiClient.Orchestration.Consolidation
     using System.Diagnostics;
     using OpenAIApiClient;
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Interfaces.Orchestration;
     using OpenAIApiClient.Models.Consolidation;
     using OpenAIApiClient.Models.Consolidation.Options.HeuristicScoring;
     using OpenAIApiClient.Models.Consolidation.Options.LLMJudge;
@@ -57,12 +56,12 @@ namespace OpenAIApiClient.Orchestration.Consolidation
         /// <exception cref="InvalidOperationException">
         /// Thrown when advanced fan-out and consolidation fails.
         /// </exception>
-        public async Task<AdvancedConsolidatedResponse> AdvancedConsolidatationAsync(ConsolidationMode consolidationMode,
-                                                                                     string prompt,
-                                                                                     List<AiModelResponse> responses,
-                                                                                     AiCallOptions options,
-                                                                                     OpenAIModel? operatorModel = null,
-                                                                                     CancellationToken cancelToken = default)
+        public async Task<AdvancedConsolidatedResponse> AdvancedConsolidationAsync(ConsolidationMode consolidationMode,
+                                                                                   string prompt,
+                                                                                   List<AiModelResponse> responses,
+                                                                                   AiCallOptions options,
+                                                                                   OpenAIModel? operatorModel = null,
+                                                                                   CancellationToken cancelToken = default)
         {
             // Filter out unsuccessful or blank model response(s) ..
             List<AiModelResponse> successfulResponses = [.. responses.Where(r => r.IsSuccessful && !string.IsNullOrEmpty(r.RawOutput))];
