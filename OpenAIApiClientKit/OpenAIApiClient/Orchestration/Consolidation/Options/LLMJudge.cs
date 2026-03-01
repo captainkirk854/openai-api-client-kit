@@ -155,7 +155,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
                 int longestIndex = responses.IndexOf(responses.OrderByDescending(r => r.RawOutput.Length).First());
                 return new ParsedJudgeResponse
                 {
-                    SelectedIndex = longestIndex,
+                    SelectedIndex = longestIndex + 1,
                     SelectedResponse = responses[longestIndex].RawOutput,
                     Reasoning = "Parsed as longest response (fallback).",
                     Scores = [],
@@ -166,7 +166,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
                 // Final fallback
                 return new ParsedJudgeResponse
                 {
-                    SelectedIndex = 0,
+                    SelectedIndex = 1,
                     SelectedResponse = responses[0].RawOutput,
                     Reasoning = "Error parsing judge response; defaulting to first response.",
                     Scores = [],
