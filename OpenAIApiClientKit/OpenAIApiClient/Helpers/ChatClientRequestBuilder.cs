@@ -29,7 +29,7 @@ namespace OpenAIApiClient.Helpers
     ///                                                                                               .AddSystemMessage(input: "You are a helpful assistant that answers concisely.")
     ///                                                                                               .AddUserMessage(input: userPrompt)
     ///                                                                                               .WithTemperature(input: 1.0)
-    ///                                                                                               .WithMaxTokens(input: 100)
+    ///                                                                                               .UsingMaxTokens(input: 100)
     ///                                                                                               .WithTopP(input: 0.5)
     ///                                                                                               .WithPresencePenalty(input: 2.0)
     ///                                                                                               .WithFrequencyPenalty(input: 2.0)
