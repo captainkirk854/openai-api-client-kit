@@ -34,21 +34,21 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
         /// </summary>
         /// <param name="prompt">The original user prompt.</param>
         /// <param name="responses">The list of model responses to evaluate.</param>
-        /// <param name="judgeModel">The model to use as judge.</param>
+        /// <param name="judge">The model to use as judge.</param>
         /// <param name="execution">Execution options for the judge model request.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>
         /// An instance of <see cref="LLMJudgeResult"/> containing the selected response,
         /// reasoning, and any associated scoring information.
         /// </returns>
-        public async Task<LLMJudgeResult> ConsolidateWithLLMJudgeAsync(string prompt, List<AiModelResponse> responses, OpenAIModel judgeModel, AiCallOptions execution, CancellationToken cancellationToken)
+        public async Task<LLMJudgeResult> ConsolidateWithLLMJudgeAsync(string prompt, List<AiModelResponse> responses, OpenAIModel judge, AiCallOptions execution, CancellationToken cancellationToken)
         {
-            Console.WriteLine($" Requesting model: [{judgeModel}] to judge the dispatched model response(s)...");
+            Console.WriteLine($" Requesting model: [{judge}] to judge the dispatched model response(s)...");
 
             // Create judgment request ..
             string judgmentPrompt = BuildJudgmentPrompt(prompt: prompt, responses: responses);
             ChatCompletionRequest judgeRequest = new ChatClientRequestBuilder()
-                                                     .WithModel(judgeModel)
+                                                     .WithModel(judge)
                                                      .AddSystemMessage(PromptRegistry.Prompts[PromptId.SetModelJudgementMode])
                                                      .AddUserMessage(judgmentPrompt)
                                                      .Build();
@@ -63,7 +63,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
             // .. and return structured result
             return new LLMJudgeResult
             {
-                JudgeModel = judgeModel,
+                JudgeModel = judge,
                 JudgeReasoning = parseResult.Reasoning,
                 JudgeScores = parseResult.Scores,
                 SelectedIndex = parseResult.SelectedIndex,
@@ -128,10 +128,10 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
                     if (rootElement.TryGetProperty(modelIndexKey, out JsonElement indexElement) &&
                         indexElement.TryGetInt32(out int selectedIndex))
                     {
-                        if (selectedIndex >= 0 && selectedIndex < responses.Count)
+                        if (selectedIndex >= 1 && selectedIndex <= responses.Count)
                         {
                             // Extract reasoning
-                            string reasoning = "Judge model selected this response: ";
+                            string reasoning = "Judge LLM selected this response.";
                             if (rootElement.TryGetProperty(reasoningKey, out JsonElement reasoningElement))
                             {
                                 reasoning = reasoningElement.GetString() ?? reasoning;
@@ -143,7 +143,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
                             return new ParsedJudgeResponse
                             {
                                 SelectedIndex = selectedIndex,
-                                SelectedResponse = responses[selectedIndex].RawOutput,
+                                SelectedResponse = responses[selectedIndex - 1].RawOutput,
                                 Reasoning = reasoning,
                                 Scores = scores,
                             };

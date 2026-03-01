@@ -47,7 +47,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation
         /// <param name="prompt">The user prompt to send to all models.</param>
         /// <param name="responses">The list of <see cref="AiModelResponse"/> objects from the ensemble model calls.</param>
         /// <param name="options">Options for execution, such as chunk handling and aggregation (optional).</param>
-        /// <param name="operationalModel">The judge <see cref="OpenAIModel"/> for LLM-based strategies (optional).</param>
+        /// <param name="operatorModel">The judge <see cref="OpenAIModel"/> for LLM-based strategies (optional).</param>
         /// <param name="cancelToken">The cancellation token for the operation.</param>
         /// <returns>
         /// An <see cref="AdvancedConsolidatedResponse"/> containing the consolidated content,
@@ -65,7 +65,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation
                                                                                      string prompt,
                                                                                      List<AiModelResponse> responses,
                                                                                      AiCallOptions options,
-                                                                                     OpenAIModel? operationalModel = null,
+                                                                                     OpenAIModel? operatorModel = null,
                                                                                      CancellationToken cancelToken = default)
         {
             // Filter out unsuccessful or blank model response(s) ..
@@ -86,13 +86,13 @@ namespace OpenAIApiClient.Orchestration.Consolidation
                 {
                     // LLM Judge consolidation mode uses a separate LLM to evaluate the successful model response(s) and select the best one based on the prompt ..
                     case ConsolidationMode.LLMAsJudge:
-                        if (operationalModel is null)
+                        if (operatorModel is null)
                         {
-                            throw new ArgumentException("An operational LLM is required for LLM Judge consolidation!", nameof(operationalModel));
+                            throw new ArgumentException("An operational LLM is required for LLM Judge consolidation!", nameof(operatorModel));
                         }
                         LLMJudgeResult judgeResult = await this.llmJudgeStrategy.ConsolidateWithLLMJudgeAsync(prompt: prompt,
                                                                                                               responses: successfulResponses,
-                                                                                                              judgeModel: operationalModel.Value,
+                                                                                                              judge: operatorModel.Value,
                                                                                                               execution: options,
                                                                                                               cancellationToken: cancelToken);
                         consolidatedContent = judgeResult.SelectedResponse;
@@ -109,15 +109,15 @@ namespace OpenAIApiClient.Orchestration.Consolidation
 
                     // Response Synthesis consolidation mode uses a separate LLM to synthesise a new response that optimally blends the information from all input model response(s) ..
                     case ConsolidationMode.ResponseSynthesis:
-                        if (operationalModel is null)
+                        if (operatorModel is null)
                         {
-                            throw new ArgumentException("An operational LLM is required for Response Synthesis", nameof(operationalModel));
+                            throw new ArgumentException("An operational LLM is required for Response Synthesis", nameof(operatorModel));
                         }
                         ResponseSynthesisResult synthesisResult = await this.responseSynthesisStrategy.ConsolidateWithResponseSynthesisAsync(prompt: prompt,
-                                                                                                                                               responses: successfulResponses,
-                                                                                                                                               synthesisModel: operationalModel.Value,
-                                                                                                                                               options: options,
-                                                                                                                                               cancelToken: cancelToken);
+                                                                                                                                             responses: successfulResponses,
+                                                                                                                                             synthesiser: operatorModel.Value,
+                                                                                                                                             options: options,
+                                                                                                                                             cancelToken: cancelToken);
                         consolidatedContent = synthesisResult.SynthesisedResponse;
                         consolidationMetadata = synthesisResult;
                         break;

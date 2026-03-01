@@ -23,7 +23,6 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
     /// <param name="client">The <see cref="ChatClient"/> instance for making API calls.</param>
     public sealed class ResponseSynthesis(ChatClient client)
     {
-        private readonly ChatClient client = client;
         private readonly OpenAIModels modelRegistry = new();
         private readonly SingleAiModelExecutor singleModelExecutor = new(client: client);
 
@@ -32,7 +31,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
         /// </summary>
         /// <param name="prompt">The original user prompt.</param>
         /// <param name="responses">The list of <see cref="AiModelResponse"/> instances to synthesize.</param>
-        /// <param name="synthesisModel">The judge model for synthesis.</param>
+        /// <param name="synthesiser">The synthesis model.</param>
         /// <param name="options">The <see cref="AiCallOptions"/> for executing the judge model.</param>
         /// <param name="cancelToken">The cancellation token.</param>
         /// <returns>
@@ -41,18 +40,18 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
         /// </returns>
         public async Task<ResponseSynthesisResult> ConsolidateWithResponseSynthesisAsync(string prompt,
                                                                                          List<AiModelResponse> responses,
-                                                                                         OpenAIModel synthesisModel,
+                                                                                         OpenAIModel synthesiser,
                                                                                          AiCallOptions options,
                                                                                          CancellationToken cancelToken)
         {
-            Console.WriteLine($" Asking [{synthesisModel}] to synthesise new response...");
+            Console.WriteLine($" Asking [{synthesiser}] model to synthesise new response...");
 
             // Build resynthesis prompt for the synthesis model that includes the original user prompt and all candidate responses to synthesize from ..
             string fusionPrompt = BuildSynthesisPrompt(prompt: prompt, responses: responses);
 
             // Create synthesis request ..
             ChatCompletionRequest synthesisRequest = new ChatClientRequestBuilder()
-                .WithModel(synthesisModel)
+                .WithModel(synthesiser)
                 .AddSystemMessage(PromptRegistry.Prompts[PromptId.SetModelSynthesisMode])
                 .AddUserMessage(fusionPrompt)
                 .Build();
@@ -61,9 +60,10 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
             AiModelResponse synthesisResponse = await this.singleModelExecutor.ExecuteAsync(request: synthesisRequest, options: options, cancelToken: cancelToken);
             string synthesisedContent = synthesisResponse.RawOutput ?? string.Empty;
 
+            // Return synthesis result with the synthesised response and metadata about the source responses that contributed to the synthesis ..
             return new ResponseSynthesisResult
             {
-                SynthesisModel = synthesisModel,
+                SynthesisModel = synthesiser,
                 SynthesisedResponse = synthesisedContent,
                 SourceResponses = responses,
                 RawFusionOutput = synthesisedContent,
