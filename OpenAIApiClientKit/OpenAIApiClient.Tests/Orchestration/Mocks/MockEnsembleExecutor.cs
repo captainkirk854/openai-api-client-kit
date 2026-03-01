@@ -30,6 +30,15 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         }
 
         /// <summary>
+        /// Gets the last <see cref="AiCallOptions"/> passed to the executor - only in mock class for test verification purposes.
+        /// </summary>
+        public AiCallOptions? LastOptions
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Gets or sets the responses to return when ExecuteAsync is called - only in mock class for test verification purposes.
         /// </summary>
         public IReadOnlyList<AiModelResponse> ResponsesToReturn
@@ -42,6 +51,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         {
             this.WasCalled = true;
             this.LastContext = context;
+            this.LastOptions = execution;
             return Task.FromResult(this.ResponsesToReturn);
         }
     }
