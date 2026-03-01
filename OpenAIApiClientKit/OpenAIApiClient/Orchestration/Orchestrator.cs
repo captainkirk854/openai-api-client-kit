@@ -18,20 +18,20 @@ namespace OpenAIApiClient.Orchestration
     /// Responsible for orchestrating model requests, routing them to the appropriate models,
     /// executing the requests, and handling the responses.
     /// </summary>
-    /// <param name="requestBuilder">Client request builder.</param>
+    /// <param name="requestBuilderFactory">Factory that produces a fresh client request builder for each request.</param>
     /// <param name="singleModelDispatcher">Single model router.</param>
     /// <param name="ensembleDispatcher">Ensemble router.</param>
     /// <param name="singleModelExecutor">Single model executor.</param>
     /// <param name="ensembleExecutor">Ensemble model executor.</param>
     /// <param name="responseHandler">Response handler.</param>
-    public sealed class Orchestrator(ChatClientRequestBuilder requestBuilder,
+    public sealed class Orchestrator(Func<ChatClientRequestBuilder> requestBuilderFactory,
                                      ISingleAiModelDispatcher singleModelDispatcher,
                                      IEnsembleDispatcher ensembleDispatcher,
                                      ISingleAiModelExecutor singleModelExecutor,
                                      IEnsembleExecutor ensembleExecutor,
                                      IAiModelResponseHandler responseHandler)
     {
-        private readonly ChatClientRequestBuilder requestBuilder = requestBuilder;
+        private readonly Func<ChatClientRequestBuilder> requestBuilderFactory = requestBuilderFactory;
         private readonly ISingleAiModelDispatcher singleModelDispatcher = singleModelDispatcher;
         private readonly IEnsembleDispatcher ensembleDispatcher = ensembleDispatcher;
         private readonly ISingleAiModelExecutor singleModelExecutor = singleModelExecutor;
@@ -46,8 +46,11 @@ namespace OpenAIApiClient.Orchestration
         /// <returns>IReadOnlyList&lt;ModelResponse&gt;.</returns>
         public async Task<IReadOnlyList<AiModelResponse>> ProcessAsync(OrchestrationRequest request, CancellationToken cancelToken)
         {
+            // Create a fresh builder for this request to prevent state leaking across calls ..
+            ChatClientRequestBuilder requestBuilder = this.requestBuilderFactory();
+
             // Append prompt and output format from orchestration request to chat request builder ..
-            this.requestBuilder.SetPromptAndFormat(prompt: request.Prompt, format: request.OutputFormat);
+            requestBuilder.SetPromptAndFormat(prompt: request.Prompt, format: request.OutputFormat);
 
             // Determine execution context based on request type ..
             IExecutionContext executionContext = request.UseEnsemble
@@ -64,14 +67,14 @@ namespace OpenAIApiClient.Orchestration
             // Execute the request based on the determined execution context and handle the responses accordingly ..
             if (isEnsemble)
             {
-                IReadOnlyList<AiModelResponse> responses = await this.ensembleExecutor.ExecuteAsync(requestBuilder: this.requestBuilder, context: executionContext, execution: request.CallOptions, cancelToken: cancelToken);
+                IReadOnlyList<AiModelResponse> responses = await this.ensembleExecutor.ExecuteAsync(requestBuilder: requestBuilder, context: executionContext, execution: request.CallOptions, cancelToken: cancelToken);
                 return this.responseHandler.HandleResponses(modelResponses: responses);
             }
             else
             {
                 // In single model scenario, there is implicitly one model and so we set that model on the request builder before execution ..
                 AiModelDescriptor model = executionContext.Models[0];
-                ChatCompletionRequest chatRequest = this.requestBuilder.WithModel(input: model.Name).Build();
+                ChatCompletionRequest chatRequest = requestBuilder.WithModel(input: model.Name).Build();
 
                 // Execute the request and handle the response ..
                 AiModelResponse response = await this.singleModelExecutor.ExecuteAsync(request: chatRequest, options: request.CallOptions, cancelToken: cancelToken);

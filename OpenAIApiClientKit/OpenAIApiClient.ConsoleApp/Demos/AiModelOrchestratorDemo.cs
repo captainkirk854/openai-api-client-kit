@@ -24,7 +24,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                                             .WithClient(client)
                                             .WithResponseHandler(new AiModelResponseHandlerDemo())
                                             .WithModelRegistry(new OpenAIModels())
-                                            .WithRequestBuilder(new ChatClientRequestBuilder().WithDefaults())
+                                            .WithRequestBuilder(() => new ChatClientRequestBuilder().WithDefaults())
                                             .Build();
 
             // ------------------------------------------------------------

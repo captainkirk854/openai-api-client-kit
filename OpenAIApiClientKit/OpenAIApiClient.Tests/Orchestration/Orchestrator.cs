@@ -19,7 +19,6 @@ namespace OpenAIApiClient.Tests.Orchestration
     [TestClass]
     public class Orchestrator
     {
-        private ChatClientRequestBuilder requestBuilder = null!;
         private MockSingleAiModelDispatcher mockSingleModelDispatcher = null!;
         private MockEnsembleDispatcher mockEnsembleDispatcher = null!;
         private MockSingleAiModelExecutor mockSingleExecutor = null!;
@@ -36,14 +35,13 @@ namespace OpenAIApiClient.Tests.Orchestration
             this.modelA = CreateModelDescriptor(OpenAIModel.GPT4o);
             this.modelB = CreateModelDescriptor(OpenAIModel.GPT4o_Mini);
 
-            this.requestBuilder = new ChatClientRequestBuilder();
             this.mockSingleModelDispatcher = new MockSingleAiModelDispatcher();
             this.mockEnsembleDispatcher = new MockEnsembleDispatcher();
             this.mockSingleExecutor = new MockSingleAiModelExecutor();
             this.mockEnsembleExecutor = new MockEnsembleExecutor();
             this.mockModelResponseHandler = new MockAiModelResponseHandler();
 
-            this.orchestrator = new testClass(requestBuilder: this.requestBuilder,
+            this.orchestrator = new testClass(requestBuilderFactory: () => new ChatClientRequestBuilder(),
                                               singleModelDispatcher: this.mockSingleModelDispatcher,
                                               ensembleDispatcher: this.mockEnsembleDispatcher,
                                               singleModelExecutor: this.mockSingleExecutor,
@@ -209,6 +207,42 @@ namespace OpenAIApiClient.Tests.Orchestration
             Assert.AreEqual(this.mockModelResponseHandler.ResponsesToReturn, result);
             Assert.AreEqual(responses[0], this.mockModelResponseHandler.LastResponses![0]);
             Assert.AreEqual(responses[1], this.mockModelResponseHandler.LastResponses![1]);
+        }
+
+        [TestMethod]
+        public async Task ProcessAsync_DoesNotLeakMessages_AcrossConsecutiveCalls()
+        {
+            // Arrange: two separate requests with distinct prompts
+            this.mockSingleModelDispatcher.ReturnedModel = this.modelA;
+            AiModelResponse response = new() { Model = this.modelA, RawOutput = "ok", IsSuccessful = true };
+            this.mockSingleExecutor.ResponseToReturn = response;
+            this.mockModelResponseHandler.ResponsesToReturn = [response];
+
+            OrchestrationRequest firstRequest = new()
+            {
+                UseEnsemble = false,
+                Prompt = "First prompt",
+                OutputFormat = OutputFormat.PlainText,
+                SingleModelRequest = new SingleAiModelDispatchRequest { Strategy = SingleAiModelStrategy.BestReasoning },
+            };
+
+            OrchestrationRequest secondRequest = new()
+            {
+                UseEnsemble = false,
+                Prompt = "Second prompt",
+                OutputFormat = OutputFormat.PlainText,
+                SingleModelRequest = new SingleAiModelDispatchRequest { Strategy = SingleAiModelStrategy.BestReasoning },
+            };
+
+            // Act
+            _ = await this.orchestrator.ProcessAsync(firstRequest, CancellationToken.None);
+            _ = await this.orchestrator.ProcessAsync(secondRequest, CancellationToken.None);
+
+            // Assert: the second request should only contain its own prompt, not the first prompt
+            Assert.IsNotNull(this.mockSingleExecutor.LastCall);
+            IReadOnlyList<OpenAIApiClient.Models.Chat.Common.ChatMessage> messages = this.mockSingleExecutor.LastCall.Value.request.Messages;
+            Assert.IsTrue(messages.Any(m => m.Content == "Second prompt"), "Second request should contain its own prompt.");
+            Assert.IsFalse(messages.Any(m => m.Content == "First prompt"), "Second request must not contain the first prompt.");
         }
 
         /// <summary>

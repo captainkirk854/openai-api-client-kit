@@ -17,5 +17,12 @@ namespace OpenAIApiClient.Orchestration.Factories
         /// <returns see cref="ChatClientRequestBuilder">A ClientRequestBuilder configured with default values.</returns>
         public static ChatClientRequestBuilder CreateDefault()
             => new ChatClientRequestBuilder().WithDefaults();
+
+        /// <summary>
+        /// Returns a factory that creates a new <see cref="ChatClientRequestBuilder"/> with default settings on each invocation.
+        /// </summary>
+        /// <returns>A <see cref="Func{ChatClientRequestBuilder}"/> that produces a freshly configured builder each time it is called.</returns>
+        public static Func<ChatClientRequestBuilder> CreateDefaultFactory()
+            => () => new ChatClientRequestBuilder().WithDefaults();
     }
 }
