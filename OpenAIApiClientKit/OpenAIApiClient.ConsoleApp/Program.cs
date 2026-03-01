@@ -265,8 +265,9 @@ namespace OpenAIApiClient.ConsoleApp
             }
 
             // Define randomly-picked models to use for LLM-as-judge and response synthesis strategies; models should have good reasoning capabilities for best results ..
-            OpenAIModel judgeModel = EnsembleStrategy.Reasoning.GetOpenAIModels().OrderBy(_ => new Random().Next()).First();
-            OpenAIModel synthesisModel = EnsembleStrategy.Reasoning.GetOpenAIModels().OrderBy(_ => new Random().Next()).First();
+            OpenAIModel[] reasoningModels = EnsembleStrategy.Reasoning.GetOpenAIModels();
+            OpenAIModel judgeModel = reasoningModels[Random.Shared.Next(reasoningModels.Length)];
+            OpenAIModel synthesisModel = reasoningModels[Random.Shared.Next(reasoningModels.Length)];
 
             // Run demo ..
             await Demos.AiAdvancedEnsembleConsolidationDemo.GetAdvancedResponsesAsync(client: client,

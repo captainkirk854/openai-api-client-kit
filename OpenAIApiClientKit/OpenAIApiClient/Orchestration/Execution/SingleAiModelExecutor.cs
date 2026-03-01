@@ -41,7 +41,7 @@ namespace OpenAIApiClient.Orchestration.Execution
                     AiCallMode.NonStreaming => await this.ExecuteNonStreamingAsync(request: request, sw: sw, cancelToken: cancelToken),
                     AiCallMode.BufferedStreaming => await this.ExecuteBufferedStreamingAsync(request: request, sw: sw, options: options, cancelToken: cancelToken),
                     AiCallMode.PushStreaming => await this.ExecutePushStreamingAsync(request: request, sw: sw, options: options, cancelToken: cancelToken),
-                    _ => throw new ArgumentOutOfRangeException(paramName: nameof(request), actualValue: options.Mode, message: "Unknown execution mode."),
+                    _ => throw new ArgumentOutOfRangeException(paramName: nameof(options), actualValue: options.Mode, message: "Unknown call option mode."),
                 };
             }
             catch (Exception ex)

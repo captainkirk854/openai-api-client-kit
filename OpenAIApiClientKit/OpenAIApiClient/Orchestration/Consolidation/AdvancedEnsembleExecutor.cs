@@ -30,13 +30,9 @@ namespace OpenAIApiClient.Orchestration.Consolidation
     /// using the default orchestration pipeline created by <see cref="OrchestratorBuilder"/>.
     /// </remarks>
     /// <param name="client">The <see cref="ChatClient"/> used for API calls.</param>
-    /// <param name="responseHandler">
-    /// The <see cref="IAiModelResponseHandler"/> used by the orchestrator to post‑process responses.
-    /// </param>
-    public class AdvancedEnsembleExecutor(ChatClient client, IAiModelResponseHandler responseHandler)
+    public class AdvancedEnsembleExecutor(ChatClient client)
     {
-        // Specialized consolidation strategy classes that encapsulate the logic for each approach.
-        private readonly OrchestratedEnsembleExecutor orchestratedEnsembleExecutor = new(client: client, responseHandler: responseHandler);
+        // Specialized consolidation strategy classes that encapsulate the logic for each approach ..
         private readonly LLMJudge llmJudgeStrategy = new(client: client);
         private readonly ResponseSynthesis responseSynthesisStrategy = new(client: client);
 

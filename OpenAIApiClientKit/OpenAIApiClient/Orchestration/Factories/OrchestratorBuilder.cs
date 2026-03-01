@@ -170,7 +170,7 @@ namespace OpenAIApiClient.Orchestration.Factories
 
             // Use factory defaults if caller didn’t override
             IAiModelRegistry registry = this.registry ?? AiModelRegistryFactory.Create();
-            ChatClientRequestBuilder requestBuilder = this.requestBuilder ?? RequestBuilderFactory.CreateDefault();
+            ChatClientRequestBuilder requestBuilder = this.requestBuilder ?? ChatClientRequestBuilderFactory.CreateDefault();
 
             // Create Dispatchers - Use overrides if provided, otherwise fall back to DispatcherFactory ..
             (SingleAiModelDispatcher factorySingleModelDispatcher, EnsembleDispatcher defaultEnsembleDispatcher) = DispatcherFactory.Create(registry: registry);

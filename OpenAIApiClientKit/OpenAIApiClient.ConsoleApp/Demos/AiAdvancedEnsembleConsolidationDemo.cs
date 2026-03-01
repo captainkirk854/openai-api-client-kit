@@ -41,13 +41,13 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             // Create response handler and executors for orchestrating calls and consolidations ..
             DefaultAiModelResponseHandler responseHandler = new();
             OrchestratedEnsembleExecutor orchestratedExecutor = new(client: client, responseHandler: responseHandler);
-            AdvancedEnsembleExecutor advancedExecutor = new(client: client, responseHandler: responseHandler);
+            AdvancedEnsembleExecutor advancedExecutor = new(client: client);
 
             // Define AI call options; can be customized per call if needed. Note: the callbacks only work when using AiCallMode modes: BufferedStreaming or PushStreaming ..
             AiCallOptions options = ConfigureCallOptions(callMode: callMode, isChunkContentCallback: true, isChunkCallback: false);
 
             // Dispatch the prompt to the selected model(s) and get their response(s); these will be used as input for the different consolidation strategies below.
-            // Note: Add some retry logic here to handle potential API errors or timeouts when calling multiple models, especially if using a large ensemble.
+            // Note: The Chat Client has built-in retry logic to handle potential API errors or timeouts when calling multiple models, especially if using a large ensemble.
             Console.WriteLine($" Dispatching to {workers.Length} model(s)...");
             List<AiModelResponse> responses = await orchestratedExecutor.ProcessAsync(prompt: prompt,
                                                                                       models: workers,
