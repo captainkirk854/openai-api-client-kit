@@ -39,7 +39,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             AiModelResponseHandlerDemo responseHandlerDemo = new();
 
             // Create the orchestrator using all the components ..
-            Orchestrator orchestrator = new(requestBuilder: requestBuilder,
+            Orchestrator orchestrator = new(requestBuilderFactory: () => requestBuilder,
                                             singleModelDispatcher: singleModelDispatcher,
                                             ensembleDispatcher: ensembleDispatcher,
                                             singleModelExecutor: singleModelExecutor,

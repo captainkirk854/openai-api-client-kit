@@ -12,15 +12,13 @@ namespace OpenAIApiClient.Orchestration.Factories
     public static class ChatClientRequestBuilderFactory
     {
         /// <summary>
-        /// Creates a new instance of <see cref="ChatClientRequestBuilder"/> initialized with default settings.
-        /// </summary>
-        /// <returns see cref="ChatClientRequestBuilder">A ClientRequestBuilder configured with default values.</returns>
-        public static ChatClientRequestBuilder CreateDefault()
-            => new ChatClientRequestBuilder().WithDefaults();
-
-        /// <summary>
         /// Returns a factory that creates a new <see cref="ChatClientRequestBuilder"/> with default settings on each invocation.
         /// </summary>
+        /// <remarks>
+        /// This factory method is useful for scenarios where you need to create multiple builders with the same default configuration.
+        /// Each call to the returned factory will yield a fresh builder instance initialised
+        /// with the defaults defined in the <see cref="ChatClientRequestBuilder.WithDefaults"/> method.
+        /// </remarks>
         /// <returns>A <see cref="Func{ChatClientRequestBuilder}"/> that produces a freshly configured builder each time it is called.</returns>
         public static Func<ChatClientRequestBuilder> CreateDefaultFactory()
             => () => new ChatClientRequestBuilder().WithDefaults();

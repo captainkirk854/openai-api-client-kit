@@ -104,9 +104,9 @@ namespace OpenAIApiClient.Orchestration.Factories
         /// Providing a factory ensures that each call to <c>ProcessAsync</c> starts with a clean builder, preventing
         /// messages or state from leaking between requests.
         /// </remarks>
-        /// <param name="builderFactory">A factory that returns a new, pre-configured <see cref="ChatClientRequestBuilder"/> each time it is invoked. If not set, a default factory is used.</param>
+        /// <param name="builderFactory">A factory that returns a new, pre-configured <see cref="ChatClientRequestBuilder"/> each time it is called/invoked. If not set, a default factory is used.</param>
         /// <returns see cref="OrchestratorBuilder">The builder instance, for chaining.</returns>
-        public OrchestratorBuilder WithRequestBuilder(Func<ChatClientRequestBuilder> builderFactory)
+        public OrchestratorBuilder WithRequestBuilderFactory(Func<ChatClientRequestBuilder> builderFactory)
         {
             this.requestBuilderFactory = builderFactory;
             return this;

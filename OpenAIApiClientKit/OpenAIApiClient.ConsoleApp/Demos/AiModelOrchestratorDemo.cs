@@ -24,13 +24,13 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                                             .WithClient(client)
                                             .WithResponseHandler(new AiModelResponseHandlerDemo())
                                             .WithModelRegistry(new OpenAIModels())
-                                            .WithRequestBuilder(() => new ChatClientRequestBuilder().WithDefaults())
+                                            .WithRequestBuilderFactory(() => new ChatClientRequestBuilder().WithDefaults()) // Passed as a ChatClientRequestBuilder() lambda ..
                                             .Build();
 
             // ------------------------------------------------------------
             // Run a single-model request
             // ------------------------------------------------------------
-            Console.WriteLine(">>> Single Model Request");
+            Console.WriteLine(">>> Single Model Request in streaming mode displaying stream chunk(s) as they occur");
             OrchestrationRequest singleModelRequest = new()
             {
                 UseEnsemble = false,

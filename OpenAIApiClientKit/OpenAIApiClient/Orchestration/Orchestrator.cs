@@ -10,7 +10,6 @@ namespace OpenAIApiClient.Orchestration
     using OpenAIApiClient.Interfaces.Orchestration.Execution;
     using OpenAIApiClient.Models.Chat.Request;
     using OpenAIApiClient.Models.Registries;
-    using OpenAIApiClient.Orchestration.Dispatch;
     using OpenAIApiClient.Orchestration.Execution;
     using OpenAIApiClient.Orchestration.Response;
 
@@ -46,7 +45,7 @@ namespace OpenAIApiClient.Orchestration
         /// <returns>IReadOnlyList&lt;ModelResponse&gt;.</returns>
         public async Task<IReadOnlyList<AiModelResponse>> ProcessAsync(OrchestrationRequest request, CancellationToken cancelToken)
         {
-            // Create a fresh builder for this request to prevent state leaking across calls ..
+            // Create a fresh, clean builder instance insulated to this request to prevent state leaking across calls ..
             ChatClientRequestBuilder requestBuilder = this.requestBuilderFactory();
 
             // Append prompt and output format from orchestration request to chat request builder ..
