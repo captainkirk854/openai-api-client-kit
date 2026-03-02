@@ -99,7 +99,7 @@ namespace OpenAIApiClient.Registries.Dispatch
         {
             if (request.ExplicitModel is null)
             {
-                throw new InvalidOperationException("Explicit routing requires an explicit model.");
+                throw new InvalidOperationException("Explicit dispatch requires an explicit model.");
             }
 
             return new SingleAiModelDispatchResult(model: modelRegistry[request.ExplicitModel.Value]);

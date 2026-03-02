@@ -118,7 +118,7 @@ namespace OpenAIApiClient.Tests.Registries.Dispatch
             }
             catch (InvalidOperationException ex)
             {
-                Assert.Contains("Explicit routing requires", ex.Message);
+                Assert.Contains("Explicit dispatch requires", ex.Message);
             }
         }
 

@@ -96,7 +96,7 @@ namespace OpenAIApiClient.Tests.Registries.Dispatch
             EnsembleStrategyHandler strategy = testClass.Get(EnsembleStrategy.Reasoning);
             EnsembleDispatchResult result = strategy(modelRegistry: this.modelRegistry!);
 
-            Assert.IsTrue(result.Models.Any(m => m.Capabilities.Contains(AiModelCapability.Reasoning)), "Reasoning ensemble must include at least one reasoning model.");
+            Assert.Contains(m => m.Capabilities.Contains(AiModelCapability.Reasoning), result.Models, "Reasoning ensemble must include at least one reasoning model.");
         }
 
         [TestMethod]
@@ -105,7 +105,7 @@ namespace OpenAIApiClient.Tests.Registries.Dispatch
             EnsembleStrategyHandler strategy = testClass.Get(EnsembleStrategy.Reasoning);
             EnsembleDispatchResult result = strategy(modelRegistry: this.modelRegistry!);
 
-            Assert.IsTrue(result.Models.Any(m => m.Capabilities.Contains(AiModelCapability.Chat)), "Reasoning ensemble must include a fast chat model.");
+            Assert.Contains(m => m.Capabilities.Contains(AiModelCapability.Chat), result.Models, "Reasoning ensemble must include a fast chat model.");
         }
 
         // ---------------------------------------------------------
@@ -126,7 +126,7 @@ namespace OpenAIApiClient.Tests.Registries.Dispatch
             EnsembleStrategyHandler strategy = testClass.Get(EnsembleStrategy.Vision);
             EnsembleDispatchResult result = strategy(modelRegistry: this.modelRegistry!);
 
-            Assert.IsTrue(result.Models.Any(m => m.Capabilities.Contains(AiModelCapability.Vision)), "Vision ensemble must include a vision-capable model.");
+            Assert.Contains(m => m.Capabilities.Contains(AiModelCapability.Vision), result.Models, "Vision ensemble must include a vision-capable model.");
         }
 
         [TestMethod]
@@ -135,7 +135,7 @@ namespace OpenAIApiClient.Tests.Registries.Dispatch
             EnsembleStrategyHandler strategy = testClass.Get(EnsembleStrategy.Vision);
             EnsembleDispatchResult result = strategy(modelRegistry: this.modelRegistry!);
 
-            Assert.IsTrue(result.Models.Any(m => m.Capabilities.Contains(AiModelCapability.Chat)), "Vision ensemble must include a fast chat model.");
+            Assert.Contains(m => m.Capabilities.Contains(AiModelCapability.Chat), result.Models, "Vision ensemble must include a fast chat model.");
         }
 
         // ---------------------------------------------------------
@@ -156,7 +156,7 @@ namespace OpenAIApiClient.Tests.Registries.Dispatch
             EnsembleStrategyHandler strategy = testClass.Get(EnsembleStrategy.CostOptimized);
             EnsembleDispatchResult result = strategy(modelRegistry: this.modelRegistry!);
 
-            Assert.IsTrue(result.Models.Any(m => m.Capabilities.Contains(AiModelCapability.LowCost)), "Cost-optimized ensemble must include a low-cost model.");
+            Assert.Contains(m => m.Capabilities.Contains(AiModelCapability.LowCost), result.Models, "Cost-optimized ensemble must include a low-cost model.");
         }
 
         [TestMethod]
@@ -165,7 +165,7 @@ namespace OpenAIApiClient.Tests.Registries.Dispatch
             EnsembleStrategyHandler strategy = testClass.Get(EnsembleStrategy.CostOptimized);
             EnsembleDispatchResult result = strategy(modelRegistry: this.modelRegistry!);
 
-            Assert.IsTrue(result.Models.Any(m => m.Capabilities.Contains(AiModelCapability.HighPerformance)), "Cost-optimized ensemble must include a high-performance model.");
+            Assert.Contains(m => m.Capabilities.Contains(AiModelCapability.HighPerformance), result.Models, "Cost-optimized ensemble must include a high-performance model.");
         }
 
         // ---------------------------------------------------------
