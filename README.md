@@ -16,7 +16,7 @@ Supports:
 - ✔️ Automatic retries  
 - ✔️ Exponential backoff with jitter  
 - ✔️ Smart handling of `HTTP 429 Rate Limit` + `Retry-After` header  
-- ✔�� Strongly‑typed **OpenAI Model Registry**  
+- ✔ Strongly‑typed **OpenAI Model Registry**  
 - ✔️ Strategy‑driven **Single‑Model** & **Ensemble** dispatchers  
 - ✔️ **Model‑as‑judge** evaluation flows  
 - ✔️ **Decision‑by‑heuristic** model selection and ranking  
@@ -215,180 +215,22 @@ setx OPENAI_API_KEY "your-api-key"
 ```
 
 ## 2. Option 1: Use PowerShell to list available OpenAI models
-
-A simple PowerShell function to list models associated with your API key:
-
 ```powershell
-function Get-OpenAIModels {
-    param(
-        [string]$ApiKey = $env:OPENAI_API_KEY
-    )
-
-    Invoke-RestMethod `
-        -Uri "https://api.openai.com/v1/models" `
-        -Headers @{ "Authorization" = "Bearer $ApiKey" } `
-        -Method Get
-}
-
-(Get-OpenAIModels).data | Sort-Object -Property id
+   Show-OpenAIModels.ps1
 ```
 
 ## 3. Option 2: Use PowerShell to send a chat completion request (GPT‑5)
+```powershell
+   Invoke-GPT5.ps1
+```
 
 > Note: GPT‑5 access must be enabled for your account. You need a verified organization and billing at  
 > https://platform.openai.com/settings/organization/general.  
 > Otherwise, you’ll receive 403/Forbidden or similar errors.
 
-### Simple PowerShell script
-
-```powershell
-function Invoke-GPT5Prompt {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Prompt,
-
-        [string]$ApiKey = $env:OPENAI_API_KEY,
-
-        # Optional: adjust temperature if desired
-        [double]$Temperature = 1.0 # GPT-5 only supports 1.0
-    )
-
-    if (-not $ApiKey) {
-        throw "No API key provided. Set OPENAI_API_KEY or pass -ApiKey."
-    }
-
-    $url = "https://api.openai.com/v1/chat/completions"
-
-    $headers = @{
-        "Authorization" = "Bearer $ApiKey"
-        "Content-Type"  = "application/json"
-    }
-
-    $body = @{
-        model = "gpt-5"
-        messages = @(
-            @{
-                role    = "user"
-                content = $Prompt
-            }
-        )
-        temperature = $Temperature
-    } | ConvertTo-Json -Depth 5
-
-    $response = Invoke-RestMethod -Uri $url -Headers $headers -Method Post -Body $body
-
-    return $response.choices[0].message.content
-}
-
-# Example usage
-$response = Invoke-GPT5Prompt -Prompt "List the planets and their diameters in order of size"
-$response
-```
-
 ### Extended PowerShell script with more options
-
 ```powershell
-function Invoke-GPT5Prompt {
-    [CmdletBinding()]
-    param(
-        # Required user prompt
-        [Parameter(Mandatory = $true)]
-        [string]$Prompt,
-
-        # Optional system prompt
-        [string]$SystemPrompt,
-
-        # API key (defaults to environment variable)
-        [string]$ApiKey = $env:OPENAI_API_KEY,
-
-        # Optional OpenAI parameters
-        [double]$Temperature = 1.0,
-        [double]$TopP = 1.0,
-        [int]$MaxTokens,
-        [double]$PresencePenalty = 0.0,
-        [double]$FrequencyPenalty = 0.0,
-        [string[]]$Stop,
-        [string]$User,
-        [int]$Seed,
-        [int]$N = 1,
-
-        # Optional: JSON object for logit bias
-        [hashtable]$LogitBias,
-
-        # Optional: response format (e.g., "json_object")
-        [string]$ResponseFormat
-    )
-
-    if (-not $ApiKey) {
-        throw "No API key provided. Set OPENAI_API_KEY or pass -ApiKey."
-    }
-
-    $url = "https://api.openai.com/v1/chat/completions"
-
-    $headers = @{
-        "Authorization" = "Bearer $ApiKey"
-        "Content-Type"  = "application/json"
-    }
-
-    # Build messages array
-    $messages = @()
-
-    if ($SystemPrompt) {
-        $messages += @{
-            role    = "system"
-            content = $SystemPrompt
-        }
-    }
-
-    $messages += @{
-        role    = "user"
-        content = $Prompt
-    }
-
-    # Build request body
-    $body = @{
-        model = "gpt-5"
-        messages = $messages
-        temperature = $Temperature # GPT-5 only supports 1.0
-        top_p = $TopP              # Not supported by GPT-5 but included for completeness
-        n = $N
-        presence_penalty = $PresencePenalty
-        frequency_penalty = $FrequencyPenalty
-    }
-
-    if ($MaxTokens)      { $body.max_completion_tokens = $MaxTokens }
-    if ($Stop)           { $body.stop = $Stop }
-    if ($User)           { $body.user = $User }
-    if ($Seed)           { $body.seed = $Seed }
-    if ($LogitBias)      { $body.logit_bias = $LogitBias } # Not supported by GPT-5 but included for completeness
-    if ($ResponseFormat) { $body.response_format = @{ type = $ResponseFormat } }
-
-    $json = $body | ConvertTo-Json -Depth 10
-
-    $response = Invoke-RestMethod -Uri $url -Headers $headers -Method Post -Body $json
-
-    # Return the first completion
-    return $response.choices[0].message.content
-}
-
-# Example usage
-
-# Basic
-$response = Invoke-GPT5Prompt -Prompt "Explain the theory of relativity in simple terms."
-$response
-
-# With system prompt and additional parameters
-$response = Invoke-GPT5Prompt -Prompt "Summarize the key points of the article." `
-                              -SystemPrompt "You are a concise summarizer." `
-                              -MaxTokens 150 `
-                              -Temperature 0.7 `
-                              -TopP 0.9
-$response
-
-# With logit bias and response format
-$response = Invoke-GPT5Prompt -Prompt "Generate a JSON object with user details." `
-                              -LogitBias @{ "50256" = -100 } ` # Example token bias
-                              -ResponseFormat "json_object"
+   Invoke-OpenAIModel.ps1
 ```
 
 ## 4. Option 3: Run the console app
@@ -484,7 +326,11 @@ Pricing fields include:
 - Reasoning token cost  
 - Tool‑use token cost  
 
-Values are defined in one place and can be updated whenever OpenAI’s pricing changes.
+Values are defined in one place and can be updated whenever OpenAI’s pricing changes:
+
+- https://openai.com/api/pricing/
+- https://platform.openai.com/docs/pricing
+- https://pricepertoken.com/pricing-page/provider/openai
 
 ## 🗂️ 6. Combined Model Registry
 
