@@ -1,0 +1,112 @@
+﻿{
+  "gpt-5.2": {
+    "input_cost": 1.75,
+    "output_cost": 14.00,
+    "context_window": 200000,
+    "max_output_tokens": 32768,
+    "capabilities": [
+      "Advanced multi-step reasoning",
+      "High-precision code generation",
+      "Long-context comprehension",
+      "Complex planning and analysis",
+      "Robust tool-use and function-calling"
+    ],
+    "use_cases": [
+      "Research-grade analysis",
+      "Multi-agent orchestration",
+      "Enterprise automation",
+      "Complex data transformation",
+      "High-stakes decision support"
+    ],
+    "release_year": 2025,
+    "notes": "Flagship frontier model with highest accuracy and reasoning depth."
+  },
+  "gpt-5.2-pro": {
+    "input_cost": 3.00,
+    "output_cost": 24.00,
+    "context_window": 200000,
+    "max_output_tokens": 32768,
+    "capabilities": [
+      "Enhanced reliability and safety tuning",
+      "Deterministic reasoning under constraints",
+      "High-throughput enterprise performance",
+      "Improved factual consistency",
+      "Advanced compliance-aware generation"
+    ],
+    "use_cases": [
+      "Legal and regulatory analysis",
+      "Financial modelling",
+      "Mission-critical enterprise workloads",
+      "High-volume structured automation",
+      "Safety-sensitive decision pipelines"
+    ],
+    "release_year": 2025,
+    "notes": "Premium variant with stronger guarantees and enterprise-grade behaviour."
+  },
+  "gpt-5-mini": {
+    "input_cost": 0.25,
+    "output_cost": 2.00,
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "capabilities": [
+      "Fast inference",
+      "Low-cost structured output",
+      "Strong classification and extraction",
+      "Reliable summarisation",
+      "Efficient tool-calling"
+    ],
+    "use_cases": [
+      "High-volume classification",
+      "Data extraction pipelines",
+      "Summaries and transformations",
+      "Routing and dispatching",
+      "Lightweight chat and automation"
+    ],
+    "release_year": 2025,
+    "notes": "Best cost/performance ratio for predictable, structured tasks."
+  },
+  "gpt-4.1": {
+    "input_cost": 0.50,
+    "output_cost": 1.50,
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "capabilities": [
+      "General-purpose reasoning",
+      "Strong coding performance",
+      "Good long-context handling",
+      "Balanced speed and accuracy",
+      "Reliable conversational behaviour"
+    ],
+    "use_cases": [
+      "Chatbots and assistants",
+      "Coding support",
+      "General reasoning tasks",
+      "Content generation",
+      "Moderate-complexity analysis"
+    ],
+    "release_year": 2024,
+    "notes": "Stable, widely deployed model with excellent compatibility."
+  },
+  "gpt-4.1-mini": {
+    "input_cost": 0.15,
+    "output_cost": 0.60,
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "capabilities": [
+      "High-speed inference",
+      "Cost-efficient generation",
+      "Strong for classification",
+      "Good for extraction and routing",
+      "Lightweight reasoning"
+    ],
+    "use_cases": [
+      "Embeddings and routing",
+      "Classification and tagging",
+      "Extraction and transformation",
+      "Low-cost chat",
+      "Pipeline orchestrators"
+    ],
+    "release_year": 2024,
+    "notes": "Ideal for orchestrators and high-volume workloads."
+  }
+}
