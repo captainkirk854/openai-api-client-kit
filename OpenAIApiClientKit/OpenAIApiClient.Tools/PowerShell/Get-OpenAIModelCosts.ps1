@@ -10,6 +10,7 @@
 ----------------------------------------------------------------------------------------------------------------------------
 Comments
 ----------------------------------------------------------------------------------------------------------------------------
+A crude, somewhat fragile script that provides some information about OpenAI model pricing.
 ----------------------------------------------------------------------------------------------------------------------------
 #>
 
@@ -153,10 +154,14 @@ function Test-IsModelLine
     )
 
     # Skip lines that are clearly not model names:
-    #  - start with '$'
-    #  - purely numeric
+    #  - start with '$'    
     if ($Line -match '^\$') { return $false }
+    #  - purely numeric
     if ($Line -match '^[0-9\.\-\,]+$') { return $false }
+    # - numerous non-model texts ..
+    if ($Line -match "File Search") {return $false }
+    if ($Line -match "Web Search") {return $false }
+    if ($Line -match ",") {return $false }
 
     $lower = $Line.ToLowerInvariant()
 
@@ -184,12 +189,28 @@ function Get-ModelPricingFromLines
   .SYNOPSIS
   Given an array of text lines, identify model blocks and extract pricing info, returning structured objects
   .NOTES
+  Model entries frequently occur more than once (and are not always visible on the visible web-page).
+  This algorithm will collect all the $prices - expect some inconsistencies - blame it on the source :)
+  
+  e.g.
+  This algorithm expects the following order in pricing structure: [ $input | $cachedinput | $output ]
+  Some tables are structured:
+    [ $input | $cachedinput | $output ] :)
+    [ $input | - | $output ] :|
+    [ $input | $output ] grr ..
+    [ $training | $input | $cachedinput | $output ] GRRRRRR ...
+
+  Tabulated data on these websites appear to be script-driven without ay of the usual table-related tags
+  to attach to.
   .LINK
 #>
     param
     (
         [Parameter(Mandatory = $true)]
-        [string[]]$Lines
+        [string[]]$Lines,
+
+        [Parameter(Mandatory = $false)]
+        [string[]]$Url
     )
 
     $results    = @()
@@ -199,46 +220,63 @@ function Get-ModelPricingFromLines
     {
         $line = $Lines[$i]
 
+        # Skip if $line is html garbage ..
         if (-not (Test-IsModelLine -Line $line)) 
         {
             continue
         }
 
+        # Assign Model Name ..
         $modelName = $line
 
-        if ($seenModels.ContainsKey($modelName)) 
-        {
-            continue
-        }
-
-        # Look ahead for the next two price lines (starting with $)
-        $inputLine  = $null
-        $outputLine = $null
+        # Look ahead for the next two (or three) $price lines (starting with US Dollar $ or in rare cases, no value - indicated by a '-') ..
+        $inputCostLine  = $null
+        $cachedInputCostLine  = $null
+        $outputCostLine = $null
         for ($j = $i + 1; $j -lt [Math]::Min($i + 15, $Lines.Count); $j++) 
         {
             $candidate = $Lines[$j]
-            if ($candidate -match '^\$') {
-                if (-not $inputLine) 
+
+            # Look for model $pricing with this layout: [input | cachedinput | output] and ignore multi-pricings in one block e.g. $1.50/$0.65/$3.23)
+            if (($candidate -match '^\$' -or ($candidate -eq '-')) -and -not $candidate.Contains('/')) 
+            {
+                if (-not $inputCostLine) 
                 {
-                    $inputLine = $candidate
+                    $inputCostLine = $candidate
                 }
-                elseif (-not $outputLine) 
+                elseif (-not $cachedInputCostLine) 
                 {
-                    $outputLine = $candidate
+                    $cachedInputCostLine = $candidate
+                }
+                elseif (-not $outputCostLine) 
+                {
+                    $outputCostLine = $candidate
                     break
                 }
             }
         }
 
-        # If we didn't find two price lines, skip this model block
-        if (-not $inputLine -or -not $outputLine) 
+        # In those cases were CachedInputCost is valuated with '-' on the website, erroneously setting outputCostLine, reset its value ..
+        if ($outputCostLine -eq '-' -and $cachedInputCostLine.Length -gt 0)
+        {
+          $outputCostLine = $cachedInputCostLine
+        }
+
+        # In those cases were CachedInputCost seems to be greater than OutputCost (usually because of change in order of columns on web-page), swap values ..
+        if($outputCostLine -lt $cachedInputCostLine)
+        {
+            $outputCostLine = $cachedInputCostLine
+        }
+
+        # If we didn't find the two price lines we care about (so ignore cached input), skip this model block
+        if (-not $inputCostLine -or -not $outputCostLine) 
         {
             continue
         }
 
         # Normalize the price lines to per 1M tokens numeric values ..
-        $inputPerM  = Normalise-PricePerMillion -Raw $inputLine
-        $outputPerM = Normalise-PricePerMillion -Raw $outputLine
+        $inputPerM  = Normalise-PricePerMillion -Raw $inputCostLine
+        $outputPerM = Normalise-PricePerMillion -Raw $outputCostLine
 
         # Calculate per-token prices ..
         $inputPerTokenValue  = if ($inputPerM  -ne $null) { $inputPerM  / 1000000 } else { $null }
@@ -250,13 +288,14 @@ function Get-ModelPricingFromLines
 
         # Add to results ..
         $results += [pscustomobject]@{
-            Model                  = $modelName
-            RawInput               = $inputLine
-            RawOutput              = $outputLine
-            inputTokenCost_per_1M  = $inputPerM
-            outputTokenCost_per_1M = $outputPerM
+            Model                  = $modelName.ToLower() -replace(" ","-") -replace("\(","") -replace("\)","") # transform to standardise model name
+            RawInput               = $inputCostLine
+            RawOutput              = $outputCostLine
+            InputTokenCost_per_1M  = $inputPerM
+            OutputTokenCost_per_1M = $outputPerM
             inputTokenCost  = if ($inputPerTokenStr)  { $inputPerTokenStr  + 'm' } else { $null }
             outputTokenCost = if ($outputPerTokenStr) { $outputPerTokenStr + 'm' } else { $null }
+            SourceUrl = $Url
         }
 
         $seenModels[$modelName] = $true
@@ -265,6 +304,38 @@ function Get-ModelPricingFromLines
     return $results
 }
 #---------------------------------------------------------------------------------
+
+#---------------------------------------------------------------------------------
+function Get-MostExpensiveModel 
+{
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [object[]]$Group
+    )
+
+    $best = $null
+    $bestScore = [double]::MinValue
+
+    foreach ($m in $Group) 
+    {
+        $input  = if ($m.PSObject.Properties.Match('InputTokenCost_per_1M'))  { [double]($m.InputTokenCost_per_1M  -as [double]) } else { 0 }
+        $output = if ($m.PSObject.Properties.Match('OutputTokenCost_per_1M')) { [double]($m.OutputTokenCost_per_1M -as [double]) } else { 0 }
+
+        # Define score as: sum of input + output
+        $score = $input + $output
+
+        if ($score -gt $bestScore) 
+        {
+            $bestScore = $score
+            $best = $m
+        }
+    }
+
+    return $best
+}
+#---------------------------------------------------------------------------------
+
 
 #---------------------------------------------------------------------------------
 function Get-ModelPricingFromUrl
@@ -287,7 +358,7 @@ function Get-ModelPricingFromUrl
     $lines = Convert-HtmlToLines -Html $html
 
     # Identify model blocks ..
-    $results = Get-ModelPricingFromLines -Lines $lines
+    $results = Get-ModelPricingFromLines -Lines $lines -Url $url
     if ($results.Count -eq 0) 
     {
         throw "No model blocks with two price lines were found on $Url."
@@ -302,6 +373,7 @@ function Get-ModelPricingFromUrl
 # MAIN
 #---------------------------------------------------------------------------------
 # Initialise ...
+$cfgPickMostExpensiveModelVariant = $false # if true, will keep only the most expensive variant of each model; if false, will keep up to 5 variants per model (sorted by cost)
 
 # Go ..
 Write-Host
@@ -309,20 +381,76 @@ Write-Host
 # Get pricing from both sources, combine and dedupe by model name (keeping the first occurrence) ..
 $models1 = Get-ModelPricingFromUrl -Url "https://pricepertoken.com/pricing-page/provider/openai"
 $models2 = Get-ModelPricingFromUrl -Url "https://developers.openai.com/api/docs/pricing?latest-pricing=standard"
+
+<#
 $allModels =
-    $models1 +
-    $models2 |
+    $models1 + $models2 |
+    Group-Object -Property model |
+    ForEach-Object {
+        Get-MostExpensiveModel -Group $_.Group
+    } |
+    Sort-Object model
+#>
+
+<#
+$allModels =
+    $models1 + $models2 |
     Group-Object -Property Model |
     ForEach-Object {
         # Pick the most expensive variant of this model
         $_.Group |
-            Sort-Object @{ Expression = { ($_.input_cost_per_1M  -as [double]) + ($_.output_cost_per_1M -as [double]) } ; Descending = $true } |
-            Select-Object -First 1
-    } |
+            Sort-Object @{
+                 # Robust numeric sum; treat missing/null as 0 ..
+                Expression = { 
+                    ($_.InputTokenCost_per_1M  -as [double]) + 
+                    ($_.OutputTokenCost_per_1M -as [double]) 
+                } 
+                Descending = $true # highest cost first
+              } |
+              Select-Object -First $(if ($cfgPickMostExpensiveModelVariant) { 1 } else { 5 } )
+    }  |
     Sort-Object Model
+#>
+
+
+# Combine raw models from both sources (keeping duplicates / variants)
+$combined = $models1 + $models2
+
+# For each model, sort its variants by cost, assign index that resets per model
+$allModels =
+    $models1 + $models2 |
+    Group-Object -Property model |
+    ForEach-Object {
+        $group = $_.Group
+
+        # Sort variants for this model from most expensive to cheapest
+        $sorted = $group | 
+            Sort-Object -Property @{
+                # Robust numeric sum; treat missing/null as 0 ..
+                Expression = {
+                    ([double]($_.InputTokenCost_per_1M  -as [double])) +
+                    ([double]($_.OutputTokenCost_per_1M -as [double]))
+                }
+            Descending = $true
+        }
+
+        # Optionally pick only the most expensive variant (if config is set), otherwise keep some additional variants for this model
+        $sorted = $sorted  |
+            Select-Object -First $(if ($cfgPickMostExpensiveModelVariant) { 1 } else { 5 } )
+        
+        # Assign an index to each variant of this model, starting at 1 for the most expensive, that can be used to sort variants of the same model together
+        $localIndex = 1
+        foreach ($row in $sorted) {
+            $row | Add-Member -NotePropertyName index_by_cost -NotePropertyValue $localIndex -Force
+            $localIndex++
+            $row
+        }
+    } |
+    Sort-Object model, index_by_cost
+
 
 # Grid .. 
-$allModels | Out-GridView -Title "Scraped Model Costs" -OutputMode Single
+$allModels | Out-GridView -Title "Scraped Model Costs" -PassThru | Format-Table -AutoSize
 
 # Output as JSON (sorted by model name) ..
 $json = $allModels | Sort-Object Model | ConvertTo-Json -Depth 5

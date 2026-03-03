@@ -331,6 +331,12 @@ Values are defined in one place and can be updated whenever OpenAI’s pricing c
 - https://openai.com/api/pricing/
 - https://platform.openai.com/docs/pricing
 - https://pricepertoken.com/pricing-page/provider/openai
+- https://api.openaipricing.com/openai/text_tokens (Restful API Source - not working currently)
+- https://openaipricing.com/pages/openai-platform-api-pricing/ (examples for the API above - not working currently))
+- https://zapier.com/blog/openai-models/ (for pricing and good capabilities reference)
+- https://learn.microsoft.com/en-us/azure/foundry/foundry-models/how-to/model-choice-guide (capabilities reference for Azure OpenAI models, which often align with OpenAI’s public models))
+- https://azure.microsoft.com/en-gb/pricing/details/azure-openai/ (pricing reference for Azure OpenAI models with capabilities information)
+
 
 ## 🗂️ 6. Combined Model Registry
 
