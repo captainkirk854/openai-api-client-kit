@@ -195,9 +195,9 @@ function Get-ModelPricingFromLines
   e.g.
   This algorithm expects the following order in pricing structure: [ $input | $cachedinput | $output ]
   Some tables are structured:
-    [ $input | $cachedinput | $output ] :)
-    [ $input | - | $output ] :|
-    [ $input | $output ] grr ..
+    [ $input | $cachedinput | $output ]             :)
+    [ $input | - | $output ]                        :|
+    [ $input | $output ]                            :(
     [ $training | $input | $cachedinput | $output ] GRRRRRR ...
 
   Tabulated data on these websites appear to be script-driven without ay of the usual table-related tags
@@ -440,7 +440,7 @@ $allModels =
         # Assign an index to each variant of this model, starting at 1 for the most expensive, that can be used to sort variants of the same model together
         $localIndex = 1
         foreach ($row in $sorted) {
-            $row | Add-Member -NotePropertyName index_by_cost -NotePropertyValue $localIndex -Force
+            $row | Add-Member -NotePropertyName cost-index -NotePropertyValue $localIndex -Force
             $localIndex++
             $row
         }
