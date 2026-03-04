@@ -66,23 +66,34 @@
         content = $Prompt
     }
 
+    # Determine if the model is a GPT-5 variant (some parameters are not supported)
+    $isGpt5 = $Model -like "gpt-5*"
+
+    # GPT-5 only supports temperature = 1.0
+    if ($isGpt5 -and $Temperature -ne 1.0) {
+        Write-Warning "Model '$Model' only supports temperature=1.0. Overriding supplied value ($Temperature)."
+        $Temperature = 1.0
+    }
+
     # Build request body
     $body = @{
         model = $Model
         messages = $messages
-        temperature = $Temperature # GPT-5 only supports 1.0
-        top_p = $TopP              # Not supported by gpt-5
+        temperature = $Temperature
         n = $N
         presence_penalty = $PresencePenalty
         frequency_penalty = $FrequencyPenalty
     }
 
-    if ($MaxTokens)      { $body.max_completion_tokens = $MaxTokens }
-    if ($Stop)           { $body.stop = $Stop }
-    if ($User)           { $body.user = $User }
-    if ($Seed)           { $body.seed = $Seed }
-    if ($LogitBias)      { $body.logit_bias = $LogitBias } # Not supported by gpt-5
-    if ($ResponseFormat) { $body.response_format = @{ type = $ResponseFormat } }
+    # top_p is not supported by gpt-5 models
+    if (-not $isGpt5) { $body.top_p = $TopP }
+
+    if ($MaxTokens)                  { $body.max_completion_tokens = $MaxTokens }
+    if ($Stop)                       { $body.stop = $Stop }
+    if ($User)                       { $body.user = $User }
+    if ($Seed)                       { $body.seed = $Seed }
+    if ($LogitBias -and -not $isGpt5) { $body.logit_bias = $LogitBias } # Not supported by gpt-5
+    if ($ResponseFormat)             { $body.response_format = @{ type = $ResponseFormat } }
 
     $json = $body | ConvertTo-Json -Depth 10
 
