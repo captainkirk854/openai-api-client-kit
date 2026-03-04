@@ -26,10 +26,7 @@ function Invoke-GPT5Prompt
         [Parameter(Mandatory = $true)]
         [string]$Prompt,
 
-        [string]$ApiKey = $env:OPENAI_API_KEY,
-
-        # Optional: adjust temperature if desired
-        [double]$Temperature = 1.0 # GPT-5 only supports a value of 1.0 (!)
+        [string]$ApiKey = $env:OPENAI_API_KEY
     )
 
     if (-not $ApiKey) {
@@ -49,7 +46,7 @@ function Invoke-GPT5Prompt
                 content = $Prompt
             }
         )
-        temperature = $Temperature
+        temperature = 1.0 # GPT-5 only supports a value of 1.0 (!)
     } | ConvertTo-Json -Depth 5
 
     # Invoke the API ..

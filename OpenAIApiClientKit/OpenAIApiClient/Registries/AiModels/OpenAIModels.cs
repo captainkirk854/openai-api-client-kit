@@ -77,7 +77,7 @@ namespace OpenAIApiClient.Registries.AiModels
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.00000175m,
-                    outputTokenCost: 0.000021m),
+                    outputTokenCost: 0.000014m),
                 },
 
                 [OpenAIModel.GPT5_2_Pro] = new AiModelDescriptor
@@ -93,7 +93,7 @@ namespace OpenAIApiClient.Registries.AiModels
                     },
                     Pricing = new ModelPricing(
                     inputTokenCost: 0.000021m,
-                    outputTokenCost: 0.00000175m),
+                    outputTokenCost: 0.000168m),
                 },
 
                 [OpenAIModel.GPT5] = new AiModelDescriptor

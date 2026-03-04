@@ -216,7 +216,7 @@ setx OPENAI_API_KEY "your-api-key"
 
 ## 2. Option 1: Use PowerShell to list available OpenAI models
 ```powershell
-   Show-OpenAIModels.ps1
+   Get-Models.ps1
 ```
 
 ## 3. Option 2: Use PowerShell to send a chat completion request (GPT‑5)
@@ -230,7 +230,7 @@ setx OPENAI_API_KEY "your-api-key"
 
 ### Extended PowerShell script with more options
 ```powershell
-   Invoke-OpenAIModel.ps1
+   Invoke-Model.ps1
 ```
 
 ## 4. Option 3: Run the console app
@@ -332,9 +332,9 @@ Values are defined in one place and can be updated whenever OpenAI’s pricing c
 - https://platform.openai.com/docs/pricing
 - https://pricepertoken.com/pricing-page/provider/openai
 - https://api.openaipricing.com/openai/text_tokens (Restful API Source - not working currently)
-- https://openaipricing.com/pages/openai-platform-api-pricing/ (examples for the API above - not working currently))
+- https://openaipricing.com/pages/openai-platform-api-pricing/ (examples for the API above - not working currently)
 - https://zapier.com/blog/openai-models/ (for pricing and good capabilities reference)
-- https://learn.microsoft.com/en-us/azure/foundry/foundry-models/how-to/model-choice-guide (capabilities reference for Azure OpenAI models, which often align with OpenAI’s public models))
+- https://learn.microsoft.com/en-us/azure/foundry/foundry-models/how-to/model-choice-guide (capabilities reference for Azure OpenAI models, which often align with OpenAI’s public models)
 - https://azure.microsoft.com/en-gb/pricing/details/azure-openai/ (pricing reference for Azure OpenAI models with capabilities information)
 
 

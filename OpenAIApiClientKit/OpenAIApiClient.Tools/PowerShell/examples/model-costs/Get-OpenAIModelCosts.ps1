@@ -263,9 +263,16 @@ function Get-ModelPricingFromLines
         }
 
         # In those cases were CachedInputCost seems to be greater than OutputCost (usually because of change in order of columns on web-page), swap values ..
-        if($outputCostLine -lt $cachedInputCostLine)
+        if ($outputCostLine -and $cachedInputCostLine)
         {
-            $outputCostLine = $cachedInputCostLine
+            $numericOutputPerM = Normalise-PricePerMillion -Raw $outputCostLine
+            $numericCachedPerM = Normalise-PricePerMillion -Raw $cachedInputCostLine
+            if ($numericOutputPerM -ne $null -and $numericCachedPerM -ne $null -and $numericOutputPerM -lt $numericCachedPerM)
+            {
+                $temp = $outputCostLine
+                $outputCostLine = $cachedInputCostLine
+                $cachedInputCostLine = $temp
+            }
         }
 
         # If we didn't find the two price lines we care about (so ignore cached input), skip this model block
@@ -440,12 +447,12 @@ $allModels =
         # Assign an index to each variant of this model, starting at 1 for the most expensive, that can be used to sort variants of the same model together
         $localIndex = 1
         foreach ($row in $sorted) {
-            $row | Add-Member -NotePropertyName cost-index -NotePropertyValue $localIndex -Force
+            $row | Add-Member -NotePropertyName CostIndex -NotePropertyValue $localIndex -Force
             $localIndex++
             $row
         }
     } |
-    Sort-Object model, index_by_cost
+    Sort-Object model, CostIndex
 
 
 # Grid .. 
