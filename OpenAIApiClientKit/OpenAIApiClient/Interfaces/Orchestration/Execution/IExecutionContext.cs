@@ -5,7 +5,7 @@
 namespace OpenAIApiClient.Interfaces.Orchestration.Execution
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Models.Registries.AiModels;
 
     public interface IExecutionContext
     {

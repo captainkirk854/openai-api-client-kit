@@ -7,7 +7,7 @@ namespace OpenAIApiClient.Orchestration.Execution
     using System.Collections.Generic;
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Interfaces.Orchestration.Execution;
-    using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Models.Registries.AiModels;
 
     /// <summary>
     /// Defines the execution context for ensemble model requests.

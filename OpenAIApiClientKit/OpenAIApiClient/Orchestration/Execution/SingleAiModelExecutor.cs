@@ -13,7 +13,7 @@ namespace OpenAIApiClient.Orchestration.Execution
     using OpenAIApiClient.Models.Chat.Request;
     using OpenAIApiClient.Models.Chat.Response.Completion;
     using OpenAIApiClient.Models.Chat.Response.Streaming;
-    using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Models.Registries.AiModels;
     using OpenAIApiClient.Orchestration.Response;
 
     /// <summary>

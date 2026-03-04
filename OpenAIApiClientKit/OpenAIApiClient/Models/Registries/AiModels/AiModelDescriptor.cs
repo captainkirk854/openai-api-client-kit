@@ -2,7 +2,7 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Models.Registries
+namespace OpenAIApiClient.Models.Registries.AiModels
 {
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Chat.Response.Completion;

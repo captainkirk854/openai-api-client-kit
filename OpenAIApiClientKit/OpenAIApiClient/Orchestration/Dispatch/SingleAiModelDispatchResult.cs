@@ -4,7 +4,7 @@
 
 namespace OpenAIApiClient.Orchestration.Dispatch
 {
-    using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Models.Registries.AiModels;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SingleAiModelDispatchResult"/> class with the specified model descriptor.

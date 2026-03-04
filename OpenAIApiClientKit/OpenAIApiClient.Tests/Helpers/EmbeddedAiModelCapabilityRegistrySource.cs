@@ -6,7 +6,7 @@ namespace OpenAIApiClient.Tests.Helpers
 {
     using System.Reflection;
     using System.Text.Json;
-    using OpenAIApiClient.Models.Registries.ModelCapabilities;
+    using OpenAIApiClient.Models.Registries.AiModels;
     using testClass = OpenAIApiClient.Helpers.EmbeddedAiModelCapabilityRegistrySource;
 
     [TestClass]
@@ -110,7 +110,7 @@ namespace OpenAIApiClient.Tests.Helpers
                     Assert.IsFalse(string.IsNullOrWhiteSpace(json), "Embedded capability JSON must not be empty.");
 
                     // Try to deserialize using internal DTO ... if this fails, the JSON structure is not as expected for the registry data.
-                    OpenAIModelCapabilityRegistryData? registry = JsonSerializer.Deserialize<OpenAIModelCapabilityRegistryData>(json: json, options: options);
+                    AiModelCapabilityRegistryData? registry = JsonSerializer.Deserialize<AiModelCapabilityRegistryData>(json: json, options: options);
 
                     // Assert that deserialization succeeded and that the expected properties are present in the resulting object.
                     Assert.IsNotNull(registry, "Capability registry deserialization returned null.");

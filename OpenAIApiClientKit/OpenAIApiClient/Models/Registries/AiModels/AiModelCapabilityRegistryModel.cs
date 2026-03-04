@@ -1,13 +1,13 @@
-﻿// <copyright file="OpenAIModelCapabilityRegistryModel.cs" company="854 Things (tm)">
+﻿// <copyright file="AiModelCapabilityRegistryModel.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Models.Registries.ModelCapabilities
+namespace OpenAIApiClient.Models.Registries.AiModels
 {
     /// <summary>
     /// Represents a registry entry for an OpenAI model and its capability scores.
     /// </summary>
-    public sealed class OpenAIModelCapabilityRegistryModel
+    public sealed class AiModelCapabilityRegistryModel
     {
         /// <summary>
         /// Gets The model identifier (e.g., gpt-4.1, gpt-4o-mini).
@@ -30,10 +30,10 @@ namespace OpenAIApiClient.Models.Registries.ModelCapabilities
         /// <summary>
         /// Gets Capability scores for this model.
         /// </summary>
-        public OpenAIModelCapabilityScores Capabilities
+        public AiModelCapabilityScores Capabilities
         {
             get;
             init;
-        } = new OpenAIModelCapabilityScores();
+        } = new AiModelCapabilityScores();
     }
 }

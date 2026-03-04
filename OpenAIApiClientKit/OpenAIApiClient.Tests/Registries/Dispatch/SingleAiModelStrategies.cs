@@ -8,7 +8,7 @@ namespace OpenAIApiClient.Tests.Registries.Dispatch
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using OpenAIApiClient.Delegates;
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Models.Registries.AiModels;
     using OpenAIApiClient.Orchestration.Dispatch;
     using OpenAIApiClient.Registries.AiModels;
     using testClass = OpenAIApiClient.Registries.Dispatch.SingleAiModelStrategies;

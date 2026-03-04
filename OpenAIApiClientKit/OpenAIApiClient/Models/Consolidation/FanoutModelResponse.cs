@@ -4,7 +4,7 @@
 
 namespace OpenAIApiClient.Models.Consolidation
 {
-    using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Models.Registries.AiModels;
 
     /// <summary>
     /// Represents a single model's response in the fan-out process.

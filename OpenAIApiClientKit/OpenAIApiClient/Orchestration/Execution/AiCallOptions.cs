@@ -6,7 +6,7 @@ namespace OpenAIApiClient.Orchestration.Execution
 {
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Chat.Response.Streaming;
-    using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Models.Registries.AiModels;
 
     public sealed class AiCallOptions
     {

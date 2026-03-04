@@ -2,7 +2,7 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Models.Registries.ModelCapabilities.Capabilities
+namespace OpenAIApiClient.Models.Registries.AiModels.Capabilities
 {
     /// <summary>
     /// Represents the performance capabilities of an OpenAI model, including FastInference and HighPerformance scores. These scores provide insights into the model's efficiency and overall performance, helping users understand how well the model can handle various tasks and workloads.

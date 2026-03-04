@@ -6,7 +6,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
 {
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Interfaces.Registries;
-    using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Models.Registries.AiModels;
     using OpenAIApiClient.Registries.AiModels;
 
     /// <summary>

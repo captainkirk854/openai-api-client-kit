@@ -5,7 +5,7 @@
 namespace OpenAIApiClient.Orchestration.Response
 {
     using System.Collections.Generic;
-    using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Models.Registries.AiModels;
 
     /// <summary>
     /// Model response details.

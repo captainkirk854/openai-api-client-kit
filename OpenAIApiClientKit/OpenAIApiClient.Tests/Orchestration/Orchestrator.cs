@@ -6,7 +6,7 @@ namespace OpenAIApiClient.Tests.Orchestration
 {
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Helpers;
-    using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Models.Registries.AiModels;
     using OpenAIApiClient.Orchestration;
     using OpenAIApiClient.Orchestration.Dispatch;
     using OpenAIApiClient.Orchestration.Execution;

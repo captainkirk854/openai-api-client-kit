@@ -5,7 +5,7 @@
 namespace OpenAIApiClient.Delegates
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Models.Registries.AiModels;
     using OpenAIApiClient.Orchestration.Dispatch;
 
     public delegate SingleAiModelDispatchResult SingleAiModelStrategyHandler(IReadOnlyDictionary<OpenAIModel, AiModelDescriptor> modelRegistry, SingleAiModelDispatchRequest request);

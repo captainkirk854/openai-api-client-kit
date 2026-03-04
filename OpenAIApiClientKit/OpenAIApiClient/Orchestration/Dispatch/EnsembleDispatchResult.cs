@@ -4,7 +4,7 @@
 
 namespace OpenAIApiClient.Orchestration.Dispatch
 {
-    using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Models.Registries.AiModels;
 
     /// <summary>
     /// <see cref="EnsembleDispatchRequest"/> represents the result of an ensemble dispatch operation, containing the selected model(s).

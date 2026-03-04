@@ -6,7 +6,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
 {
     using OpenAIApiClient.Interfaces.Orchestration.Execution;
     using OpenAIApiClient.Models.Chat.Request;
-    using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Models.Registries.AiModels;
     using OpenAIApiClient.Orchestration.Execution;
     using OpenAIApiClient.Orchestration.Response;
 

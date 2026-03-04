@@ -1,16 +1,16 @@
-﻿// <copyright file="OpenAIModelCapabilityScores.cs" company="854 Things (tm)">
+﻿// <copyright file="AiModelCapabilityScores.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Models.Registries.ModelCapabilities
+namespace OpenAIApiClient.Models.Registries.AiModels
 {
-    using OpenAIApiClient.Models.Registries.ModelCapabilities.Capabilities;
+    using OpenAIApiClient.Models.Registries.AiModels.Capabilities;
 
     /// <summary>
     /// Represents capability scores for an OpenAI model, including core, advanced, performance, and operational
     /// aspects.
     /// </summary>
-    public sealed class OpenAIModelCapabilityScores
+    public sealed class AiModelCapabilityScores
     {
         /// <summary>
         /// Gets the core capability scores for the model, which include fundamental abilities such as language understanding, reasoning, and contextual awareness.

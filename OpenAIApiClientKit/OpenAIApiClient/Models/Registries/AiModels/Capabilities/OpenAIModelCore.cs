@@ -2,7 +2,7 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Models.Registries.ModelCapabilities.Capabilities
+namespace OpenAIApiClient.Models.Registries.AiModels.Capabilities
 {
     /// <summary>
     /// Represents the core capability scores of an OpenAI model, including reasoning, text generation, chat, vision,

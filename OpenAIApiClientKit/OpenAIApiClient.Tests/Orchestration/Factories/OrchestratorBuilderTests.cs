@@ -5,7 +5,7 @@
 namespace OpenAIApiClient.Tests.Orchestration.Factories
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Models.Registries.AiModels;
     using OpenAIApiClient.Orchestration;
     using OpenAIApiClient.Orchestration.Factories;
     using OpenAIApiClient.Tests.Orchestration.Mocks;

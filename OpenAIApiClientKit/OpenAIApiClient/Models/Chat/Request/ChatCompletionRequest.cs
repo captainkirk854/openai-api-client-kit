@@ -7,7 +7,7 @@ namespace OpenAIApiClient.Models.Chat.Request
     using System.Text.Json.Serialization;
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Chat.Common;
-    using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Models.Registries.AiModels;
     using OpenAIApiClient.Registries.AiModels;
 
     public class ChatCompletionRequest

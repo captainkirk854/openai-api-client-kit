@@ -9,7 +9,7 @@ namespace OpenAIApiClient.Tests.Registries.AiModels
     using System.Linq;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Models.Registries.AiModels;
     using testClass = OpenAIApiClient.Registries.AiModels.OpenAIModels;
 
     /// <summary>

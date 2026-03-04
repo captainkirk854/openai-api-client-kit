@@ -7,7 +7,7 @@ namespace OpenAIApiClient.Registries.AiModels
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Interfaces.Registries;
     using OpenAIApiClient.Models.Chat.Response.Completion;
-    using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Models.Registries.AiModels;
 
     /// <summary>
     /// Provides a registry of available OpenAI models and their descriptors, including capabilities and pricing information.

@@ -5,7 +5,7 @@
 namespace OpenAIApiClient.ConsoleApp.Demos
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Models.Registries.AiModels;
     using OpenAIApiClient.Orchestration.Dispatch;
     using OpenAIApiClient.Registries.AiModels;
 

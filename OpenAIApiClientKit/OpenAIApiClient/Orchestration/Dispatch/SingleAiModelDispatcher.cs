@@ -8,7 +8,7 @@ namespace OpenAIApiClient.Orchestration.Dispatch
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Interfaces.Orchestration.Dispatch;
     using OpenAIApiClient.Interfaces.Registries;
-    using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Models.Registries.AiModels;
     using OpenAIApiClient.Registries.Dispatch;
 
     /// <summary>

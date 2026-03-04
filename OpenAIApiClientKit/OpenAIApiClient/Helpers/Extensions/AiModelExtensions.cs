@@ -5,7 +5,7 @@
 namespace OpenAIApiClient.Helpers.Extensions
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Models.Registries;
+    using OpenAIApiClient.Models.Registries.AiModels;
     using OpenAIApiClient.Registries.AiModels;
     using OpenAIApiClient.Registries.Dispatch;
 
