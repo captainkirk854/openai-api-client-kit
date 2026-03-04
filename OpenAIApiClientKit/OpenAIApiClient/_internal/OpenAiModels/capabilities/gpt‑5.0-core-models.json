@@ -1,0 +1,124 @@
+{
+  "models": [
+    {
+      "name": "gpt-5.0",
+      "family": "gpt-5",
+      "capabilities": {
+        "core": {
+          "Reasoning": 5,
+          "Text": 5,
+          "Chat": 5,
+          "Vision": 4,
+          "AudioIn": 2,
+          "AudioOut": 2
+        },
+        "advanced": {
+          "Critic": 4,
+          "Editor": 4,
+          "JSONMode": 5,
+          "Embedding": 0,
+          "ImageGeneration": 0
+        },
+        "performance": {
+          "FastInference": 4,
+          "HighPerformance": 5
+        },
+        "operational": {
+          "LowCost": 2,
+          "Moderation": 3,
+          "OpenWeight": 0
+        }
+      }
+    },
+    {
+      "name": "gpt-5.0-pro",
+      "family": "gpt-5",
+      "capabilities": {
+        "core": {
+          "Reasoning": 5,
+          "Text": 5,
+          "Chat": 5,
+          "Vision": 5,
+          "AudioIn": 3,
+          "AudioOut": 3
+        },
+        "advanced": {
+          "Critic": 5,
+          "Editor": 5,
+          "JSONMode": 5,
+          "Embedding": 0,
+          "ImageGeneration": 0
+        },
+        "performance": {
+          "FastInference": 3,
+          "HighPerformance": 5
+        },
+        "operational": {
+          "LowCost": 1,
+          "Moderation": 4,
+          "OpenWeight": 0
+        }
+      }
+    },
+    {
+      "name": "gpt-5.0-mini",
+      "family": "gpt-5",
+      "capabilities": {
+        "core": {
+          "Reasoning": 4,
+          "Text": 5,
+          "Chat": 5,
+          "Vision": 3,
+          "AudioIn": 1,
+          "AudioOut": 1
+        },
+        "advanced": {
+          "Critic": 3,
+          "Editor": 3,
+          "JSONMode": 4,
+          "Embedding": 0,
+          "ImageGeneration": 0
+        },
+        "performance": {
+          "FastInference": 5,
+          "HighPerformance": 4
+        },
+        "operational": {
+          "LowCost": 4,
+          "Moderation": 2,
+          "OpenWeight": 0
+        }
+      }
+    },
+    {
+      "name": "gpt-5.0-nano",
+      "family": "gpt-5",
+      "capabilities": {
+        "core": {
+          "Reasoning": 3,
+          "Text": 4,
+          "Chat": 4,
+          "Vision": 2,
+          "AudioIn": 0,
+          "AudioOut": 0
+        },
+        "advanced": {
+          "Critic": 2,
+          "Editor": 2,
+          "JSONMode": 3,
+          "Embedding": 0,
+          "ImageGeneration": 0
+        },
+        "performance": {
+          "FastInference": 5,
+          "HighPerformance": 3
+        },
+        "operational": {
+          "LowCost": 5,
+          "Moderation": 1,
+          "OpenWeight": 0
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "models": [
+
+    {
+      "name": "gpt-3.5-turbo",
+      "family": "gpt-3.5",
+      "capabilities": {
+        "core": {
+          "Reasoning": 3,
+          "Text": 4,
+          "Chat": 4,
+          "Vision": 1,
+          "AudioIn": 0,
+          "AudioOut": 0
+        },
+        "advanced": {
+          "Critic": 1,
+          "Editor": 1,
+          "JSONMode": 3,
+          "Embedding": 0,
+          "ImageGeneration": 0
+        },
+        "performance": {
+          "FastInference": 4,
+          "HighPerformance": 3
+        },
+        "operational": {
+          "LowCost": 4,
+          "Moderation": 1,
+          "OpenWeight": 0
+        }
+      }
+    },
+
+    {
+      "name": "gpt-3.5-turbo-16k",
+      "family": "gpt-3.5",
+      "capabilities": {
+        "core": {
+          "Reasoning": 3,
+          "Text": 4,
+          "Chat": 4,
+          "Vision": 1,
+          "AudioIn": 0,
+          "AudioOut": 0
+        },
+        "advanced": {
+          "Critic": 1,
+          "Editor": 1,
+          "JSONMode": 3,
+          "Embedding": 0,
+          "ImageGeneration": 0
+        },
+        "performance": {
+          "FastInference": 3,
+          "HighPerformance": 3
+        },
+        "operational": {
+          "LowCost": 3,
+          "Moderation": 1,
+          "OpenWeight": 0
+        }
+      }
+    },
+    {
+      "name": "gpt-3.5-turbo-instruct",
+      "family": "gpt-3.5",
+      "capabilities": {
+        "core": {
+          "Reasoning": 3,
+          "Text": 4,
+          "Chat": 3,
+          "Vision": 0,
+          "AudioIn": 0,
+          "AudioOut": 0
+        },
+        "advanced": {
+          "Critic": 1,
+          "Editor": 2,
+          "JSONMode": 2,
+          "Embedding": 0,
+          "ImageGeneration": 0
+        },
+        "performance": {
+          "FastInference": 3,
+          "HighPerformance": 3
+        },
+        "operational": {
+          "LowCost": 3,
+          "Moderation": 1,
+          "OpenWeight": 0
+        }
+      }
+    }
+  ]
+}

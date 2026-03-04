@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OpenAIModelCapabilityRegistry",
+  "type": "object",
+  "properties": {
+    "models": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "family", "capabilities"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The model identifier (e.g., gpt-4.1, gpt-4o-mini)."
+          },
+          "family": {
+            "type": "string",
+            "description": "The model family (e.g., gpt-4, gpt-4o, o-series)."
+          },
+          "capabilities": {
+            "type": "object",
+            "required": [
+              "core",
+              "advanced",
+              "performance",
+              "operational"
+            ],
+            "properties": {
+              "core": {
+                "type": "object",
+                "description": "Fundamental cognitive and multimodal capabilities.",
+                "properties": {
+                  "Reasoning": { "type": "integer", "minimum": 0, "maximum": 5 },
+                  "Text": { "type": "integer", "minimum": 0, "maximum": 5 },
+                  "Chat": { "type": "integer", "minimum": 0, "maximum": 5 },
+                  "Vision": { "type": "integer", "minimum": 0, "maximum": 5 },
+                  "AudioIn": { "type": "integer", "minimum": 0, "maximum": 5 },
+                  "AudioOut": { "type": "integer", "minimum": 0, "maximum": 5 }
+                },
+                "additionalProperties": false
+              },
+              "advanced": {
+                "type": "object",
+                "description": "Higher-order behavioural and structured-output capabilities.",
+                "properties": {
+                  "Critic": { "type": "integer", "minimum": 0, "maximum": 5 },
+                  "Editor": { "type": "integer", "minimum": 0, "maximum": 5 },
+                  "JSONMode": { "type": "integer", "minimum": 0, "maximum": 5 },
+                  "Embedding": { "type": "integer", "minimum": 0, "maximum": 5 },
+                  "ImageGeneration": { "type": "integer", "minimum": 0, "maximum": 5 }
+                },
+                "additionalProperties": false
+              },
+              "performance": {
+                "type": "object",
+                "description": "Speed, throughput, and model capability tier.",
+                "properties": {
+                  "FastInference": { "type": "integer", "minimum": 0, "maximum": 5 },
+                  "HighPerformance": { "type": "integer", "minimum": 0, "maximum": 5 }
+                },
+                "additionalProperties": false
+              },
+              "operational": {
+                "type": "object",
+                "description": "Cost, safety, and deployment characteristics.",
+                "properties": {
+                  "LowCost": { "type": "integer", "minimum": 0, "maximum": 5 },
+                  "Moderation": { "type": "integer", "minimum": 0, "maximum": 5 },
+                  "OpenWeight": { "type": "integer", "minimum": 0, "maximum": 5 }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["models"],
+  "additionalProperties": false
+}

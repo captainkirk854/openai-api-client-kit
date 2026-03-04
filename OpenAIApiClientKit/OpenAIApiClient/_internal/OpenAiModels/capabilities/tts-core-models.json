@@ -1,0 +1,64 @@
+{
+  "models": [
+    {
+      "name": "tts-1",
+      "family": "audio",
+      "capabilities": {
+        "core": {
+          "Reasoning": 1,
+          "Text": 0,
+          "Chat": 0,
+          "Vision": 0,
+          "AudioIn": 0,
+          "AudioOut": 5
+        },
+        "advanced": {
+          "Critic": 0,
+          "Editor": 0,
+          "JSONMode": 0,
+          "Embedding": 0,
+          "ImageGeneration": 0
+        },
+        "performance": {
+          "FastInference": 4,
+          "HighPerformance": 3
+        },
+        "operational": {
+          "LowCost": 3,
+          "Moderation": 0,
+          "OpenWeight": 0
+        }
+      }
+    },
+    {
+      "name": "tts-1-hd",
+      "family": "audio",
+      "capabilities": {
+        "core": {
+          "Reasoning": 1,
+          "Text": 0,
+          "Chat": 0,
+          "Vision": 0,
+          "AudioIn": 0,
+          "AudioOut": 5
+        },
+        "advanced": {
+          "Critic": 0,
+          "Editor": 0,
+          "JSONMode": 0,
+          "Embedding": 0,
+          "ImageGeneration": 0
+        },
+        "performance": {
+          "FastInference": 3,
+          "HighPerformance": 4
+        },
+        "operational": {
+          "LowCost": 2,
+          "Moderation": 0,
+          "OpenWeight": 0
+        }
+      }
+    }
+  ]
+}

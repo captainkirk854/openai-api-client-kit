@@ -1,0 +1,94 @@
+{
+  "models": [
+    {
+      "name": "o3-mini",
+      "family": "o-series",
+      "capabilities": {
+        "core": {
+          "Reasoning": 5,
+          "Text": 4,
+          "Chat": 4,
+          "Vision": 2,
+          "AudioIn": 0,
+          "AudioOut": 0
+        },
+        "advanced": {
+          "Critic": 4,
+          "Editor": 3,
+          "JSONMode": 4,
+          "Embedding": 0,
+          "ImageGeneration": 0
+        },
+        "performance": {
+          "FastInference": 3,
+          "HighPerformance": 5
+        },
+        "operational": {
+          "LowCost": 3,
+          "Moderation": 2,
+          "OpenWeight": 0
+        }
+      }
+    },
+    {
+      "name": "o1",
+      "family": "o-series",
+      "capabilities": {
+        "core": {
+          "Reasoning": 5,
+          "Text": 4,
+          "Chat": 4,
+          "Vision": 2,
+          "AudioIn": 0,
+          "AudioOut": 0
+        },
+        "advanced": {
+          "Critic": 4,
+          "Editor": 3,
+          "JSONMode": 4,
+          "Embedding": 0,
+          "ImageGeneration": 0
+        },
+        "performance": {
+          "FastInference": 2,
+          "HighPerformance": 5
+        },
+        "operational": {
+          "LowCost": 1,
+          "Moderation": 2,
+          "OpenWeight": 0
+        }
+      }
+    },
+    {
+      "name": "o1-mini",
+      "family": "o-series",
+      "capabilities": {
+        "core": {
+          "Reasoning": 5,
+          "Text": 4,
+          "Chat": 4,
+          "Vision": 2,
+          "AudioIn": 0,
+          "AudioOut": 0
+        },
+        "advanced": {
+          "Critic": 4,
+          "Editor": 3,
+          "JSONMode": 4,
+          "Embedding": 0,
+          "ImageGeneration": 0
+        },
+        "performance": {
+          "FastInference": 3,
+          "HighPerformance": 5
+        },
+        "operational": {
+          "LowCost": 2,
+          "Moderation": 2,
+          "OpenWeight": 0
+        }
+      }
+    }
+  ]
+}

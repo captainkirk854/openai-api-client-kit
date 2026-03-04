@@ -1,0 +1,96 @@
+{
+  "models": [
+    {
+      "name": "text-embedding-3-large",
+      "family": "embedding",
+      "capabilities": {
+        "core": {
+          "Reasoning": 2,
+          "Text": 1,
+          "Chat": 0,
+          "Vision": 0,
+          "AudioIn": 0,
+          "AudioOut": 0
+        },
+        "advanced": {
+          "Critic": 0,
+          "Editor": 0,
+          "JSONMode": 1,
+          "Embedding": 5,
+          "ImageGeneration": 0
+        },
+        "performance": {
+          "FastInference": 3,
+          "HighPerformance": 3
+        },
+        "operational": {
+          "LowCost": 3,
+          "Moderation": 0,
+          "OpenWeight": 0
+        }
+      }
+    },
+
+    {
+      "name": "text-embedding-3-small",
+      "family": "embedding",
+      "capabilities": {
+        "core": {
+          "Reasoning": 1,
+          "Text": 1,
+          "Chat": 0,
+          "Vision": 0,
+          "AudioIn": 0,
+          "AudioOut": 0
+        },
+        "advanced": {
+          "Critic": 0,
+          "Editor": 0,
+          "JSONMode": 1,
+          "Embedding": 5,
+          "ImageGeneration": 0
+        },
+        "performance": {
+          "FastInference": 4,
+          "HighPerformance": 2
+        },
+        "operational": {
+          "LowCost": 4,
+          "Moderation": 0,
+          "OpenWeight": 0
+        }
+      }
+    },
+
+    {
+      "name": "text-embedding-ada-002",
+      "family": "embedding",
+      "capabilities": {
+        "core": {
+          "Reasoning": 1,
+          "Text": 1,
+          "Chat": 0,
+          "Vision": 0,
+          "AudioIn": 0,
+          "AudioOut": 0
+        },
+        "advanced": {
+          "Critic": 0,
+          "Editor": 0,
+          "JSONMode": 1,
+          "Embedding": 4,
+          "ImageGeneration": 0
+        },
+        "performance": {
+          "FastInference": 3,
+          "HighPerformance": 2
+        },
+        "operational": {
+          "LowCost": 4,
+          "Moderation": 0,
+          "OpenWeight": 0
+        }
+      }
+    }
+  ]
+}

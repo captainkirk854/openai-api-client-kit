@@ -1,0 +1,94 @@
+{
+  "models": [
+    {
+      "name": "gpt-4o",
+      "family": "gpt-4o",
+      "capabilities": {
+        "core": {
+          "Reasoning": 5,
+          "Text": 5,
+          "Chat": 5,
+          "Vision": 5,
+          "AudioIn": 3,
+          "AudioOut": 3
+        },
+        "advanced": {
+          "Critic": 4,
+          "Editor": 4,
+          "JSONMode": 5,
+          "Embedding": 0,
+          "ImageGeneration": 0
+        },
+        "performance": {
+          "FastInference": 4,
+          "HighPerformance": 5
+        },
+        "operational": {
+          "LowCost": 3,
+          "Moderation": 3,
+          "OpenWeight": 0
+        }
+      }
+    },
+    {
+      "name": "gpt-4o-mini",
+      "family": "gpt-4o",
+      "capabilities": {
+        "core": {
+          "Reasoning": 4,
+          "Text": 5,
+          "Chat": 5,
+          "Vision": 4,
+          "AudioIn": 3,
+          "AudioOut": 3
+        },
+        "advanced": {
+          "Critic": 3,
+          "Editor": 3,
+          "JSONMode": 4,
+          "Embedding": 0,
+          "ImageGeneration": 0
+        },
+        "performance": {
+          "FastInference": 5,
+          "HighPerformance": 4
+        },
+        "operational": {
+          "LowCost": 5,
+          "Moderation": 3,
+          "OpenWeight": 0
+        }
+      }
+    },
+    {
+      "name": "gpt-4o-realtime-preview",
+      "family": "gpt-4o",
+      "capabilities": {
+        "core": {
+          "Reasoning": 4,
+          "Text": 5,
+          "Chat": 5,
+          "Vision": 4,
+          "AudioIn": 5,
+          "AudioOut": 5
+        },
+        "advanced": {
+          "Critic": 3,
+          "Editor": 3,
+          "JSONMode": 4,
+          "Embedding": 0,
+          "ImageGeneration": 0
+        },
+        "performance": {
+          "FastInference": 4,
+          "HighPerformance": 5
+        },
+        "operational": {
+          "LowCost": 3,
+          "Moderation": 3,
+          "OpenWeight": 0
+        }
+      }
+    }
+  ]
+}
