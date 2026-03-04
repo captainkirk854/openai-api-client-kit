@@ -76,8 +76,8 @@ namespace OpenAIApiClient.Registries.AiModels
                         AiModelCapability.HighPerformance,
                     },
                     Pricing = new ModelPricing(
-                    inputTokenCost: 0.00000000m,
-                    outputTokenCost: 0.00000000m),
+                    inputTokenCost: 0.00000175m,
+                    outputTokenCost: 0.000014m),
                 },
 
                 [OpenAIModel.GPT5_2_Pro] = new AiModelDescriptor
@@ -92,8 +92,8 @@ namespace OpenAIApiClient.Registries.AiModels
                         AiModelCapability.HighPerformance,
                     },
                     Pricing = new ModelPricing(
-                    inputTokenCost: 0.00000000m,
-                    outputTokenCost: 0.00000000m),
+                    inputTokenCost: 0.000021m,
+                    outputTokenCost: 0.000168m),
                 },
 
                 [OpenAIModel.GPT5] = new AiModelDescriptor
@@ -107,8 +107,8 @@ namespace OpenAIApiClient.Registries.AiModels
                         AiModelCapability.HighPerformance,
                     },
                     Pricing = new ModelPricing(
-                    inputTokenCost: 0.00000000m,
-                    outputTokenCost: 0.00000000m),
+                    inputTokenCost: 0.00000125m,
+                    outputTokenCost: 0.00001m),
                 },
 
                 [OpenAIModel.GPT5_Mini] = new AiModelDescriptor
@@ -122,8 +122,8 @@ namespace OpenAIApiClient.Registries.AiModels
                         AiModelCapability.LowCost,
                     },
                     Pricing = new ModelPricing(
-                    inputTokenCost: 0.00000000m,
-                    outputTokenCost: 0.00000000m),
+                    inputTokenCost: 0.00000025m,
+                    outputTokenCost: 0.000002m),
                 },
 
                 [OpenAIModel.GPT5_Nano] = new AiModelDescriptor
@@ -137,8 +137,8 @@ namespace OpenAIApiClient.Registries.AiModels
                         AiModelCapability.LowCost,
                     },
                     Pricing = new ModelPricing(
-                    inputTokenCost: 0.00000000m,
-                    outputTokenCost: 0.00000000m),
+                    inputTokenCost: 0.00000005m,
+                    outputTokenCost: 0.0000004m),
                 },
 
                 // -------------------------

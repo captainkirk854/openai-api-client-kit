@@ -123,8 +123,8 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
 
             // Assert
             Assert.HasCount(2, result.Models);
-            Assert.IsTrue(result.Models.Any(m => m.Name == m1.Name), "Expected model m1 was not found in the result set.");
-            Assert.IsTrue(result.Models.Any(m => m.Name == m2.Name), "Expected model m2 was not found in the result set.");
+            Assert.Contains(m => m.Name == m1.Name, result.Models, "Expected model m1 was not found in the result set.");
+            Assert.Contains(m => m.Name == m2.Name, result.Models, "Expected model m2 was not found in the result set.");
             Assert.AreEqual(m2, result.Models[0]);
         }
 

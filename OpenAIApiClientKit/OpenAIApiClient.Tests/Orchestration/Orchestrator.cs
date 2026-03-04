@@ -81,7 +81,7 @@ namespace OpenAIApiClient.Tests.Orchestration
             Assert.IsNull(this.mockEnsembleDispatcher.LastRequest);
 
             Assert.IsNotNull(this.mockSingleExecutor.LastCall);
-            Assert.IsTrue(this.mockSingleExecutor.LastCall.Value.request.Messages.Any(m => m.Content == prompt));
+            Assert.Contains(m => m.Content == prompt, this.mockSingleExecutor.LastCall.Value.request.Messages);
         }
 
         [TestMethod]
@@ -242,8 +242,8 @@ namespace OpenAIApiClient.Tests.Orchestration
             // Assert: the second request should only contain its own prompt, not the first prompt
             Assert.IsNotNull(this.mockSingleExecutor.LastCall);
             IReadOnlyList<OpenAIApiClient.Models.Chat.Common.ChatMessage> messages = this.mockSingleExecutor.LastCall.Value.request.Messages;
-            Assert.IsTrue(messages.Any(m => m.Content == "Second prompt"), "Second request should contain its own prompt.");
-            Assert.IsFalse(messages.Any(m => m.Content == "First prompt"), "Second request must not contain the first prompt.");
+            Assert.Contains(m => m.Content == "Second prompt", messages, "Second request should contain its own prompt.");
+            Assert.DoesNotContain(m => m.Content == "First prompt", messages, "Second request must not contain the first prompt.");
         }
 
         // ------------------------------------------------------------
