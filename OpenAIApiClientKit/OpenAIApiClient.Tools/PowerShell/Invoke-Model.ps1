@@ -10,6 +10,7 @@
 
 # Sample usage
 
+<#
 # Basic
 $response = Invoke-OpenAIPrompt -Model "gpt-4.1-mini" `
                                 -Prompt "Explain the theory of relativity in simple terms."
@@ -36,3 +37,4 @@ $response = Invoke-OpenAIPrompt -Model "gpt-3.5-turbo" `
 $response
 Write-Host "---------------------------------------------------------------------------------------------"
 Write-Host
+#>
