@@ -4,6 +4,8 @@
 
 namespace OpenAIApiClient.Models.Registries.AiModels
 {
+    using OpenAIApiClient.Models.Chat.Response.Completion;
+
     /// <summary>
     /// Represents a registry entry for an OpenAI model and its capability scores.
     /// </summary>
@@ -44,6 +46,15 @@ namespace OpenAIApiClient.Models.Registries.AiModels
             get;
             init;
         } = [];
+
+        /// <summary>
+        /// Gets the pricing information for the model.
+        /// </summary>
+        public ModelPricing Pricing
+        {
+            get;
+            init;
+        } = new ModelPricing(0, 0);
 
         /// <summary>
         /// Gets Capability scores for this model.

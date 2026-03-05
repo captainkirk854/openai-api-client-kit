@@ -5,6 +5,10 @@
       "family": "gpt-5",
       "tier": "base",
       "tags": [ "analysis", "generalist", "balanced" ],
+      "Pricing": {
+        "inputTokenCost": 0.0005,
+        "outputTokenCost": 0.001
+      },
       "capabilities": {
         "core": {
           "Reasoning": 5,
