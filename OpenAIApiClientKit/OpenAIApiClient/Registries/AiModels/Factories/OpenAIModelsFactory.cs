@@ -46,7 +46,7 @@ namespace OpenAIApiClient.Registries.AiModels.Factories
                     Capabilities = new HashSet<AiModelCapability>(capabilities),
 
                     // For now, you can keep your existing pricing logic.
-                    Pricing = new ModelPricing(0m, 0m), // schema needs extension to support pricing data
+                    Pricing = new AiModelPricing(0m, 0m), // schema needs extension to support pricing data
                     Domain = ModelDomain.Other, // schema needs extension to support domain data
                     Generation = OpenAIModelGeneration.Other, // schema needs extension to support generation data
                 };

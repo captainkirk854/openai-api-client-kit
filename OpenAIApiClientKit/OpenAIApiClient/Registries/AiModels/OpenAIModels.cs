@@ -75,7 +75,7 @@ namespace OpenAIApiClient.Registries.AiModels
                         AiModelCapability.Reasoning,
                         AiModelCapability.HighPerformance,
                     },
-                    Pricing = new ModelPricing(
+                    Pricing = new AiModelPricing(
                     inputTokenCost: 0.00000175m,
                     outputTokenCost: 0.000014m),
                 },
@@ -91,7 +91,7 @@ namespace OpenAIApiClient.Registries.AiModels
                         AiModelCapability.Reasoning,
                         AiModelCapability.HighPerformance,
                     },
-                    Pricing = new ModelPricing(
+                    Pricing = new AiModelPricing(
                     inputTokenCost: 0.000021m,
                     outputTokenCost: 0.000168m),
                 },
@@ -106,7 +106,7 @@ namespace OpenAIApiClient.Registries.AiModels
                         AiModelCapability.Chat,
                         AiModelCapability.HighPerformance,
                     },
-                    Pricing = new ModelPricing(
+                    Pricing = new AiModelPricing(
                     inputTokenCost: 0.00000125m,
                     outputTokenCost: 0.00001m),
                 },
@@ -121,7 +121,7 @@ namespace OpenAIApiClient.Registries.AiModels
                         AiModelCapability.Chat,
                         AiModelCapability.LowCost,
                     },
-                    Pricing = new ModelPricing(
+                    Pricing = new AiModelPricing(
                     inputTokenCost: 0.00000025m,
                     outputTokenCost: 0.000002m),
                 },
@@ -136,7 +136,7 @@ namespace OpenAIApiClient.Registries.AiModels
                         AiModelCapability.Chat,
                         AiModelCapability.LowCost,
                     },
-                    Pricing = new ModelPricing(
+                    Pricing = new AiModelPricing(
                     inputTokenCost: 0.00000005m,
                     outputTokenCost: 0.0000004m),
                 },
@@ -155,7 +155,7 @@ namespace OpenAIApiClient.Registries.AiModels
                         AiModelCapability.Chat,
                         AiModelCapability.Reasoning,
                     },
-                    Pricing = new ModelPricing(
+                    Pricing = new AiModelPricing(
                     inputTokenCost: 0.00001m,
                     outputTokenCost: 0.00003m,
                     cachedInputTokenCost: 0.000002m),
@@ -173,7 +173,7 @@ namespace OpenAIApiClient.Registries.AiModels
                         AiModelCapability.LowCost,
                         AiModelCapability.FastInference,
                     },
-                    Pricing = new ModelPricing(
+                    Pricing = new AiModelPricing(
                     inputTokenCost: 0.0000015m,
                     outputTokenCost: 0.000002m),
                 },
@@ -188,7 +188,7 @@ namespace OpenAIApiClient.Registries.AiModels
                         AiModelCapability.Chat,
                         AiModelCapability.HighPerformance,
                     },
-                    Pricing = new ModelPricing(
+                    Pricing = new AiModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
                 },
@@ -209,7 +209,7 @@ namespace OpenAIApiClient.Registries.AiModels
                         AiModelCapability.AudioOut,
                         AiModelCapability.HighPerformance,
                     },
-                    Pricing = new ModelPricing(
+                    Pricing = new AiModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
                 },
@@ -227,7 +227,7 @@ namespace OpenAIApiClient.Registries.AiModels
                         AiModelCapability.LowCost,
                         AiModelCapability.FastInference,
                     },
-                    Pricing = new ModelPricing(
+                    Pricing = new AiModelPricing(
                     inputTokenCost: 0.00000015m,
                     outputTokenCost: 0.00000060m),
                 },
@@ -245,7 +245,7 @@ namespace OpenAIApiClient.Registries.AiModels
                         AiModelCapability.Chat,
                         AiModelCapability.LowCost,
                     },
-                    Pricing = new ModelPricing(
+                    Pricing = new AiModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
                 },
@@ -261,7 +261,7 @@ namespace OpenAIApiClient.Registries.AiModels
                     {
                         AiModelCapability.Embedding,
                     },
-                    Pricing = new ModelPricing(
+                    Pricing = new AiModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
                 },
@@ -274,7 +274,7 @@ namespace OpenAIApiClient.Registries.AiModels
                     {
                         AiModelCapability.Embedding,
                     },
-                    Pricing = new ModelPricing(
+                    Pricing = new AiModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
                 },
@@ -287,7 +287,7 @@ namespace OpenAIApiClient.Registries.AiModels
                     {
                         AiModelCapability.Embedding,
                     },
-                    Pricing = new ModelPricing(
+                    Pricing = new AiModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
                 },
@@ -303,7 +303,7 @@ namespace OpenAIApiClient.Registries.AiModels
                     {
                         AiModelCapability.AudioOut,
                     },
-                    Pricing = new ModelPricing(
+                    Pricing = new AiModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
                 },
@@ -316,7 +316,7 @@ namespace OpenAIApiClient.Registries.AiModels
                     {
                         AiModelCapability.AudioOut,
                     },
-                    Pricing = new ModelPricing(
+                    Pricing = new AiModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
                 },
@@ -329,7 +329,7 @@ namespace OpenAIApiClient.Registries.AiModels
                     {
                         AiModelCapability.AudioIn,
                     },
-                    Pricing = new ModelPricing(
+                    Pricing = new AiModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
                 },
@@ -342,7 +342,7 @@ namespace OpenAIApiClient.Registries.AiModels
                     {
                         AiModelCapability.AudioOut,
                     },
-                    Pricing = new ModelPricing(
+                    Pricing = new AiModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
                 },
@@ -355,7 +355,7 @@ namespace OpenAIApiClient.Registries.AiModels
                     {
                         AiModelCapability.AudioOut,
                     },
-                    Pricing = new ModelPricing(
+                    Pricing = new AiModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
                 },
@@ -371,7 +371,7 @@ namespace OpenAIApiClient.Registries.AiModels
                     {
                         AiModelCapability.ImageGeneration,
                     },
-                    Pricing = new ModelPricing(
+                    Pricing = new AiModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
                 },
@@ -389,7 +389,7 @@ namespace OpenAIApiClient.Registries.AiModels
                         AiModelCapability.Chat,
                         AiModelCapability.OpenWeight,
                     },
-                    Pricing = new ModelPricing(
+                    Pricing = new AiModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
                 },
@@ -405,7 +405,7 @@ namespace OpenAIApiClient.Registries.AiModels
                         AiModelCapability.OpenWeight,
                         AiModelCapability.LowCost,
                     },
-                    Pricing = new ModelPricing(
+                    Pricing = new AiModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
                 },
@@ -420,7 +420,7 @@ namespace OpenAIApiClient.Registries.AiModels
                         AiModelCapability.HighPerformance,
                         AiModelCapability.Critic,
                     },
-                    Pricing = new ModelPricing(
+                    Pricing = new AiModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m,
                     reasoningTokenCost: 0.00000000m),
@@ -436,7 +436,7 @@ namespace OpenAIApiClient.Registries.AiModels
                         AiModelCapability.HighPerformance,
                         AiModelCapability.Critic,
                     },
-                    Pricing = new ModelPricing(
+                    Pricing = new AiModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m,
                     reasoningTokenCost: 0.00000000m),
@@ -452,7 +452,7 @@ namespace OpenAIApiClient.Registries.AiModels
                         AiModelCapability.HighPerformance,
                         AiModelCapability.LowCost,
                     },
-                    Pricing = new ModelPricing(
+                    Pricing = new AiModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m,
                     reasoningTokenCost: 0.00000000m),
@@ -469,7 +469,7 @@ namespace OpenAIApiClient.Registries.AiModels
                     {
                         AiModelCapability.Moderation,
                     },
-                    Pricing = new ModelPricing(
+                    Pricing = new AiModelPricing(
                     inputTokenCost: 0.00000000m,
                     outputTokenCost: 0.00000000m),
                 },

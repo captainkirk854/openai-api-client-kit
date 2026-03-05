@@ -224,7 +224,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
             AiModelDescriptor descriptor = new()
             {
                 Capabilities = new HashSet<AiModelCapability>(capabilities),
-                Pricing = new ModelPricing(cost, cost),
+                Pricing = new AiModelPricing(cost, cost),
                 Domain = ModelDomain.Other,
                 Generation = OpenAIModelGeneration.Other,
             };

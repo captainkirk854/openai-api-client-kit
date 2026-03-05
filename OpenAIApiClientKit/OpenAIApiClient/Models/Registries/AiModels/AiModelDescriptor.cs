@@ -5,7 +5,6 @@
 namespace OpenAIApiClient.Models.Registries.AiModels
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Models.Chat.Response.Completion;
     using OpenAIApiClient.Registries.AiModels;
 
     /// <summary>
@@ -56,11 +55,11 @@ namespace OpenAIApiClient.Models.Registries.AiModels
         /// <summary>
         /// Gets the pricing information for the model.
         /// </summary>
-        public ModelPricing Pricing
+        public AiModelPricing Pricing
         {
             get;
             init;
-        } = new ModelPricing(0, 0);
+        } = new AiModelPricing(0, 0);
 
         /// <summary>
         /// Overrides ToString() to provide a string representation of the OpenAIModels enum.

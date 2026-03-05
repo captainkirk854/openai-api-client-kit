@@ -5,6 +5,7 @@
 namespace OpenAIApiClient.Models.Chat.Response.Completion
 {
     using System.Text.Json.Serialization;
+    using OpenAIApiClient.Models.Registries.AiModels;
 
     public class ChatUsage
     {
@@ -65,7 +66,7 @@ namespace OpenAIApiClient.Models.Chat.Response.Completion
         /// </summary>
         /// <param name="pricing"></param>
         /// <returns>see <see cref="decimal?"/>.</returns>
-        public decimal? CalculateCost(ModelPricing pricing)
+        public decimal? CalculateCost(AiModelPricing pricing)
         {
             // Set cost components ..
             decimal? inputCost = (this.PromptTokens - this.PromptTokensDetails!.CachedTokens) * pricing.InputTokenCost;

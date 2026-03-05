@@ -1,20 +1,20 @@
-﻿// <copyright file="ModelPricing.cs" company="854 Things (tm)">
+﻿// <copyright file="AiModelPricing.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Models.Chat.Response.Completion
+namespace OpenAIApiClient.Models.Registries.AiModels
 {
-    public sealed class ModelPricing
+    public sealed class AiModelPricing
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ModelPricing"/> class.
+        /// Initializes a new instance of the <see cref="AiModelPricing"/> class.
         /// </summary>
         /// <param name="cachedInputTokenCost">Cost per single cached input token.</param>
         /// <param name="inputTokenCost">Cost per single input token (non-cached).</param>
         /// <param name="outputTokenCost">Cost per single output token.</param>
         /// <param name="reasoningTokenCost">Cost per single reasoning token (for reasoning models) (optional).</param>
         /// <param name="toolUseTokenCost">Cost per single tool-use token (optional).</param>
-        public ModelPricing(decimal inputTokenCost, decimal outputTokenCost, decimal cachedInputTokenCost = 0m, decimal? reasoningTokenCost = null, decimal? toolUseTokenCost = null)
+        public AiModelPricing(decimal inputTokenCost, decimal outputTokenCost, decimal cachedInputTokenCost = 0m, decimal? reasoningTokenCost = null, decimal? toolUseTokenCost = null)
         {
             // Validate parameters ..
             ArgumentOutOfRangeException.ThrowIfNegative(inputTokenCost);
