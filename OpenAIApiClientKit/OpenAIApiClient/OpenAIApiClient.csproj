@@ -6,32 +6,28 @@
     <Nullable>enable</Nullable>
     <NoWarn>AD0001</NoWarn> <!-- Suppress StyleCop warnings about analyzer failures when using Records -->
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="_internal\OpenAiModels\capabilities\OpenAIModelCapabilityRegistrySchema.json" />
-  </ItemGroup>
   
   <ItemGroup>
     <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
   
   <ItemGroup>
-    <EmbeddedResource Include="_internal\OpenAiModels\capabilities\dall-e-core-models.json" />
-    <EmbeddedResource Include="_internal\OpenAiModels\capabilities\gpt‑3.5-core-models.json" />
-    <EmbeddedResource Include="_internal\OpenAiModels\capabilities\gpt‑4.1-core-models.json" />
-    <EmbeddedResource Include="_internal\OpenAiModels\capabilities\gpt‑4o-core-models.json" />
-    <EmbeddedResource Include="_internal\OpenAiModels\capabilities\gpt‑5.0-core-models.json" />
-    <EmbeddedResource Include="_internal\OpenAiModels\capabilities\gpt‑5.0-multimodal-variants.json" />
-    <EmbeddedResource Include="_internal\OpenAiModels\capabilities\gpt‑5.1-core-models.json" />
-    <EmbeddedResource Include="_internal\OpenAiModels\capabilities\gpt‑5.1-multimodal-variants.json" />
-    <EmbeddedResource Include="_internal\OpenAiModels\capabilities\gpt‑5.2-core-models.json" />
-    <EmbeddedResource Include="_internal\OpenAiModels\capabilities\gpt‑5.2-multimodal-variants.json" />
-    <EmbeddedResource Include="_internal\OpenAiModels\capabilities\legacy-core-models.json" />
-    <EmbeddedResource Include="_internal\OpenAiModels\capabilities\o-core-models.json" />
+    <EmbeddedResource Include="_internal\OpenAiModels\dall-e-core-models.json" />
+    <EmbeddedResource Include="_internal\OpenAiModels\gpt‑3.5-core-models.json" />
+    <EmbeddedResource Include="_internal\OpenAiModels\gpt‑4.1-core-models.json" />
+    <EmbeddedResource Include="_internal\OpenAiModels\gpt‑4o-core-models.json" />
+    <EmbeddedResource Include="_internal\OpenAiModels\gpt‑5.0-core-models.json" />
+    <EmbeddedResource Include="_internal\OpenAiModels\gpt‑5.0-multimodal-variants.json" />
+    <EmbeddedResource Include="_internal\OpenAiModels\gpt‑5.1-core-models.json" />
+    <EmbeddedResource Include="_internal\OpenAiModels\gpt‑5.1-multimodal-variants.json" />
+    <EmbeddedResource Include="_internal\OpenAiModels\gpt‑5.2-core-models.json" />
+    <EmbeddedResource Include="_internal\OpenAiModels\gpt‑5.2-multimodal-variants.json" />
+    <EmbeddedResource Include="_internal\OpenAiModels\legacy-core-models.json" />
+    <EmbeddedResource Include="_internal\OpenAiModels\o-core-models.json" />
     <EmbeddedResource Include="_docs\model-capabilities\OpenAIModelCapabilityRegistrySchema.json" />
-    <EmbeddedResource Include="_internal\OpenAiModels\capabilities\text-davinci-core-models.json" />
-    <EmbeddedResource Include="_internal\OpenAiModels\capabilities\text-embedding-multimodal-variants.json" />
-    <EmbeddedResource Include="_internal\OpenAiModels\capabilities\tts-core-models.json" />
+    <EmbeddedResource Include="_internal\OpenAiModels\text-davinci-core-models.json" />
+    <EmbeddedResource Include="_internal\OpenAiModels\text-embedding-multimodal-variants.json" />
+    <EmbeddedResource Include="_internal\OpenAiModels\tts-core-models.json" />
   </ItemGroup>
   
    <ItemGroup>

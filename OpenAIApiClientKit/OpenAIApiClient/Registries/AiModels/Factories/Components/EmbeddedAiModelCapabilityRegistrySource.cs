@@ -22,7 +22,7 @@ namespace OpenAIApiClient.Registries.AiModels.Factories.Components
     public sealed class EmbeddedAiModelCapabilityRegistrySource(Assembly? assembly = null, string? resourcePrefix = null, string? resourceSuffix = null) : IAiModelCapabilityRegistrySource
     {
         // Default values for resource prefix and suffix if not provided by the caller.
-        private const string DefaultResourcePrefix = "OpenAIApiClient._internal.OpenAiModels.capabilities.";
+        private const string DefaultResourcePrefix = "OpenAIApiClient._internal.OpenAiModels.";
         private const string DefaultFileSuffix = ".json";
 
         // Initialize the assembly and resource filtering parameters, using defaults if not provided.

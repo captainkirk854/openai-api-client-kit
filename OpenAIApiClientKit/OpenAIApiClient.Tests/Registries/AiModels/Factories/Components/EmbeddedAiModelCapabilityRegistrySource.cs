@@ -17,7 +17,7 @@ namespace OpenAIApiClient.Tests.Registries.AiModels.Factories.Components
         {
             // Arrange
             Assembly testAssembly = typeof(testClass).Assembly;
-            string resourcePrefix = "OpenAIApiClient._internal.OpenAiModels.capabilities.";
+            string resourcePrefix = "OpenAIApiClient._internal.OpenAiModels.";
             string resourceSuffix = ".json";
 
             // This prefix should capture only capability JSON in your test harness
@@ -41,7 +41,7 @@ namespace OpenAIApiClient.Tests.Registries.AiModels.Factories.Components
         {
             // Arrange
             Assembly testAssembly = typeof(testClass).Assembly;
-            string resourcePrefix = "OpenAIApiClient._internal.OpenAiModels.capabilities.";
+            string resourcePrefix = "OpenAIApiClient._internal.OpenAiModels.";
             string resourceSuffix = ".json";
 
             // This prefix should capture only capability JSON in your test harness
