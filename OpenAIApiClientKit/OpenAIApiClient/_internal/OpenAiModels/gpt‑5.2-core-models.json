@@ -2,7 +2,7 @@
   "models": [
     {
       "name": "gpt-5.2",
-      "family": "gpt-5",
+      "generation": "GPT-5.2",
       "tier": "base",
       "domain": "chat",
       "tags": [ "analysis", "generalist", "balanced" ],
@@ -40,7 +40,7 @@
     },
     {
       "name": "gpt-5.2-pro",
-      "family": "gpt-5",
+      "generation": "GPT-5.2",
       "tier": "pro",
       "domain": "chat",
       "tags": [ "reasoning", "synthesis", "multimodal", "expert" ],
@@ -77,7 +77,7 @@
     },
     {
       "name": "gpt-5.2-mini",
-      "family": "gpt-5",
+      "generation": "GPT-5.2",
       "tier": "mini",
       "domain": "chat",
       "tags": [ "utility", "summarisation", "drafting" ],
@@ -115,7 +115,7 @@
     },
     {
       "name": "gpt-5.2-nano",
-      "family": "gpt-5",
+      "generation": "GPT-5.2",
       "tier": "nano",
       "domain": "chat",
       "tags": [ "edge", "lightweight", "latency" ],

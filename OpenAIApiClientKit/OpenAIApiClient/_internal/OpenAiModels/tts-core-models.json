@@ -2,7 +2,7 @@
   "models": [
     {
       "name": "tts-1",
-      "family": "audio",
+      "generation": "TTS-1",
       "tier": "text-to-speech",
       "domain": "audio",
       "tags": [ "speech", "synthesis", "realtime" ],
@@ -40,7 +40,7 @@
     },
     {
       "name": "tts-1-hd",
-      "family": "audio",
+      "generation": "TTS-1",
       "tier": "text-to-speech",
       "domain": "audio",
       "tags": [ "speech", "synthesis", "high-fidelity" ],
@@ -78,7 +78,7 @@
     },
     {
       "name": "tts-1-1106",
-      "family": "audio",
+      "generation": "TTS-1",
       "tier": "text-to-speech",
       "domain": "audio",
       "tags": [ "speech", "synthesis", "realtime" ],
@@ -116,7 +116,7 @@
     },
     {
       "name": "tts-1-hd-1106",
-      "family": "audio",
+      "generation": "TTS-1",
       "tier": "text-to-speech",
       "tags": [ "speech", "synthesis", "high-fidelity" ],
       "capabilities": {

@@ -31,12 +31,30 @@ namespace OpenAIApiClient.Registries.AiModels.Factories
                 string apiName = model.ToApiString();
                 IReadOnlySet<AiModelCapability> capabilities = new HashSet<AiModelCapability>();
                 AiModelPricing pricing = new(0m, 0m);
+                ModelDomain domain = ModelDomain.Other;
+                OpenAIModelGeneration generation = OpenAIModelGeneration.Other;
 
                 // .. then try to populate from registry if we have an entry for this model
                 if (lookup.TryGetByName(apiName, out AiModelPropertyRegistryModel? entry) && entry is not null)
                 {
                     capabilities = evaluator.GetCapabilities(modelEntry: entry);
                     pricing = entry.Pricing;
+                    domain = entry.Tier switch
+                    {
+                        "Chat" => ModelDomain.Chat,
+                        "Embedding" => ModelDomain.Embedding,
+                        "Audio" => ModelDomain.Audio,
+                        "Image" => ModelDomain.Image,
+                        "Moderation" => ModelDomain.Moderation,
+                        _ => ModelDomain.Other
+                    };
+                    generation = entry.Generation switch
+                    {
+                        "GPT-3" => OpenAIModelGeneration.GPT3,
+                        "GPT-3.5" => OpenAIModelGeneration.GPT35,
+                        "GPT-4" => OpenAIModelGeneration.GPT4,
+                        _ => OpenAIModelGeneration.Other
+                    };
                 }
 
                 // Construct descriptor (without Name for now, as we need to set it after the loop to avoid immutability issues)
@@ -46,9 +64,9 @@ namespace OpenAIApiClient.Registries.AiModels.Factories
                     Capabilities = new HashSet<AiModelCapability>(capabilities),
 
                     // For now, you can keep your existing pricing logic.
-                    Pricing = pricing, // schema needs extension to support pricing data
-                    Domain = ModelDomain.Other, // schema needs extension to support domain data
-                    Generation = OpenAIModelGeneration.Other, // schema needs extension to support generation data
+                    Pricing = pricing,
+                    Domain = domain, // schema needs extension to support domain data
+                    Generation = generation, // schema needs extension to support generation data
                 };
 
                 descriptors[model] = descriptor;

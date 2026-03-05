@@ -2,7 +2,7 @@
   "models": [
     {
       "name": "text-embedding-3-large",
-      "family": "embedding",
+      "generation": "Embedding-3",
       "tier": "embedding",
       "domain": "embedding",
       "tags": [ "semantic", "retrieval", "vector" ],
@@ -41,7 +41,7 @@
 
     {
       "name": "text-embedding-3-small",
-      "family": "embedding",
+      "generation": "Embedding-3",
       "tier": "embedding",
       "domain": "embedding",
       "tags": [ "semantic", "efficient", "vector" ],
@@ -80,7 +80,7 @@
 
     {
       "name": "text-embedding-ada-002",
-      "family": "embedding",
+      "generation": "Embedding-2",
       "tier": "embedding",
       "domain": "embedding",
       "tags": [ "semantic", "economical", "vector" ],

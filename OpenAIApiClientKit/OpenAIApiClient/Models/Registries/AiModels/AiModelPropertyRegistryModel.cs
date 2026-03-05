@@ -19,9 +19,9 @@ namespace OpenAIApiClient.Models.Registries.AiModels
         } = string.Empty;
 
         /// <summary>
-        /// Gets the model family (e.g., gpt-4, gpt-4o, o-series).
+        /// Gets the model generation (e.g., GPT-4.1, GPT-4o, O-series).
         /// </summary>
-        public string Family
+        public string Generation
         {
             get;
             init;

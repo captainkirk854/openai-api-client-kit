@@ -2,7 +2,7 @@
   "models": [
     {
       "name": "gpt-5",
-      "family": "gpt-5",
+      "generation": "GPT-5.0",
       "tier": "base",
       "domain": "chat",
       "tags": [ "generalist", "drafting", "chat" ],
@@ -39,7 +39,7 @@
     },
     {
       "name": "gpt-5-pro",
-      "family": "gpt-5",
+      "generation": "GPT-5.0",
       "tier": "pro",
       "domain": "chat",
       "tags": [ "analysis", "planning", "creative" ],
@@ -76,7 +76,7 @@
     },
     {
       "name": "gpt-5-mini",
-      "family": "gpt-5",
+      "generation": "GPT-5.0",
       "tier": "mini",
       "domain": "chat",
       "tags": [ "summaries", "extraction", "utility" ],
@@ -113,7 +113,7 @@
     },
     {
       "name": "gpt-5-nano",
-      "family": "gpt-5",
+      "generation": "GPT-5.0",
       "tier": "nano",
       "domain": "chat",
       "tags": [ "mobile", "embedded", "latency" ],

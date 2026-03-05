@@ -2,7 +2,7 @@
   "models": [
     {
       "name": "o4-mini",
-      "family": "o-series",
+      "generation": "O-series",
       "tier": "reasoning-mini",
       "domain": "chat",
       "tags": [ "reasoning", "compact", "efficient" ],
@@ -40,7 +40,7 @@
     },
     {
       "name": "o3",
-      "family": "o-series",
+      "generation": "O-series",
       "tier": "reasoning",
       "tags": [ "reasoning", "deliberate", "advanced" ],
       "domain": "chat",
@@ -78,7 +78,7 @@
     },
     {
       "name": "o3-mini",
-      "family": "o-series",
+      "generation": "O-series",
       "tier": "reasoning-mini",
       "domain": "chat",
       "tags": [ "reasoning", "compact", "efficient" ],
@@ -116,7 +116,7 @@
     },
     {
       "name": "o1",
-      "family": "o-series",
+      "generation": "O-series",
       "tier": "reasoning",
       "domain": "chat",
       "tags": [ "reasoning", "deliberate", "structured" ],
@@ -154,7 +154,7 @@
     },
     {
       "name": "o1-mini",
-      "family": "o-series",
+      "generation": "O-series",
       "tier": "reasoning-mini",
       "domain": "chat",
       "tags": [ "reasoning", "lightweight", "efficient" ],

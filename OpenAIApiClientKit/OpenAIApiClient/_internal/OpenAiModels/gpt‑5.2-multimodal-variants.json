@@ -2,7 +2,7 @@
   "models": [
     {
       "name": "gpt-5.2-vision",
-      "family": "gpt-5",
+      "generation": "GPT-5.2",
       "tier": "vision",
       "domain": "image",
       "tags": [ "vision", "perception", "grounding" ],
@@ -40,7 +40,7 @@
     },
     {
       "name": "gpt-5.2-audio",
-      "family": "gpt-5",
+      "generation": "GPT-5.2",
       "tier": "audio",
       "domain": "audio",
       "tags": [ "speech", "transcription", "dialogue" ],

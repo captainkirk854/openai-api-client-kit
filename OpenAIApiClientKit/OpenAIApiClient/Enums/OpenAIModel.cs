@@ -35,6 +35,7 @@ namespace OpenAIApiClient.Enums
         // -------------------------
         // GPT‑4 Family
         // -------------------------
+        GPT4_1_Pro,
         GPT4_1,
         GPT4_1_Mini,
         GPT4_Turbo,   // Optimized GPT-4 variant

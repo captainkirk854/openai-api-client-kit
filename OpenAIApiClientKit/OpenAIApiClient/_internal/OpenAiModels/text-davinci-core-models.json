@@ -2,7 +2,7 @@
   "models": [
     {
       "name": "text-davinci-003",
-      "family": "gpt-3",
+      "generation": "GPT-3.5",
       "tier": "text-generation",
       "domain": "chat",
       "tags": [ "creative", "drafting", "generalist" ],
@@ -40,7 +40,7 @@
     },
     {
       "name": "davinci-002",
-      "family": "gpt-3",
+      "generation": "GPT-3",
       "tier": "text-generation",
       "domain": "chat",
       "tags": [ "generalist", "drafting", "completion" ],

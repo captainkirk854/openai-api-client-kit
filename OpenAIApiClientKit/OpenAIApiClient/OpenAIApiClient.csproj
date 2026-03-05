@@ -23,7 +23,7 @@
     <EmbeddedResource Include="_internal\OpenAiModels\gpt‑5.2-core-models.json" />
     <EmbeddedResource Include="_internal\OpenAiModels\gpt‑5.2-multimodal-variants.json" />
     <EmbeddedResource Include="_internal\OpenAiModels\legacy-core-models.json" />
-    <EmbeddedResource Include="_internal\OpenAiModels\o-core-models.json" />
+    <EmbeddedResource Include="_internal\OpenAiModels\o-series-core-models.json" />
     <EmbeddedResource Include="_docs\model-capabilities\OpenAIModelCapabilityRegistrySchema.json" />
     <EmbeddedResource Include="_internal\OpenAiModels\text-davinci-core-models.json" />
     <EmbeddedResource Include="_internal\OpenAiModels\text-embedding-multimodal-variants.json" />

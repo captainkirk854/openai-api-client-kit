@@ -2,7 +2,7 @@
   "models": [
     {
       "name": "gpt-4o-pro",
-      "family": "gpt-4o",
+      "generation": "GPT-4o",
       "tier": "pro",
       "domain": "chat",
       "tags": [ "multimodal", "interactive", "perception" ],
@@ -39,7 +39,7 @@
     },
     {
       "name": "gpt-4o",
-      "family": "gpt-4o",
+      "generation": "GPT-4o",
       "tier": "base",
       "domain": "chat",
       "tags": [ "vision", "chat", "balanced" ],
@@ -76,7 +76,7 @@
     },
     {
       "name": "gpt-4o-mini",
-      "family": "gpt-4o",
+      "generation": "GPT-4o",
       "tier": "multimodal-mini",
       "domain": "chat",
       "tags": [ "multimodal", "efficient", "interactive", "utility" ],
@@ -113,7 +113,7 @@
     },
     {
       "name": "gpt-4o-realtime-preview",
-      "family": "gpt-4o",
+      "generation": "GPT-4o",
       "tier": "multimodal-realtime",
       "domain": "audio",
       "tags": [ "realtime", "interactive", "multimodal", "conversational" ],

@@ -3,7 +3,7 @@
 
     {
       "name": "babbage-002",
-      "family": "gpt-3",
+      "generation": "GPT-3",
       "tier": "text-generation",
       "domain": "chat",
       "tags": [ "utility", "economical", "basic" ],
@@ -42,7 +42,7 @@
 
     {
       "name": "curie-001",
-      "family": "gpt-3",
+      "generation": "GPT-3",
       "tier": "text-generation",
       "domain": "chat",
       "tags": [ "balanced", "drafting", "utility" ],
@@ -81,7 +81,7 @@
 
     {
       "name": "ada-001",
-      "family": "gpt-3",
+      "generation": "GPT-3",
       "domain": "chat",
       "tier": "text-generation",
       "tags": [ "economical", "fast", "lightweight" ],
@@ -120,7 +120,7 @@
 
     {
       "name": "gpt-image-1",
-      "family": "image",
+      "generation": "GPT-Image-1",
       "tier": "image-generation",
       "domain": "image",
       "tags": [ "visual", "generative", "coherent" ],
@@ -158,7 +158,7 @@
     },
     {
       "name": "whisper-1",
-      "family": "audio",
+      "generation": "Whisper-1",
       "tier": "speech-to-text",
       "domain": "audio",
       "tags": [ "transcription", "audio", "recognition" ],
@@ -196,7 +196,7 @@
     },
     {
       "name": "omni-moderation-latest",
-      "family": "moderation",
+      "generation": "Moderation",
       "tier": "moderation",
       "domain": "moderation",
       "tags": [ "safety", "filtering", "compliance" ],
@@ -234,7 +234,7 @@
     },
     {
       "name": "text-moderation-latest",
-      "family": "moderation",
+      "generation": "Moderation",
       "tier": "moderation",
       "domain": "moderation",
       "tags": [ "safety", "filtering", "text" ],

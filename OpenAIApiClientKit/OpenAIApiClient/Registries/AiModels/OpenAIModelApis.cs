@@ -51,6 +51,7 @@ namespace OpenAIApiClient.Registries.AiModels
                 // -------------------------
                 // GPT‑4 Family
                 // -------------------------
+                [OpenAIModel.GPT4_1_Pro] = "gpt-4.1-pro",
                 [OpenAIModel.GPT4_1] = "gpt-4.1",
                 [OpenAIModel.GPT4_1_Mini] = "gpt-4.1-mini",
                 [OpenAIModel.GPT4_Turbo] = "gpt-4-turbo", // NOT IN LIST

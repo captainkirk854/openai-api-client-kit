@@ -2,7 +2,7 @@
   "models": [
     {
       "name": "dall-e-3",
-      "family": "image",
+      "generation": "DALL-E-3",
       "tier": "image-generation",
       "domain": "image",
       "tags": [ "creative", "visual", "generative", "artistic" ],
@@ -39,7 +39,7 @@
     },
     {
       "name": "dall-e-2",
-      "family": "image",
+      "generation": "DALL-E-2",
       "tier": "image-generation",
       "domain": "image",
       "tags": [ "visual", "generative", "stylised" ],

@@ -2,7 +2,7 @@
   "models": [
     {
       "name": "gpt-3.5",
-      "family": "gpt-3.5",
+      "generation": "GPT-3.5",
       "tier": "base",
       "tags": [ "economical", "drafting", "utility" ],
       "capabilities": {
@@ -34,7 +34,7 @@
     },
     {
       "name": "gpt-3.5-turbo",
-      "family": "gpt-3.5",
+      "generation": "GPT-3.5",
       "tier": "text-generation",
       "domain": "chat",
       "tags": [ "chat", "drafting", "economical", "utility" ],
@@ -72,7 +72,7 @@
     },
     {
       "name": "gpt-3.5-turbo-16k",
-      "family": "gpt-3.5",
+      "generation": "GPT-3.5",
       "tier": "text-generation",
       "domain": "chat",
       "tags": [ "chat", "drafting", "context", "utility" ],
@@ -110,7 +110,7 @@
     },
     {
       "name": "gpt-3.5-turbo-instruct",
-      "family": "gpt-3.5",
+      "generation": "GPT-3.5",
       "tier": "text-generation",
       "domain": "chat",
       "tags": [ "instruction", "completion", "utility", "drafting" ],
