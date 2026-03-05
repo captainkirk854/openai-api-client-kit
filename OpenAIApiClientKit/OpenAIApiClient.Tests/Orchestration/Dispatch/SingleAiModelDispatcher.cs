@@ -6,7 +6,6 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
 {
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Interfaces.Registries;
-    using OpenAIApiClient.Models.Chat.Response.Completion;
     using OpenAIApiClient.Models.Registries.AiModels;
     using OpenAIApiClient.Orchestration.Dispatch;
     using OpenAIApiClient.Registries.AiModels;

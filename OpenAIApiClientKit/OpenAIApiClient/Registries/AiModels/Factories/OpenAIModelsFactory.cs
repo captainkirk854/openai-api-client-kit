@@ -21,7 +21,7 @@ namespace OpenAIApiClient.Registries.AiModels.Factories
 
             // Create lookup and evaluator
             AiModelPropertyRegistryLookup lookup = new(mergedData);
-            IAiModelCapabilityEvaluator evaluator = new AiModelCapabilityEvaluator();
+            AiModelCapabilityEvaluator evaluator = new();
 
             // Build descriptor dictionary
             Dictionary<OpenAIModel, AiModelDescriptor> descriptors = [];
@@ -30,7 +30,7 @@ namespace OpenAIApiClient.Registries.AiModels.Factories
                 // Initialise with empty capabilities ..
                 string apiName = model.ToApiString();
                 IReadOnlySet<AiModelCapability> capabilities = new HashSet<AiModelCapability>();
-                AiModelPricing pricing = new AiModelPricing(0m, 0m);
+                AiModelPricing pricing = new(0m, 0m);
 
                 // .. then try to populate from registry if we have an entry for this model
                 if (lookup.TryGetByName(apiName, out AiModelPropertyRegistryModel? entry) && entry is not null)
