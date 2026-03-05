@@ -2,7 +2,7 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Helpers
+namespace OpenAIApiClient.Registries.AiModels.Factories.Components
 {
     using System.Reflection;
     using OpenAIApiClient.Interfaces.Registries;

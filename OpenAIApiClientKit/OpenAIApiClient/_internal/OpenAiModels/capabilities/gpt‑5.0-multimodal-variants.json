@@ -1,7 +1,7 @@
 {
   "models": [
     {
-      "name": "gpt-5.0-vision",
+      "name": "gpt-5-vision",
       "family": "gpt-5",
       "capabilities": {
         "core": {
@@ -31,7 +31,7 @@
       }
     },
     {
-      "name": "gpt-5.0-audio",
+      "name": "gpt-5-audio",
       "family": "gpt-5",
       "capabilities": {
         "core": {

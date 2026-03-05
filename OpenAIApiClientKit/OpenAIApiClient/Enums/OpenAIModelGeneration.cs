@@ -6,12 +6,12 @@ namespace OpenAIApiClient.Enums
 {
     public enum OpenAIModelGeneration
     {
+        Other,
         GPT3,
         GPT35,
-        GPT4, // legacy frontier models
+        GPT4,  // legacy frontier models
         GPT41, // smartest non‑reasoning model
         GPT4o, // frontier models
-        GPT5, // top models
-        Other,
+        GPT5,  // top models
     }
 }

@@ -2,12 +2,12 @@
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
-namespace OpenAIApiClient.Tests.Helpers
+namespace OpenAIApiClient.Tests.Registries.AiModels.Factories.Components
 {
     using System.Reflection;
     using System.Text.Json;
     using OpenAIApiClient.Models.Registries.AiModels;
-    using testClass = OpenAIApiClient.Helpers.EmbeddedAiModelCapabilityRegistrySource;
+    using testClass = OpenAIApiClient.Registries.AiModels.Factories.Components.EmbeddedAiModelCapabilityRegistrySource;
 
     [TestClass]
     public class EmbeddedAiModelCapabilityRegistrySource

@@ -27,9 +27,24 @@ namespace OpenAIApiClient.Registries.AiModels
                 // -------------------------
                 // GPT‑5 Family
                 // -------------------------
+                [OpenAIModel.GPT5_2_Vision] = "gpt-5.2-vision",
+                [OpenAIModel.GPT5_2_Audio] = "gpt-5.2-audio",
                 [OpenAIModel.GPT5_2] = "gpt-5.2",
                 [OpenAIModel.GPT5_2_Pro] = "gpt-5.2-pro",
+                [OpenAIModel.GPT5_2_Mini] = "gpt-5.2-mini",
+                [OpenAIModel.GPT5_2_Nano] = "gpt-5.2-nano",
+
+                [OpenAIModel.GPT5_1_Vision] = "gpt-5.1-vision",
+                [OpenAIModel.GPT5_1_Audio] = "gpt-5.1-audio",
+                [OpenAIModel.GPT5_1] = "gpt-5.1",
+                [OpenAIModel.GPT5_1_Pro] = "gpt-5.1-pro",
+                [OpenAIModel.GPT5_1_Mini] = "gpt-5.1-mini",
+                [OpenAIModel.GPT5_1_Nano] = "gpt-5.1-nano",
+
                 [OpenAIModel.GPT5] = "gpt-5",
+                [OpenAIModel.GPT5_Pro] = "gpt-5-pro",
+                [OpenAIModel.GPT5_Vision] = "gpt-5-vision",
+                [OpenAIModel.GPT5_Audio] = "gpt-5-audio",
                 [OpenAIModel.GPT5_Mini] = "gpt-5-mini",
                 [OpenAIModel.GPT5_Nano] = "gpt-5-nano",
 
@@ -38,18 +53,30 @@ namespace OpenAIApiClient.Registries.AiModels
                 // -------------------------
                 [OpenAIModel.GPT4_1] = "gpt-4.1",
                 [OpenAIModel.GPT4_1_Mini] = "gpt-4.1-mini",
-                [OpenAIModel.GPT4_Turbo] = "gpt-4-turbo",
+                [OpenAIModel.GPT4_Turbo] = "gpt-4-turbo", // NOT IN LIST
 
                 // -------------------------
                 // GPT‑4o Family
                 // -------------------------
                 [OpenAIModel.GPT4o] = "gpt-4o",
                 [OpenAIModel.GPT4o_Mini] = "gpt-4o-mini",
+                [OpenAIModel.GPT4o_Realtime_Preview] = "gpt-4o-realtime-preview",
 
                 // -------------------------
                 // GPT‑3.5 Family
                 // -------------------------
                 [OpenAIModel.GPT3_5_Turbo] = "gpt-3.5-turbo",
+                [OpenAIModel.GPT3_5_Turbo_16k] = "gpt-3.5-turbo-16k",
+                [OpenAIModel.GPT3_5_Turbo_Instruct] = "gpt-3.5-turbo-instruct",
+
+                // -------------------------
+                // GPT‑3 Family
+                // -------------------------
+                [OpenAIModel.Babbage_002] = "babbage-002",
+                [OpenAIModel.Curie_001] = "curie-001",
+                [OpenAIModel.Ada_001] = "ada-001",
+                [OpenAIModel.Text_Davinci_003] = "text-davinci-003",
+                [OpenAIModel.Davinci_002] = "davinci-002",
 
                 // -------------------------
                 // Embedding Models
@@ -64,27 +91,30 @@ namespace OpenAIApiClient.Registries.AiModels
                 [OpenAIModel.TTS_1] = "tts-1",
                 [OpenAIModel.TTS_1_HD] = "tts-1-hd",
                 [OpenAIModel.Whisper_1] = "whisper-1",
-                [OpenAIModel.TTS1_1106] = "tts-1-1106",
-                [OpenAIModel.TTS1HD_1106] = "tts-1-hd-1106",
+                [OpenAIModel.TTS1_1106] = "tts-1-1106", // not in list
+                [OpenAIModel.TTS1HD_1106] = "tts-1-hd-1106", // not in list
 
                 // -------------------------
                 // Image Models
                 // -------------------------
                 [OpenAIModel.DALL_E_3] = "dall-e-3",
+                [OpenAIModel.DALL_E_2] = "dall-e-2",
+                [OpenAIModel.GPT_Image_1] = "gpt-image-1",
 
                 // -------------------------
                 // Open‑weight Models
                 // -------------------------
                 [OpenAIModel.O1] = "o1",
                 [OpenAIModel.O1_Mini] = "o1-mini",
-                [OpenAIModel.O3] = "o3",
+                [OpenAIModel.O3] = "o3", // not in list
                 [OpenAIModel.O3_Mini] = "o3-mini",
-                [OpenAIModel.O4_Mini] = "o4-mini",
+                [OpenAIModel.O4_Mini] = "o4-mini", // not in list
 
                 // -------------------------
                 // Moderation
                 // -------------------------
                 [OpenAIModel.OmniModerationLatest] = "omni-moderation-latest",
+                [OpenAIModel.TextModerationLatest] = "text-moderation-latest",
             };
 
         /// <summary>

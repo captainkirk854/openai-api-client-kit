@@ -13,9 +13,22 @@ namespace OpenAIApiClient.Enums
         // -------------------------
         // GPT‑5 Family
         // -------------------------
+        GPT5_2_Vision,
+        GPT5_2_Audio,
         GPT5_2,
         GPT5_2_Pro,
+        GPT5_2_Mini,
+        GPT5_2_Nano,
+        GPT5_1_Vision,
+        GPT5_1_Audio,
+        GPT5_1,
+        GPT5_1_Pro,
+        GPT5_1_Mini,
+        GPT5_1_Nano,
         GPT5,
+        GPT5_Pro,
+        GPT5_Vision,
+        GPT5_Audio,
         GPT5_Mini,
         GPT5_Nano,
 
@@ -31,11 +44,23 @@ namespace OpenAIApiClient.Enums
         // -------------------------
         GPT4o,        // Multimodal model (text + vision)
         GPT4o_Mini,   // Optimized GPT-4 variant
+        GPT4o_Realtime_Preview, // Real-time content moderation model
 
         // -------------------------
         // GPT‑3.5 Family
         // -------------------------
         GPT3_5_Turbo,
+        GPT3_5_Turbo_16k, // Extended context window
+        GPT3_5_Turbo_Instruct, // Instruction-following variant
+
+        // -------------------------
+        // GPT‑3 Family
+        // -------------------------
+        Babbage_002,
+        Curie_001,
+        Ada_001,
+        Text_Davinci_003,
+        Davinci_002,
 
         // -------------------------
         // Embedding Models
@@ -57,6 +82,8 @@ namespace OpenAIApiClient.Enums
         // Image Models
         // -------------------------
         DALL_E_3,
+        DALL_E_2,
+        GPT_Image_1, // Multimodal model (text + vision)
 
         // -------------------------
         // Open‑weight Models
@@ -71,5 +98,6 @@ namespace OpenAIApiClient.Enums
         // Moderation
         // -------------------------
         OmniModerationLatest,
+        TextModerationLatest,
     }
 }

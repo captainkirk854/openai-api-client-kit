@@ -26,6 +26,10 @@
   
   <ItemGroup>
     <ProjectReference Include="..\OpenAIApiClient\OpenAIApiClient.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Helpers\" />
   </ItemGroup>  
 
 </Project>
