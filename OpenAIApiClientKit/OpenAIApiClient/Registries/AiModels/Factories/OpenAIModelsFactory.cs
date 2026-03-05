@@ -5,9 +5,7 @@
 namespace OpenAIApiClient.Registries.AiModels.Factories
 {
     using OpenAIApiClient.Enums;
-    using OpenAIApiClient.Helpers;
     using OpenAIApiClient.Interfaces.Registries;
-    using OpenAIApiClient.Models.Chat.Response.Completion;
     using OpenAIApiClient.Models.Registries.AiModels;
     using OpenAIApiClient.Registries.AiModels;
     using OpenAIApiClient.Registries.AiModels.Factories.Components;
@@ -17,12 +15,12 @@ namespace OpenAIApiClient.Registries.AiModels.Factories
         public static OpenAIModelsNEW Create()
         {
             // Load and merge embedded capability registry JSON
-            IAiModelCapabilityRegistrySource embeddedSource = new EmbeddedAiModelCapabilityRegistrySource();
-            AiModelCapabilityRegistryLoader loader = new(embeddedSource);
-            AiModelCapabilityRegistryData mergedData = loader.LoadMerged();
+            IAiModelCapabilityRegistrySource embeddedSource = new EmbeddedAiModelPropertyRegistrySource();
+            AiModelPropertyRegistryLoader loader = new(embeddedSource);
+            AiModelPropertyRegistryData mergedData = loader.LoadMerged();
 
-            // Create lookup + evaluator
-            AiModelCapabilityRegistryLookup lookup = new(mergedData);
+            // Create lookup and evaluator
+            AiModelPropertyRegistryLookup lookup = new(mergedData);
             IAiModelCapabilityEvaluator evaluator = new AiModelCapabilityEvaluator();
 
             // Build descriptor dictionary
@@ -32,11 +30,13 @@ namespace OpenAIApiClient.Registries.AiModels.Factories
                 // Initialise with empty capabilities ..
                 string apiName = model.ToApiString();
                 IReadOnlySet<AiModelCapability> capabilities = new HashSet<AiModelCapability>();
+                AiModelPricing pricing = new AiModelPricing(0m, 0m);
 
                 // .. then try to populate from registry if we have an entry for this model
-                if (lookup.TryGetByName(apiName, out AiModelCapabilityRegistryModel? entry) && entry is not null)
+                if (lookup.TryGetByName(apiName, out AiModelPropertyRegistryModel? entry) && entry is not null)
                 {
-                    capabilities = evaluator.GetCapabilities(entry);
+                    capabilities = evaluator.GetCapabilities(modelEntry: entry);
+                    pricing = entry.Pricing;
                 }
 
                 // Construct descriptor (without Name for now, as we need to set it after the loop to avoid immutability issues)
@@ -46,7 +46,7 @@ namespace OpenAIApiClient.Registries.AiModels.Factories
                     Capabilities = new HashSet<AiModelCapability>(capabilities),
 
                     // For now, you can keep your existing pricing logic.
-                    Pricing = new AiModelPricing(0m, 0m), // schema needs extension to support pricing data
+                    Pricing = pricing, // schema needs extension to support pricing data
                     Domain = ModelDomain.Other, // schema needs extension to support domain data
                     Generation = OpenAIModelGeneration.Other, // schema needs extension to support generation data
                 };

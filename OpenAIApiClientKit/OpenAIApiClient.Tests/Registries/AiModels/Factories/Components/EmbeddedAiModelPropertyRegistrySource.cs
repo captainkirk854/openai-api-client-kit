@@ -1,4 +1,4 @@
-﻿// <copyright file="EmbeddedAiModelCapabilityRegistrySource.cs" company="854 Things (tm)">
+﻿// <copyright file="EmbeddedAiModelPropertyRegistrySource.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -7,13 +7,13 @@ namespace OpenAIApiClient.Tests.Registries.AiModels.Factories.Components
     using System.Reflection;
     using System.Text.Json;
     using OpenAIApiClient.Models.Registries.AiModels;
-    using testClass = OpenAIApiClient.Registries.AiModels.Factories.Components.EmbeddedAiModelCapabilityRegistrySource;
+    using testClass = OpenAIApiClient.Registries.AiModels.Factories.Components.EmbeddedAiModelPropertyRegistrySource;
 
     [TestClass]
-    public class EmbeddedAiModelCapabilityRegistrySource
+    public class EmbeddedAiModelPropertyRegistrySource
     {
         [TestMethod]
-        public void GetRegistryStreams_Reads_Capability_Resources()
+        public void GetRegistryStreams_Reads_AiModel_Resources()
         {
             // Arrange
             Assembly testAssembly = typeof(testClass).Assembly;
@@ -37,7 +37,7 @@ namespace OpenAIApiClient.Tests.Registries.AiModels.Factories.Components
         }
 
         [TestMethod]
-        public void GetRegistryStreams_Reads_Capability_Resources_With_Defaults()
+        public void GetRegistryStreams_Reads_AiModel_Resources_With_Defaults()
         {
             // Arrange
             Assembly testAssembly = typeof(testClass).Assembly;
@@ -110,7 +110,7 @@ namespace OpenAIApiClient.Tests.Registries.AiModels.Factories.Components
                     Assert.IsFalse(string.IsNullOrWhiteSpace(json), "Embedded capability JSON must not be empty.");
 
                     // Try to deserialize using internal DTO ... if this fails, the JSON structure is not as expected for the registry data.
-                    AiModelCapabilityRegistryData? registry = JsonSerializer.Deserialize<AiModelCapabilityRegistryData>(json: json, options: options);
+                    AiModelPropertyRegistryData? registry = JsonSerializer.Deserialize<AiModelPropertyRegistryData>(json: json, options: options);
 
                     // Assert that deserialization succeeded and that the expected properties are present in the resulting object.
                     Assert.IsNotNull(registry, "Capability registry deserialization returned null.");

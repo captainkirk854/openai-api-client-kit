@@ -10,7 +10,7 @@ namespace OpenAIApiClient.Registries.AiModels.Factories.Components
 
     public sealed class AiModelCapabilityEvaluator : IAiModelCapabilityEvaluator
     {
-        public IReadOnlySet<AiModelCapability> GetCapabilities(AiModelCapabilityRegistryModel modelEntry)
+        public IReadOnlySet<AiModelCapability> GetCapabilities(AiModelPropertyRegistryModel modelEntry)
         {
             // Initalise a set to hold the capabilities of the model ..
             HashSet<AiModelCapability> result = [];

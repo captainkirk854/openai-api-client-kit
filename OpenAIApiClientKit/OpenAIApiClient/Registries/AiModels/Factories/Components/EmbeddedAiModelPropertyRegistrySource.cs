@@ -1,4 +1,4 @@
-﻿// <copyright file="EmbeddedAiModelCapabilityRegistrySource.cs" company="854 Things (tm)">
+﻿// <copyright file="EmbeddedAiModelPropertyRegistrySource.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -13,20 +13,20 @@ namespace OpenAIApiClient.Registries.AiModels.Factories.Components
     /// AI model capabilities in the application.
     /// </summary>
     /// <remarks>
-    /// Initializes a new instance of the <see cref="EmbeddedAiModelCapabilityRegistrySource"/> class using the default assembly.
+    /// Initializes a new instance of the <see cref="EmbeddedAiModelPropertyRegistrySource"/> class using the default assembly.
     /// and resource prefix.
     /// </remarks>
     /// <param name="assembly">The assembly to search for embedded resources. If null, the assembly containing this class will be used.</param>
     /// <param name="resourcePrefix">The prefix to filter embedded resources. If null, a default prefix will be used.</param>
     /// <param name="resourceSuffix">The suffix to filter embedded resources. If null, a default suffix will be used.</param>
-    public sealed class EmbeddedAiModelCapabilityRegistrySource(Assembly? assembly = null, string? resourcePrefix = null, string? resourceSuffix = null) : IAiModelCapabilityRegistrySource
+    public sealed class EmbeddedAiModelPropertyRegistrySource(Assembly? assembly = null, string? resourcePrefix = null, string? resourceSuffix = null) : IAiModelCapabilityRegistrySource
     {
         // Default values for resource prefix and suffix if not provided by the caller.
         private const string DefaultResourcePrefix = "OpenAIApiClient._internal.OpenAiModels.";
         private const string DefaultFileSuffix = ".json";
 
         // Initialize the assembly and resource filtering parameters, using defaults if not provided.
-        private readonly Assembly assembly = assembly ?? typeof(EmbeddedAiModelCapabilityRegistrySource).Assembly;
+        private readonly Assembly assembly = assembly ?? typeof(EmbeddedAiModelPropertyRegistrySource).Assembly;
         private readonly string resourcePrefix = resourcePrefix ?? DefaultResourcePrefix;
         private readonly string resourceSuffix = resourceSuffix ?? DefaultFileSuffix;
 

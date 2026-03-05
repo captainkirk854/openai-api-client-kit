@@ -1,4 +1,4 @@
-﻿// <copyright file="AiModelCapabilityRegistryLoader.cs" company="854 Things (tm)">
+﻿// <copyright file="AiModelPropertyRegistryLoader.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -12,7 +12,7 @@ namespace OpenAIApiClient.Registries.AiModels.Factories.Components
     /// Provides functionality to load and merge AI model capability registry data from multiple sources.
     /// </summary>
     /// <param name="source">The source providing registry data streams.</param>
-    public sealed class AiModelCapabilityRegistryLoader(IAiModelCapabilityRegistrySource source)
+    public sealed class AiModelPropertyRegistryLoader(IAiModelCapabilityRegistrySource source)
     {
         private static readonly JsonSerializerOptions JsonOptions = new()
         {
@@ -24,10 +24,10 @@ namespace OpenAIApiClient.Registries.AiModels.Factories.Components
         /// <summary>
         /// Loads and merges AI model capability registry data from multiple sources.
         /// </summary>
-        /// <returns>A merged <see cref="AiModelCapabilityRegistryData"/> instance containing combined data from all sources.</returns>
-        public AiModelCapabilityRegistryData LoadMerged()
+        /// <returns>A merged <see cref="AiModelPropertyRegistryData"/> instance containing combined data from all sources.</returns>
+        public AiModelPropertyRegistryData LoadMerged()
         {
-            AiModelCapabilityRegistryData merged = new();
+            AiModelPropertyRegistryData merged = new();
 
             // Iterate through each registry stream provided by the source, read and deserialize the JSON data, and merge it into the final registry data.
             foreach (Stream stream in this.source.GetRegistryStreams())
@@ -43,14 +43,14 @@ namespace OpenAIApiClient.Registries.AiModels.Factories.Components
                     }
 
                     // Deserialize the JSON data into a partial registry data object. If the deserialization fails or the Models property is null, skip to the next stream.
-                    AiModelCapabilityRegistryData? partial = JsonSerializer.Deserialize<AiModelCapabilityRegistryData>(json, JsonOptions);
+                    AiModelPropertyRegistryData? partial = JsonSerializer.Deserialize<AiModelPropertyRegistryData>(json, JsonOptions);
                     if (partial?.Models is null)
                     {
                         continue;
                     }
 
                     // Add the models from the partial registry data to the merged registry data.
-                    foreach (AiModelCapabilityRegistryModel model in partial.Models)
+                    foreach (AiModelPropertyRegistryModel model in partial.Models)
                     {
                         merged.Models.Add(model);
                     }

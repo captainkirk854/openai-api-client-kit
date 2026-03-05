@@ -9,6 +9,6 @@ namespace OpenAIApiClient.Interfaces.Registries
 
     public interface IAiModelCapabilityEvaluator
     {
-        IReadOnlySet<AiModelCapability> GetCapabilities(AiModelCapabilityRegistryModel modelEntry);
+        IReadOnlySet<AiModelCapability> GetCapabilities(AiModelPropertyRegistryModel modelEntry);
     }
 }
