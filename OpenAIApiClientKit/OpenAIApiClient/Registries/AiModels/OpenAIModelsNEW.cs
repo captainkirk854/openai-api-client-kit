@@ -5,6 +5,7 @@
 namespace OpenAIApiClient.Registries.AiModels
 {
     using OpenAIApiClient.Enums;
+    using OpenAIApiClient.Interfaces.Registries;
     using OpenAIApiClient.Models.Registries.AiModels;
 
     /// <summary>
@@ -18,21 +19,35 @@ namespace OpenAIApiClient.Registries.AiModels
     /// This must contain one entry per supported model.
     /// </param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="models"/> is null.</exception>
-    public sealed class OpenAIModelsNEW(Dictionary<OpenAIModel, AiModelDescriptor> models) //: IAiModelRegistry<AiModelDescriptor>
+    public sealed class OpenAIModelsNEW(Dictionary<OpenAIModel, AiModelDescriptor> models) : IAiModelRegistry
     {
         private readonly Dictionary<OpenAIModel, AiModelDescriptor> models = models ?? throw new ArgumentNullException(nameof(models));
 
         /// <summary>
-        /// Gets the descriptor for a given model.
+        /// Gets the complete model registry dictionary ..
         /// </summary>
-        /// <param name="model">The model key.</param>
-        public AiModelDescriptor this[OpenAIModel model] => this.models[model];
+        /// <returns see cref="Dictionary(OpenAIModel, AiModelDescriptor)">.</returns>
+        public Dictionary<OpenAIModel, AiModelDescriptor> GetRegistry() => this.models;
 
         /// <summary>
         /// Returns all model descriptors in the registry.
         /// </summary>
         /// <returns>An <see cref="IEnumerable{AiModelDescriptor}"/> of matching descriptors.</returns>
-        public IEnumerable<AiModelDescriptor> All() => this.models.Values;
+        public IEnumerable<AiModelDescriptor> GetAll() => this.models.Values;
+
+        /// <summary>
+        /// Gets the model descriptor for a specified model by its unique name, or null if not found.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns see cref="AiModelDescriptor">.</returns>
+        public AiModelDescriptor? GetByName(string name) => this.models.Values.Where(m => m.Name.ToApiString() == name).FirstOrDefault();
+
+        /// <summary>
+        /// Gets the model descriptor for a specified model ..
+        /// </summary>
+        /// <param name="model">The model key.</param>
+        /// <returns><see cref="AiModelDescriptor"/>.</returns>
+        public AiModelDescriptor Get(OpenAIModel model) => this.models[model];
 
         /// <summary>
         /// Returns all models that satisfy the provided predicate.

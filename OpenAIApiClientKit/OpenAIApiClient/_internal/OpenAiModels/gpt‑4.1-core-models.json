@@ -36,7 +36,12 @@
       "name": "gpt-4.1",
       "family": "gpt-4",
       "tier": "base",
+      "domain": "chat",
       "tags": [ "generalist", "drafting", "chat" ],
+      "pricing": {
+        "inputCost": 1.25,
+        "outputCost": 10.00
+      },
       "capabilities": {
         "core": {
           "Reasoning": 5,
@@ -67,6 +72,13 @@
     {
       "name": "gpt-4.1-mini",
       "family": "gpt-4",
+      "tier": "mini",
+      "domain": "chat",
+      "tags": [ "lightweight", "fast", "cost-effective" ],
+      "pricing": {
+        "inputCost": 0.25,
+        "outputCost": 2.00
+      },
       "capabilities": {
         "core": {
           "Reasoning": 4,
@@ -98,7 +110,12 @@
       "name": "gpt-4-turbo",
       "family": "gpt-4",
       "tier": "multimodal",
+      "domain": "chat",
       "tags": [ "reasoning", "generalist", "drafting", "multimodal" ],
+      "pricing": {
+        "inputCost": null,
+        "outputCost": null
+      },
       "capabilities": {
         "core": {
           "Reasoning": 4,

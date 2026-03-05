@@ -4,7 +4,13 @@
       "name": "gpt-5.2-vision",
       "family": "gpt-5",
       "tier": "vision",
+      "domain": "image",
       "tags": [ "vision", "perception", "grounding" ],
+      "pricing": {
+        "inputCost": 1.75,
+        "cachedInputCost": 0.175,
+        "outputCost": 14.00
+      },
       "capabilities": {
         "core": {
           "Reasoning": 5,
@@ -36,7 +42,13 @@
       "name": "gpt-5.2-audio",
       "family": "gpt-5",
       "tier": "audio",
+      "domain": "audio",
       "tags": [ "speech", "transcription", "dialogue" ],
+      "pricing": {
+        "inputCost": 1.75,
+        "cachedInputCost": 0.175,
+        "outputCost": 14.00
+      },
       "capabilities": {
         "core": {
           "Reasoning": 5,

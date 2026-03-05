@@ -4,6 +4,7 @@
       "name": "dall-e-3",
       "family": "image",
       "tier": "image-generation",
+      "domain": "image",
       "tags": [ "creative", "visual", "generative", "artistic" ],
       "Pricing": {
         "inputTokenCost": 0.0005,
@@ -40,7 +41,13 @@
       "name": "dall-e-2",
       "family": "image",
       "tier": "image-generation",
+      "domain": "image",
       "tags": [ "visual", "generative", "stylised" ],
+      "pricing": {
+        "inputCost": null,
+        "cachedInputCost": null,
+        "outputCost": null
+      },
       "capabilities": {
         "core": {
           "Reasoning": 1,

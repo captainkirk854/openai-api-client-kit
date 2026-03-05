@@ -5,7 +5,13 @@
       "name": "babbage-002",
       "family": "gpt-3",
       "tier": "text-generation",
+      "domain": "chat",
       "tags": [ "utility", "economical", "basic" ],
+      "pricing": {
+        "inputCost": null,
+        "cachedInputCost": null,
+        "outputCost": null
+      },
       "capabilities": {
         "core": {
           "Reasoning": 2,
@@ -38,7 +44,13 @@
       "name": "curie-001",
       "family": "gpt-3",
       "tier": "text-generation",
+      "domain": "chat",
       "tags": [ "balanced", "drafting", "utility" ],
+      "pricing": {
+        "inputCost": null,
+        "cachedInputCost": null,
+        "outputCost": null
+      },
       "capabilities": {
         "core": {
           "Reasoning": 2,
@@ -70,8 +82,14 @@
     {
       "name": "ada-001",
       "family": "gpt-3",
+      "domain": "chat",
       "tier": "text-generation",
       "tags": [ "economical", "fast", "lightweight" ],
+      "pricing": {
+        "inputCost": null,
+        "cachedInputCost": null,
+        "outputCost": null
+      },
       "capabilities": {
         "core": {
           "Reasoning": 1,
@@ -104,7 +122,13 @@
       "name": "gpt-image-1",
       "family": "image",
       "tier": "image-generation",
+      "domain": "image",
       "tags": [ "visual", "generative", "coherent" ],
+      "pricing": {
+        "inputCost": null,
+        "cachedInputCost": null,
+        "outputCost": null
+      },
       "capabilities": {
         "core": {
           "Reasoning": 1,
@@ -136,7 +160,13 @@
       "name": "whisper-1",
       "family": "audio",
       "tier": "speech-to-text",
+      "domain": "audio",
       "tags": [ "transcription", "audio", "recognition" ],
+      "pricing": {
+        "inputCost": null,
+        "cachedInputCost": null,
+        "outputCost": null
+      },
       "capabilities": {
         "core": {
           "Reasoning": 1,
@@ -168,7 +198,13 @@
       "name": "omni-moderation-latest",
       "family": "moderation",
       "tier": "moderation",
+      "domain": "moderation",
       "tags": [ "safety", "filtering", "compliance" ],
+      "pricing": {
+        "inputCost": null,
+        "cachedInputCost": null,
+        "outputCost": null
+      },
       "capabilities": {
         "core": {
           "Reasoning": 1,
@@ -200,7 +236,13 @@
       "name": "text-moderation-latest",
       "family": "moderation",
       "tier": "moderation",
+      "domain": "moderation",
       "tags": [ "safety", "filtering", "text" ],
+      "pricing": {
+        "inputCost": null,
+        "cachedInputCost": null,
+        "outputCost": null
+      },
       "capabilities": {
         "core": {
           "Reasoning": 1,

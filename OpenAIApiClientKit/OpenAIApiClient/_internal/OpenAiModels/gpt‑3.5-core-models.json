@@ -36,7 +36,13 @@
       "name": "gpt-3.5-turbo",
       "family": "gpt-3.5",
       "tier": "text-generation",
-      "domains": [ "chat", "drafting", "economical", "utility" ],
+      "domain": "chat",
+      "tags": [ "chat", "drafting", "economical", "utility" ],
+      "pricing": {
+        "inputCost": null,
+        "cachedInputCost": null,
+        "outputCost": null
+      },
       "capabilities": {
         "core": {
           "Reasoning": 3,
@@ -68,7 +74,13 @@
       "name": "gpt-3.5-turbo-16k",
       "family": "gpt-3.5",
       "tier": "text-generation",
+      "domain": "chat",
       "tags": [ "chat", "drafting", "context", "utility" ],
+      "pricing": {
+        "inputCost": null,
+        "cachedInputCost": null,
+        "outputCost": null
+      },
       "capabilities": {
         "core": {
           "Reasoning": 3,
@@ -100,7 +112,13 @@
       "name": "gpt-3.5-turbo-instruct",
       "family": "gpt-3.5",
       "tier": "text-generation",
+      "domain": "chat",
       "tags": [ "instruction", "completion", "utility", "drafting" ],
+      "pricing": {
+        "inputCost": null,
+        "cachedInputCost": null,
+        "outputCost": null
+      },
       "capabilities": {
         "core": {
           "Reasoning": 3,

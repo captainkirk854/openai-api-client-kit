@@ -4,7 +4,13 @@
       "name": "tts-1",
       "family": "audio",
       "tier": "text-to-speech",
+      "domain": "audio",
       "tags": [ "speech", "synthesis", "realtime" ],
+      "pricing": {
+        "inputCost": null,
+        "cachedInputCost": null,
+        "outputCost": null
+      },
       "capabilities": {
         "core": {
           "Reasoning": 1,
@@ -36,7 +42,13 @@
       "name": "tts-1-hd",
       "family": "audio",
       "tier": "text-to-speech",
+      "domain": "audio",
       "tags": [ "speech", "synthesis", "high-fidelity" ],
+      "pricing": {
+        "inputCost": null,
+        "cachedInputCost": null,
+        "outputCost": null
+      },
       "capabilities": {
         "core": {
           "Reasoning": 1,
@@ -68,7 +80,13 @@
       "name": "tts-1-1106",
       "family": "audio",
       "tier": "text-to-speech",
+      "domain": "audio",
       "tags": [ "speech", "synthesis", "realtime" ],
+      "pricing": {
+        "inputCost": null,
+        "cachedInputCost": null,
+        "outputCost": null
+      },
       "capabilities": {
         "core": {
           "Reasoning": 4,

@@ -4,10 +4,12 @@
       "name": "gpt-5.2",
       "family": "gpt-5",
       "tier": "base",
+      "domain": "chat",
       "tags": [ "analysis", "generalist", "balanced" ],
-      "Pricing": {
-        "inputTokenCost": 0.0005,
-        "outputTokenCost": 0.001
+      "pricing": {
+        "inputCost": 1.75,
+        "cachedInputCost": 0.175,
+        "outputCost": 14.00
       },
       "capabilities": {
         "core": {
@@ -40,7 +42,12 @@
       "name": "gpt-5.2-pro",
       "family": "gpt-5",
       "tier": "pro",
+      "domain": "chat",
       "tags": [ "reasoning", "synthesis", "multimodal", "expert" ],
+      "pricing": {
+        "inputCost": 21,
+        "outputCost": 168
+      },
       "capabilities": {
         "core": {
           "Reasoning": 5,
@@ -72,7 +79,13 @@
       "name": "gpt-5.2-mini",
       "family": "gpt-5",
       "tier": "mini",
+      "domain": "chat",
       "tags": [ "utility", "summarisation", "drafting" ],
+      "pricing": {
+        "inputCost": 0.25,
+        "cachedInputCost": 0.025,
+        "outputCost": 2.00
+      },
       "capabilities": {
         "core": {
           "Reasoning": 4,
@@ -104,7 +117,12 @@
       "name": "gpt-5.2-nano",
       "family": "gpt-5",
       "tier": "nano",
+      "domain": "chat",
       "tags": [ "edge", "lightweight", "latency" ],
+      "pricing": {
+        "inputCost": 0.05,
+        "outputCost": 0.40
+      },
       "capabilities": {
         "core": {
           "Reasoning": 3,

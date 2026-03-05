@@ -4,7 +4,12 @@
       "name": "gpt-4o-pro",
       "family": "gpt-4o",
       "tier": "pro",
+      "domain": "chat",
       "tags": [ "multimodal", "interactive", "perception" ],
+      "pricing": {
+        "inputCost": 1.25,
+        "outputCost": 10.00
+      },
       "capabilities": {
         "core": {
           "Reasoning": 2,
@@ -36,7 +41,12 @@
       "name": "gpt-4o",
       "family": "gpt-4o",
       "tier": "base",
+      "domain": "chat",
       "tags": [ "vision", "chat", "balanced" ],
+      "pricing": {
+        "inputCost": null,
+        "outputCost": null
+      },
       "capabilities": {
         "core": {
           "Reasoning": 5,
@@ -68,7 +78,12 @@
       "name": "gpt-4o-mini",
       "family": "gpt-4o",
       "tier": "multimodal-mini",
+      "domain": "chat",
       "tags": [ "multimodal", "efficient", "interactive", "utility" ],
+      "pricing": {
+        "inputCost": 1.10,
+        "outputCost": 4.40
+      },
       "capabilities": {
         "core": {
           "Reasoning": 4,
@@ -100,7 +115,13 @@
       "name": "gpt-4o-realtime-preview",
       "family": "gpt-4o",
       "tier": "multimodal-realtime",
+      "domain": "audio",
       "tags": [ "realtime", "interactive", "multimodal", "conversational" ],
+      "pricing": {
+        "inputCost": null,
+        "cachedInputCost": null,
+        "outputCost": null
+      },
       "capabilities": {
         "core": {
           "Reasoning": 4,

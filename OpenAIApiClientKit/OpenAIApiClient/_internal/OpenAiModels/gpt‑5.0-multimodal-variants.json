@@ -4,7 +4,12 @@
       "name": "gpt-5-vision",
       "family": "gpt-5",
       "tier": "vision",
+      "domain": "image",
       "tags": [ "vision", "detection", "ocr" ],
+      "pricing": {
+        "inputCost": 1.25,
+        "outputCost": 10.00
+      },
       "capabilities": {
         "core": {
           "Reasoning": 5,
@@ -36,7 +41,12 @@
       "name": "gpt-5-audio",
       "family": "gpt-5",
       "tier": "audio",
+      "domain": "audio",
       "tags": [ "speech", "commands", "realtime" ],
+      "pricing": {
+        "inputCost": 1.25,
+        "outputCost": 10.00
+      },
       "capabilities": {
         "core": {
           "Reasoning": 5,

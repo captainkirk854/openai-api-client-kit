@@ -24,7 +24,7 @@ namespace OpenAIApiClient.Tests.Registries.AiModels.Factories
             // For each enum value, ensure a descriptor exists and has non-null capabilities
             foreach (OpenAIModel model in Enum.GetValues(typeof(OpenAIModel)))
             {
-                AiModelDescriptor descriptor = registry[model];
+                AiModelDescriptor descriptor = registry.Get(model: model);
 
                 Assert.IsNotNull(descriptor, $"Descriptor for {model} must not be null.");
                 Assert.IsNotNull(descriptor.Capabilities, $"Capabilities for {model} must not be null.");
@@ -58,7 +58,7 @@ namespace OpenAIApiClient.Tests.Registries.AiModels.Factories
             // Assert
             foreach (OpenAIModel model in Enum.GetValues(typeof(OpenAIModel)))
             {
-                AiModelDescriptor descriptor = registry[model];
+                AiModelDescriptor descriptor = registry.Get(model: model);
 
                 // Name should be set by the factory finalization loop
                 Assert.AreEqual(

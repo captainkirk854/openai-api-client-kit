@@ -4,7 +4,13 @@
       "name": "text-davinci-003",
       "family": "gpt-3",
       "tier": "text-generation",
+      "domain": "chat",
       "tags": [ "creative", "drafting", "generalist" ],
+      "pricing": {
+        "inputCost": null,
+        "cachedInputCost": null,
+        "outputCost": null
+      },
       "capabilities": {
         "core": {
           "Reasoning": 3,
@@ -36,7 +42,13 @@
       "name": "davinci-002",
       "family": "gpt-3",
       "tier": "text-generation",
+      "domain": "chat",
       "tags": [ "generalist", "drafting", "completion" ],
+      "pricing": {
+        "inputCost": null,
+        "cachedInputCost": null,
+        "outputCost": null
+      },
       "capabilities": {
         "core": {
           "Reasoning": 3,
