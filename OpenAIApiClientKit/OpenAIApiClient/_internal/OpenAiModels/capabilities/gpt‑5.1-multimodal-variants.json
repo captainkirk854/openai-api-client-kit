@@ -3,6 +3,8 @@
     {
       "name": "gpt-5.1-vision",
       "family": "gpt-5",
+      "tier": "vision",
+      "tags": [ "vision", "ocr", "analysis" ],
       "capabilities": {
         "core": {
           "Reasoning": 5,
@@ -33,6 +35,8 @@
     {
       "name": "gpt-5.1-audio",
       "family": "gpt-5",
+      "tier": "audio",
+      "tags": [ "speech", "transcription", "commands" ],
       "capabilities": {
         "core": {
           "Reasoning": 5,

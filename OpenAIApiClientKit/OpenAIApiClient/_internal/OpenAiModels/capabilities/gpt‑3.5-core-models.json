@@ -1,9 +1,42 @@
 {
   "models": [
-
+    {
+      "name": "gpt-3.5",
+      "family": "gpt-3.5",
+      "tier": "base",
+      "tags": [ "economical", "drafting", "utility" ],
+      "capabilities": {
+        "core": {
+          "Reasoning": 2,
+          "Text": 3,
+          "Chat": 3,
+          "Vision": 0,
+          "AudioIn": 0,
+          "AudioOut": 0
+        },
+        "advanced": {
+          "Critic": 1,
+          "Editor": 1,
+          "JSONMode": 2,
+          "Embedding": 2,
+          "ImageGeneration": 0
+        },
+        "performance": {
+          "FastInference": 4,
+          "HighPerformance": 2
+        },
+        "operational": {
+          "LowCost": 4,
+          "Moderation": 2,
+          "OpenWeight": 0
+        }
+      }
+    },
     {
       "name": "gpt-3.5-turbo",
       "family": "gpt-3.5",
+      "tier": "text-generation",
+      "domains": [ "chat", "drafting", "economical", "utility" ],
       "capabilities": {
         "core": {
           "Reasoning": 3,
@@ -31,10 +64,11 @@
         }
       }
     },
-
     {
       "name": "gpt-3.5-turbo-16k",
       "family": "gpt-3.5",
+      "tier": "text-generation",
+      "tags": [ "chat", "drafting", "context", "utility" ],
       "capabilities": {
         "core": {
           "Reasoning": 3,
@@ -65,6 +99,8 @@
     {
       "name": "gpt-3.5-turbo-instruct",
       "family": "gpt-3.5",
+      "tier": "text-generation",
+      "tags": [ "instruction", "completion", "utility", "drafting" ],
       "capabilities": {
         "core": {
           "Reasoning": 3,

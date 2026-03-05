@@ -3,6 +3,8 @@
     {
       "name": "gpt-5.2",
       "family": "gpt-5",
+      "tier": "base",
+      "tags": [ "analysis", "generalist", "balanced" ],
       "capabilities": {
         "core": {
           "Reasoning": 5,
@@ -33,6 +35,8 @@
     {
       "name": "gpt-5.2-pro",
       "family": "gpt-5",
+      "tier": "pro",
+      "tags": [ "reasoning", "synthesis", "multimodal", "expert" ],
       "capabilities": {
         "core": {
           "Reasoning": 5,
@@ -63,6 +67,8 @@
     {
       "name": "gpt-5.2-mini",
       "family": "gpt-5",
+      "tier": "mini",
+      "tags": [ "utility", "summarisation", "drafting" ],
       "capabilities": {
         "core": {
           "Reasoning": 4,
@@ -93,6 +99,8 @@
     {
       "name": "gpt-5.2-nano",
       "family": "gpt-5",
+      "tier": "nano",
+      "tags": [ "edge", "lightweight", "latency" ],
       "capabilities": {
         "core": {
           "Reasoning": 3,

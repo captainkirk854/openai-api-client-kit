@@ -4,6 +4,8 @@
     {
       "name": "babbage-002",
       "family": "gpt-3",
+      "tier": "text-generation",
+      "tags": [ "utility", "economical", "basic" ],
       "capabilities": {
         "core": {
           "Reasoning": 2,
@@ -35,6 +37,8 @@
     {
       "name": "curie-001",
       "family": "gpt-3",
+      "tier": "text-generation",
+      "tags": [ "balanced", "drafting", "utility" ],
       "capabilities": {
         "core": {
           "Reasoning": 2,
@@ -66,6 +70,8 @@
     {
       "name": "ada-001",
       "family": "gpt-3",
+      "tier": "text-generation",
+      "tags": [ "economical", "fast", "lightweight" ],
       "capabilities": {
         "core": {
           "Reasoning": 1,
@@ -97,6 +103,8 @@
     {
       "name": "gpt-image-1",
       "family": "image",
+      "tier": "image-generation",
+      "tags": [ "visual", "generative", "coherent" ],
       "capabilities": {
         "core": {
           "Reasoning": 1,
@@ -127,6 +135,8 @@
     {
       "name": "whisper-1",
       "family": "audio",
+      "tier": "speech-to-text",
+      "tags": [ "transcription", "audio", "recognition" ],
       "capabilities": {
         "core": {
           "Reasoning": 1,
@@ -157,6 +167,8 @@
     {
       "name": "omni-moderation-latest",
       "family": "moderation",
+      "tier": "moderation",
+      "tags": [ "safety", "filtering", "compliance" ],
       "capabilities": {
         "core": {
           "Reasoning": 1,
@@ -187,6 +199,8 @@
     {
       "name": "text-moderation-latest",
       "family": "moderation",
+      "tier": "moderation",
+      "tags": [ "safety", "filtering", "text" ],
       "capabilities": {
         "core": {
           "Reasoning": 1,

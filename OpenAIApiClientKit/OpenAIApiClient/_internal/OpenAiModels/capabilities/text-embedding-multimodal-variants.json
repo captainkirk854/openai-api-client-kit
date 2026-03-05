@@ -3,6 +3,8 @@
     {
       "name": "text-embedding-3-large",
       "family": "embedding",
+      "tier": "embedding",
+      "tags": [ "semantic", "retrieval", "vector" ],
       "capabilities": {
         "core": {
           "Reasoning": 2,
@@ -34,6 +36,8 @@
     {
       "name": "text-embedding-3-small",
       "family": "embedding",
+      "tier": "embedding",
+      "tags": [ "semantic", "efficient", "vector" ],
       "capabilities": {
         "core": {
           "Reasoning": 1,
@@ -65,6 +69,8 @@
     {
       "name": "text-embedding-ada-002",
       "family": "embedding",
+      "tier": "embedding",
+      "tags": [ "semantic", "economical", "vector" ],
       "capabilities": {
         "core": {
           "Reasoning": 1,

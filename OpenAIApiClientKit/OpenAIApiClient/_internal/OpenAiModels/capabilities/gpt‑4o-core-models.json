@@ -1,8 +1,42 @@
 {
   "models": [
     {
+      "name": "gpt-4o-pro",
+      "family": "gpt-4o",
+      "tier": "pro",
+      "tags": [ "multimodal", "interactive", "perception" ],
+      "capabilities": {
+        "core": {
+          "Reasoning": 2,
+          "Text": 3,
+          "Chat": 3,
+          "Vision": 1,
+          "AudioIn": 1,
+          "AudioOut": 1
+        },
+        "advanced": {
+          "Critic": 1,
+          "Editor": 1,
+          "JSONMode": 2,
+          "Embedding": 3,
+          "ImageGeneration": 0
+        },
+        "performance": {
+          "FastInference": 4,
+          "HighPerformance": 2
+        },
+        "operational": {
+          "LowCost": 5,
+          "Moderation": 2,
+          "OpenWeight": 0
+        }
+      }
+    },
+    {
       "name": "gpt-4o",
       "family": "gpt-4o",
+      "tier": "base",
+      "tags": [ "vision", "chat", "balanced" ],
       "capabilities": {
         "core": {
           "Reasoning": 5,
@@ -33,6 +67,8 @@
     {
       "name": "gpt-4o-mini",
       "family": "gpt-4o",
+      "tier": "multimodal-mini",
+      "tags": [ "multimodal", "efficient", "interactive", "utility" ],
       "capabilities": {
         "core": {
           "Reasoning": 4,
@@ -63,6 +99,8 @@
     {
       "name": "gpt-4o-realtime-preview",
       "family": "gpt-4o",
+      "tier": "multimodal-realtime",
+      "tags": [ "realtime", "interactive", "multimodal", "conversational" ],
       "capabilities": {
         "core": {
           "Reasoning": 4,

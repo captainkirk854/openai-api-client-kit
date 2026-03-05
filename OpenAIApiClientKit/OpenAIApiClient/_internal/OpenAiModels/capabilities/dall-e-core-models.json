@@ -3,6 +3,8 @@
     {
       "name": "dall-e-3",
       "family": "image",
+      "tier": "image-generation",
+      "tags": [ "creative", "visual", "generative", "artistic" ],
       "capabilities": {
         "core": {
           "Reasoning": 1,
@@ -33,6 +35,8 @@
     {
       "name": "dall-e-2",
       "family": "image",
+      "tier": "image-generation",
+      "tags": [ "visual", "generative", "stylised" ],
       "capabilities": {
         "core": {
           "Reasoning": 1,

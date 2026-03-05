@@ -1,8 +1,74 @@
 {
   "models": [
     {
+      "name": "o4-mini",
+      "family": "o-series",
+      "tier": "reasoning-mini",
+      "tags": [ "reasoning", "compact", "efficient" ],
+      "capabilities": {
+        "core": {
+          "Reasoning": 4,
+          "Text": 4,
+          "Chat": 4,
+          "Vision": 0,
+          "AudioIn": 0,
+          "AudioOut": 0
+        },
+        "advanced": {
+          "Critic": 3,
+          "Editor": 3,
+          "JSONMode": 4,
+          "Embedding": 2,
+          "ImageGeneration": 0
+        },
+        "performance": {
+          "FastInference": 4,
+          "HighPerformance": 3
+        },
+        "operational": {
+          "LowCost": 3,
+          "Moderation": 3,
+          "OpenWeight": 0
+        }
+      }
+    },
+    {
+      "name": "o3",
+      "family": "o-series",
+      "tier": "reasoning",
+      "tags": [ "reasoning", "deliberate", "advanced" ],
+      "capabilities": {
+        "core": {
+          "Reasoning": 5,
+          "Text": 5,
+          "Chat": 5,
+          "Vision": 0,
+          "AudioIn": 0,
+          "AudioOut": 0
+        },
+        "advanced": {
+          "Critic": 4,
+          "Editor": 4,
+          "JSONMode": 5,
+          "Embedding": 3,
+          "ImageGeneration": 0
+        },
+        "performance": {
+          "FastInference": 3,
+          "HighPerformance": 4
+        },
+        "operational": {
+          "LowCost": 2,
+          "Moderation": 4,
+          "OpenWeight": 0
+        }
+      }
+    },
+    {
       "name": "o3-mini",
       "family": "o-series",
+      "tier": "reasoning-mini",
+      "tags": [ "reasoning", "compact", "efficient" ],
       "capabilities": {
         "core": {
           "Reasoning": 5,
@@ -33,6 +99,8 @@
     {
       "name": "o1",
       "family": "o-series",
+      "tier": "reasoning",
+      "tags": [ "reasoning", "deliberate", "structured" ],
       "capabilities": {
         "core": {
           "Reasoning": 5,
@@ -63,6 +131,8 @@
     {
       "name": "o1-mini",
       "family": "o-series",
+      "tier": "reasoning-mini",
+      "tags": [ "reasoning", "lightweight", "efficient" ],
       "capabilities": {
         "core": {
           "Reasoning": 5,

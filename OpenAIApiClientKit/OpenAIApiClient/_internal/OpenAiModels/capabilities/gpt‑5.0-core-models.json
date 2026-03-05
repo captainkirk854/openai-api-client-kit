@@ -3,6 +3,8 @@
     {
       "name": "gpt-5",
       "family": "gpt-5",
+      "tier": "base",
+      "tags": [ "generalist", "drafting", "chat" ],
       "capabilities": {
         "core": {
           "Reasoning": 5,
@@ -33,6 +35,8 @@
     {
       "name": "gpt-5-pro",
       "family": "gpt-5",
+      "tier": "pro",
+      "tags": [ "analysis", "planning", "creative" ],
       "capabilities": {
         "core": {
           "Reasoning": 5,
@@ -63,6 +67,8 @@
     {
       "name": "gpt-5-mini",
       "family": "gpt-5",
+      "tier": "mini",
+      "tags": [ "summaries", "extraction", "utility" ],
       "capabilities": {
         "core": {
           "Reasoning": 4,
@@ -93,6 +99,8 @@
     {
       "name": "gpt-5-nano",
       "family": "gpt-5",
+      "tier": "nano",
+      "tags": [ "mobile", "embedded", "latency" ],
       "capabilities": {
         "core": {
           "Reasoning": 3,

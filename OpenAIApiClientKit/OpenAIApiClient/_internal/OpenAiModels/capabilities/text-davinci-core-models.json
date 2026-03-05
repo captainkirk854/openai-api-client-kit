@@ -3,6 +3,8 @@
     {
       "name": "text-davinci-003",
       "family": "gpt-3",
+      "tier": "text-generation",
+      "tags": [ "creative", "drafting", "generalist" ],
       "capabilities": {
         "core": {
           "Reasoning": 3,
@@ -33,6 +35,8 @@
     {
       "name": "davinci-002",
       "family": "gpt-3",
+      "tier": "text-generation",
+      "tags": [ "generalist", "drafting", "completion" ],
       "capabilities": {
         "core": {
           "Reasoning": 3,
