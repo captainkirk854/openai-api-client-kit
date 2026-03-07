@@ -13,17 +13,14 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
     /// Provides a fake read-only registry of OpenAI models and their descriptors.
     /// </summary>
     /// <param name="models">A dictionary mapping OpenAI models to their descriptors.</param>
-    public sealed class MockOpenAIModels(Dictionary<OpenAIModel, AiModelDescriptor> models) : IAiModelRegistry
+    public sealed class MockOpenAIModels(Dictionary<string, AiModelPropertyRegistryModel> models) : IAiModelRegistryNEW
     {
-        private readonly Dictionary<OpenAIModel, AiModelDescriptor> models = models;
+        private readonly Dictionary<string, AiModelPropertyRegistryModel> models = models;
 
-        public Dictionary<OpenAIModel, AiModelDescriptor> GetRegistry() => this.models;
+        public IReadOnlyDictionary<string, AiModelPropertyRegistryModel> GetRegistry() => this.models;
 
-        public IEnumerable<AiModelDescriptor> GetAll() => this.models.Values;
+        public IReadOnlyCollection<AiModelPropertyRegistryModel> GetAll() => this.models.Values;
 
-        public AiModelDescriptor? GetByName(string name) => this.models.Values.Where(m => m.Name.ToApiString() == name).FirstOrDefault();
-
-        public IEnumerable<AiModelDescriptor> Find(Func<AiModelDescriptor, bool> predicate)
-            => this.models.Values.Where(predicate);
+        public AiModelPropertyRegistryModel? TryGetByName(string name) => this.models.Values.Where(m => m.Name == name).FirstOrDefault();
     }
 }

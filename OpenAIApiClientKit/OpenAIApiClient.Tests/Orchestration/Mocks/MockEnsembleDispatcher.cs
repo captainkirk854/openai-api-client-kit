@@ -8,7 +8,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
     using OpenAIApiClient.Models.Registries.AiModels;
     using OpenAIApiClient.Orchestration.Dispatch;
 
-    public sealed class MockEnsembleDispatcher : IEnsembleDispatcher
+    public sealed class MockEnsembleDispatcher // : IEnsembleDispatcher
     {
         /// <summary>
         /// Gets a value indicating whether the executor was called - only in mock for test verification purposes.
