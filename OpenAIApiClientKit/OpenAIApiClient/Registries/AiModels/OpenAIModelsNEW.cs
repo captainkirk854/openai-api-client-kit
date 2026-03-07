@@ -4,7 +4,6 @@
 
 namespace OpenAIApiClient.Registries.AiModels
 {
-    using OpenAIApiClient.Enums;
     using OpenAIApiClient.Interfaces.Registries;
     using OpenAIApiClient.Models.Registries.AiModels;
 

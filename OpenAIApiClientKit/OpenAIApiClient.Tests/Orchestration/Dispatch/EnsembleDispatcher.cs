@@ -59,7 +59,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
             //IReadOnlyList<AiModelCapability> capabilities = [AiModelCapability.Reasoning];
 
             //// Get the mock registry, the model descriptor and the expected result as a tuple ..
-            //(IAiModelRegistry aiModels, AiModelDescriptor _, EnsembleDispatchResult expected) = Cook(aiModel: modelToUse, capabilities: capabilities);
+            //(IAiModelRegistryNEW aiModels, AiModelDescriptor _, EnsembleDispatchResult expected) = Cook(aiModel: modelToUse, capabilities: capabilities);
 
             //// Register a custom strategy handler
             //EnsembleStrategies.RegisterCustomHandler(strategy: EnsembleStrategy.Reasoning, handler: _ => expected); // EnsembleStrategies.Register(strategy: EnsembleStrategy.Reasoning, handler: (IReadOnlyDictionary<OpenAIModel, ModelDescriptor> _) => expected);
@@ -162,7 +162,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
             //IReadOnlyList<AiModelCapability> capabilities = [AiModelCapability.Reasoning];
 
             //// Get the mock registry, the model descriptor and the expected result as a tuple ..
-            //(IAiModelRegistry aiModels, AiModelDescriptor _, EnsembleDispatchResult _) = Cook(aiModel: modelToUse, capabilities: capabilities);
+            //(IAiModelRegistryNEW aiModels, AiModelDescriptor _, EnsembleDispatchResult _) = Cook(aiModel: modelToUse, capabilities: capabilities);
 
             //// Create the dispatcher ..
             //testClass dispatcher = new(registry: aiModels);
@@ -191,8 +191,8 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
         /// </summary>
         /// <param name="aiModel"></param>
         /// <param name="capabilities"></param>
-        /// <returns see cref="(IAiModelRegistry, AiModelDescriptor, EnsembleDispatchResult)">.</returns>
-        //private static (IAiModelRegistry, AiModelDescriptor, EnsembleDispatchResult) Cook(OpenAIModel aiModel, IReadOnlyList<AiModelCapability> capabilities)
+        /// <returns see cref="(IAiModelRegistryNEW, AiModelPropertyRegistryModel, EnsembleDispatchResult)">.</returns>
+        //private static (IAiModelRegistryNEW, AiModelDescriptor, EnsembleDispatchResult) Cook(OpenAIModel aiModel, IReadOnlyList<AiModelCapability> capabilities)
         //{
         //    //// Create the test model descriptor ..
         //    //AiModelDescriptor m1 = CreateDescriptor(aiModel: aiModel, cost: 1.0m, capabilities: capabilities);
@@ -220,23 +220,23 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
         /// <param name="cost"></param>
         /// <param name="capabilities"></param>
         /// <returns see cref="AiModelDescriptor">.</returns>
-        private static AiModelDescriptor CreateDescriptor(OpenAIModel aiModel, decimal cost, IEnumerable<AiModelCapability> capabilities)
-        {
-            // Create the descriptor ..
-            AiModelDescriptor descriptor = new()
-            {
-                Capabilities = new HashSet<AiModelCapability>(capabilities),
-                Pricing = new AiModelPricing(cost, cost),
-                Domain = ModelDomain.Other,
-                Generation = OpenAIModelGeneration.Other,
-            };
+        //private static AiModelPropertyRegistryModel CreateDescriptor(string aiModel, decimal cost, IEnumerable<AiModelCapability> capabilities)
+        //{
+        //    // Create the descriptor ..
+        //    AiModelPropertyRegistryModel descriptor = new()
+        //    {
+        //        Capabilities = new HashSet<AiModelCapability>(capabilities),
+        //        Pricing = new AiModelPricing(cost, cost),
+        //        Domain = ModelDomain.Other,
+        //        Generation = OpenAIModelGeneration.Other,
+        //    };
 
-            // and set the descriptor's internal property "Name" via reflection
-            typeof(AiModelDescriptor)
-                .GetProperty(name: nameof(AiModelDescriptor.Name))!
-                .SetValue(obj: descriptor, value: aiModel);
+        //    // and set the descriptor's internal property "Name" via reflection
+        //    typeof(AiModelPropertyRegistryModel)
+        //        .GetProperty(name: nameof(AiModelPropertyRegistryModel.Name))!
+        //        .SetValue(obj: descriptor, value: aiModel);
 
-            return descriptor;
-        }
+        //    return descriptor;
+        //}
     }
 }

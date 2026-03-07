@@ -75,7 +75,7 @@ namespace OpenAIApiClient
         /// </summary>
         /// <param name="request">The chat completion request payload.</param>
         /// <param name="cancelToken">A cancellation token to cancel the operation.</param>
-        /// <returns>The chat completion response.</returns>
+        /// <returns see cref="ChatCompletionResponse">The chat completion response from the API.</returns>
         public async Task<ChatCompletionResponse?> CreateChatCompletionAsync(ChatCompletionRequest request, CancellationToken cancelToken = default)
         {
             // Enforce non-streaming option ..
@@ -103,7 +103,7 @@ namespace OpenAIApiClient
         /// </summary>
         /// <param name="request">The chat completion request payload.</param>
         /// <param name="cancelToken">A cancellation token to cancel the operation.</param>
-        /// <returns>An asynchronous stream of chat completion chunks.</returns>
+        /// <returns see cref="IAsyncEnumerable{ChatCompletionChunk}">An asynchronous stream of chat completion chunks.</returns>
         public async IAsyncEnumerable<ChatCompletionChunk> CreateChatCompletionStreamAsync(ChatCompletionRequest request, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancelToken = default)
         {
             // Enforce streaming option ..
@@ -123,7 +123,7 @@ namespace OpenAIApiClient
         /// Convert Request to Json Http String.
         /// </summary>
         /// <param name="request"></param>
-        /// <returns see cref="StringContent">.</returns>
+        /// <returns see cref="StringContent">StringContent.</returns>
         private static StringContent ConvertToHttpString(ChatCompletionRequest request)
         {
             // Prepare and return HTTP content ..
@@ -135,7 +135,7 @@ namespace OpenAIApiClient
         /// Determines whether an exception is likely transient and safe to retry.
         /// </summary>
         /// <param name="ex">The exception to evaluate.</param>
-        /// <returns>True if the exception is transient; otherwise, false.</returns>
+        /// <returns see cref="bool">True if the exception is considered transient; otherwise, false.</returns>
         private static bool IsSafeToRetry(Exception ex)
         {
             return ex is HttpRequestException ||
@@ -148,7 +148,7 @@ namespace OpenAIApiClient
         /// </summary>
         /// <param name="response"></param>
         /// <param name="fallback"></param>
-        /// <returns>Timespan.</returns>
+        /// <returns see cref="TimeSpan">The delay to wait before retrying.</returns>
         private static TimeSpan GetRetryAfterDelay(HttpResponseMessage response, TimeSpan fallback)
         {
             // Check for "Retry-After" header ..
@@ -172,7 +172,7 @@ namespace OpenAIApiClient
         /// Distributes jitter around a base delay to avoid clustering.
         /// </summary>
         /// <param name="baseDelay"></param>
-        /// <returns>Timespan.</returns>
+        /// <returns see cref="TimeSpan">A jittered delay based on the base delay.</returns>
         private static TimeSpan Jitter(TimeSpan baseDelay)
         {
             double rnd = (Random.Shared.NextDouble() * 0.4) + 0.8; // 0.8–1.2x
@@ -184,7 +184,7 @@ namespace OpenAIApiClient
         /// </summary>
         /// <param name="operation">The operation to execute.</param>
         /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
-        /// <returns>The result of the operation.</returns>
+        /// <returns see cref="T">The result of the operation if successful.</returns>
         private async Task<T> ExecuteWithRetryAsync<T>(Func<Task<T>> operation, CancellationToken cancellationToken)
         {
             // Retry loop with exponential backoff ..
@@ -218,7 +218,7 @@ namespace OpenAIApiClient
         /// </summary>
         /// <param name="operation">The streaming operation to execute.</param>
         /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
-        /// <returns>An asynchronous stream of items from the operation.</returns>
+        /// <returns see cref="IAsyncEnumerable{T}">An asynchronous stream of results from the operation.</returns>
         private async IAsyncEnumerable<T> ExecuteStreamingWithRetryAsync<T>(Func<IAsyncEnumerable<T>> operation, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken)
         {
             for (int attempt = 1; attempt <= this.maxRetries; attempt++)
@@ -269,7 +269,7 @@ namespace OpenAIApiClient
         /// </summary>
         /// <param name="httpContent">The HTTP content for the request.</param>
         /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
-        /// <returns>An asynchronous stream of chat completion chunks.</returns>
+        /// <returns see cref="IAsyncEnumerable{ChatCompletionChunk}">An asynchronous stream of chat completion chunks.</returns>
         private async IAsyncEnumerable<ChatCompletionChunk> SendStreamingRequestAsync(HttpContent httpContent, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken)
         {
             // Build HTTP request

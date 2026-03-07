@@ -85,7 +85,8 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         private static void RunExplicitModelDispatch()
         {
             Console.WriteLine("Enter model name (e.g., GPT4o, GPT5_2):");
-            Console.WriteLine("Options: " + string.Join(", ", Enum.GetNames(typeof(OpenAIModel))));
+            Console.WriteLine("Available models:" + Environment.NewLine + string.Join(Environment.NewLine, Models.GetAll().Select(m => $"- {m.Name}")));
+            //Console.WriteLine("Options: " + string.Join(", ", Enum.GetNames(typeof(OpenAIModel))));
             string? model = Console.ReadLine();
 
             //if (!Enum.TryParse<string>(input, out string model))
@@ -279,7 +280,12 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             Console.WriteLine();
         }
 
-
+        /// <summary>
+        /// Determines whether the specified AI model supports a given capability.
+        /// </summary>
+        /// <param name="model">The AI model to evaluate.</param>
+        /// <param name="capability">The capability to check for support.</param>
+        /// <returns>true if the model supports the specified capability; otherwise, false.</returns>
         private static bool SupportsCapability(
             AiModelPropertyRegistryModel model,
             AiModelCapability capability)

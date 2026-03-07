@@ -10,11 +10,11 @@ namespace OpenAIApiClient.Orchestration.Dispatch
     /// <see cref="EnsembleDispatchRequest"/> represents the result of an ensemble dispatch operation, containing the selected model(s).
     /// </summary>
     /// <param name="models"></param>
-    public sealed class EnsembleDispatchResult(IEnumerable<AiModelDescriptor> models)
+    public sealed class EnsembleDispatchResult(IEnumerable<AiModelPropertyRegistryModel> models)
     {
         /// <summary>
         /// Gets a list of model descriptors selected for the ensemble.
         /// </summary>
-        public IReadOnlyList<AiModelDescriptor> Models { get; } = [.. models];
+        public IReadOnlyList<AiModelPropertyRegistryModel> Models { get; } = [.. models];
     }
 }

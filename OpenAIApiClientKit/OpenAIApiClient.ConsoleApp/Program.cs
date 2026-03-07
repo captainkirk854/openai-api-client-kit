@@ -272,7 +272,7 @@ namespace OpenAIApiClient.ConsoleApp
             string[] workerModels;
             if (useReasoning)
             {
-                workerModels = EnsembleStrategy.ReasoningNEW.GetModelNames(registry);
+                workerModels = EnsembleStrategy.Reasoning.GetModelNames(registry);
             }
             else
             {
@@ -287,7 +287,7 @@ namespace OpenAIApiClient.ConsoleApp
             }
 
             // Define randomly-picked models to use for LLM-as-judge and response synthesis strategies; models should have good reasoning capabilities for best results ..
-            string[] reasoningModels = EnsembleStrategy.ReasoningNEW.GetModelNames(registry);
+            string[] reasoningModels = EnsembleStrategy.Reasoning.GetModelNames(registry);
             string judgeModel = reasoningModels[Random.Shared.Next(reasoningModels.Length)];
             string synthesisModel = reasoningModels[Random.Shared.Next(reasoningModels.Length)];
 

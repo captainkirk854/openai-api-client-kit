@@ -22,7 +22,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         /// <summary>
         /// Gets or sets the model descriptors to be returned by the router - only in mock for test verification purposes.
         /// </summary>
-        public IReadOnlyList<AiModelDescriptor> ReturnedModels
+        public IReadOnlyList<AiModelPropertyRegistryModel> ReturnedModels
         {
             get;
             set;

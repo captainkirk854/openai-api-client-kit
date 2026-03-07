@@ -14,7 +14,7 @@ namespace OpenAIApiClient.Models.Consolidation
         /// <summary>
         /// Gets or sets the model descriptor for this response.
         /// </summary>
-        public AiModelDescriptor? Model
+        public AiModelPropertyRegistryModel? Model
         {
             get;
             set;

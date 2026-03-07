@@ -6,17 +6,12 @@ namespace OpenAIApiClient.Enums
 {
     public enum EnsembleStrategy
     {
+        Custom,
+        None,
+        TwoModel,
+        ThreeModel,
         Reasoning,
         Vision,
         CostOptimized,
-        Custom,
-        NoneNEW,
-        TwoModelNEW,
-        ThreeModelNEW,
-        ReasoningNEW,
-        VisionNEW,
-        CostOptimizedNEW,
-
-
     }
 }

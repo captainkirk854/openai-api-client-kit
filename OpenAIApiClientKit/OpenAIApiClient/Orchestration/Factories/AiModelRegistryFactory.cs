@@ -15,7 +15,7 @@ namespace OpenAIApiClient.Orchestration.Factories
         /// <summary>
         /// Creates a new instance of the default model registry.
         /// </summary>
-        /// <returns>An <see cref="IAiModelRegistry"/> representing the default model registry.</returns>
+        /// <returns>An <see cref="IAiModelRegistryNEW"/> representing the default model registry.</returns>
         public static IAiModelRegistryNEW Create() => new OpenAIModelRegistryNEW();
     }
 }

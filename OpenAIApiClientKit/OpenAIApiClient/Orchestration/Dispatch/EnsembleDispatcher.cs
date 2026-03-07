@@ -71,11 +71,9 @@ namespace OpenAIApiClient.Orchestration.Dispatch
         {
             IReadOnlyCollection<AiModelPropertyRegistryModel> allModels = this.modelRegistry.GetAll();
 
-            bool hasRequiredCapabilities = request.RequiredCapabilities is not null
-                                           && request.RequiredCapabilities.Count > 0;
+            bool hasRequiredCapabilities = request.RequiredCapabilities is not null && request.RequiredCapabilities.Count > 0;
 
-            bool hasExplicitModels = request.ExplicitModels is not null
-                                     && request.ExplicitModels.Count > 0;
+            bool hasExplicitModels = request.ExplicitModels is not null && request.ExplicitModels.Count > 0;
 
             if (!hasRequiredCapabilities)
             {
@@ -84,8 +82,12 @@ namespace OpenAIApiClient.Orchestration.Dispatch
                     throw new InvalidOperationException("Custom ensemble requires at least one defined capability or explicit model.");
                 }
 
-                List<AiModelPropertyRegistryModel> explicitModels = new List<AiModelPropertyRegistryModel>();
+                List<AiModelPropertyRegistryModel> explicitModels = [];
 
+                if(request.ExplicitModels is null)
+                {
+                    throw new InvalidOperationException("Unexpected null value for explicit models.");
+                }
                 foreach (string modelName in request.ExplicitModels)
                 {
                     AiModelPropertyRegistryModel? resolved = this.modelRegistry.TryGetByName(modelName);

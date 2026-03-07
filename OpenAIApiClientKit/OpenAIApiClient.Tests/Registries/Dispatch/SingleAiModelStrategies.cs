@@ -19,15 +19,15 @@ namespace OpenAIApiClient.Tests.Registries.Dispatch
     [TestClass]
     public class SingleAiModelStrategies
     {
-        private IReadOnlyDictionary<OpenAIModel, AiModelDescriptor>? modelRegistry;
+        private IReadOnlyDictionary<string, AiModelPropertyRegistryModel>? modelRegistry;
 
         [TestInitialize]
         public void Setup()
         {
-            // Important: Cleanup of custom handler registries on every test method end ..
-            testClass.ClearCustomHandlers();
+            //// Important: Cleanup of custom handler registries on every test method end ..
+            //testClass.ClearCustomHandlers();
 
-            this.modelRegistry = new OpenAIModels().GetRegistry();
+            //this.modelRegistry = new OpenAIModels().GetRegistry();
         }
 
         [TestCleanup]

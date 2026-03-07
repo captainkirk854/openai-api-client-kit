@@ -1,0 +1,41 @@
+{
+  "models": [
+    {
+      "name": "dall-e-3",
+      "generation": "DALL-E-3",
+      "tier": "image-generation",
+      "domain": "image",
+      "tags": [ "creative", "visual", "generative", "artistic" ],
+      "Pricing": {
+        "inputTokenCost": 0.0005,
+        "outputTokenCost": 0.001
+      },
+      "capabilities": {
+        "core": {
+          "Reasoning": 1,
+          "Text": 0,
+          "Chat": 0,
+          "Vision": 3,
+          "AudioIn": 0,
+          "AudioOut": 0
+        },
+        "advanced": {
+          "Critic": 0,
+          "Editor": 0,
+          "JSONMode": 1,
+          "Embedding": 0,
+          "ImageGeneration": 5
+        },
+        "performance": {
+          "FastInference": 2,
+          "HighPerformance": 4
+        },
+        "operational": {
+          "LowCost": 2,
+          "Moderation": 0,
+          "OpenWeight": 0
+        }
+      }
+    }
+  ]
+}

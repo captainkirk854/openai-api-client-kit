@@ -36,7 +36,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
         //public void Evaluate_Throws_WhenRequestIsNull()
         //{
         //    // Arrange
-        //    IAiModelRegistry registry = new OpenAIModels();
+        //    IAiModelRegistryNEW registry = new OpenAIModels();
         //    testClass dispatcher = new(registry: registry);
 
         //    // Act & Assert
@@ -60,7 +60,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
             //SingleAiModelStrategy strategy = SingleAiModelStrategy.BestReasoning;
 
             //// Get the mock registry, the model descriptor and the expected result as a tuple ..
-            //(IAiModelRegistry aiModels, AiModelDescriptor model, SingleAiModelDispatchResult expected) = Cook(aiModel: aiModelToUse, capabilities: capabilities);
+            //(IAiModelRegistryNEW aiModels, AiModelDescriptor model, SingleAiModelDispatchResult expected) = Cook(aiModel: aiModelToUse, capabilities: capabilities);
 
             //// Register a custom strategy handler
             //SingleAiModelStrategies.RegisterCustomHandler(strategy: strategy, handler: (_, _) => expected);
@@ -90,7 +90,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
             //SingleAiModelStrategy strategy = SingleAiModelStrategy.LowestCost;
 
             //// Get the mock registry, the model descriptor and the expected result as a tuple ..
-            //(IAiModelRegistry aiModels, AiModelDescriptor model, _) = Cook(aiModel: aiModelToUse, capabilities: capabilities);
+            //(IAiModelRegistryNEW aiModels, AiModelDescriptor model, _) = Cook(aiModel: aiModelToUse, capabilities: capabilities);
 
             //// Initialise ..
             //SingleAiModelDispatchRequest? capturedContext = null;
@@ -132,7 +132,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
             //IReadOnlyList<AiModelCapability> capabilities = [AiModelCapability.Reasoning];
 
             //// Get the mock registry, the model descriptor and the expected result as a tuple ..
-            //(IAiModelRegistry aiModels, _, _) = Cook(aiModel: aiModelToUse, capabilities: capabilities);
+            //(IAiModelRegistryNEW aiModels, _, _) = Cook(aiModel: aiModelToUse, capabilities: capabilities);
 
             //// Create the dispatcher ..
             //testClass dispatcher = new(aiModels);
@@ -163,7 +163,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
             //SingleAiModelStrategy strategy = SingleAiModelStrategy.HighestPerformance;
 
             //// Get the mock registry, the model descriptor and the expected result as a tuple ..
-            //(IAiModelRegistry aiModels, AiModelDescriptor model, SingleAiModelDispatchResult expected) = Cook(aiModel: aiModelToUse, capabilities: capabilities);
+            //(IAiModelRegistryNEW aiModels, AiModelDescriptor model, SingleAiModelDispatchResult expected) = Cook(aiModel: aiModelToUse, capabilities: capabilities);
 
             //// Register a custom strategy handler
             //SingleAiModelStrategies.RegisterCustomHandler(strategy: strategy, handler: (_, _) => expected); // lambda expression is implicitly type: (_, _) => expected
@@ -188,26 +188,26 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
         /// </summary>
         /// <param name="aiModel"></param>
         /// <param name="capabilities"></param>
-        /// <returns see cref="(IAiModelRegistry, AiModelDescriptor, SingleAiModelDispatchResult)">.</returns>
-        //private static (IAiModelRegistry, AiModelDescriptor, SingleAiModelDispatchResult) Cook(OpenAIModel aiModel, IReadOnlyList<AiModelCapability> capabilities)
+        /// <returns see cref="(IAiModelRegistryNEW, AiModelDescriptor, SingleAiModelDispatchResult)">.</returns>
+        //private static (IAiModelRegistryNEW, AiModelDescriptor, SingleAiModelDispatchResult) Cook(OpenAIModel aiModel, IReadOnlyList<AiModelCapability> capabilities)
         //{
-            //// Create the test model descriptor ..
-            //AiModelDescriptor m1 = CreateDescriptor(aiModel: aiModel, cost: 1.0m, capabilities: capabilities);
+        //// Create the test model descriptor ..
+        //AiModelDescriptor m1 = CreateDescriptor(aiModel: aiModel, cost: 1.0m, capabilities: capabilities);
 
-            //// Define an internal registry with one, single entry for the test model ..
-            //Dictionary<OpenAIModel, AiModelDescriptor> internalRegistry = new()
-            //{
-            //    { aiModel, m1 },
-            //};
+        //// Define an internal registry with one, single entry for the test model ..
+        //Dictionary<OpenAIModel, AiModelDescriptor> internalRegistry = new()
+        //{
+        //    { aiModel, m1 },
+        //};
 
-            //// Define the mock registry that returns the internal registry ..
-            //MockOpenAIModels mockRegistry = new(models: internalRegistry);
+        //// Define the mock registry that returns the internal registry ..
+        //MockOpenAIModels mockRegistry = new(models: internalRegistry);
 
-            //// Define the expected result ..
-            //SingleAiModelDispatchResult expected = new(model: m1);
+        //// Define the expected result ..
+        //SingleAiModelDispatchResult expected = new(model: m1);
 
-            //// Return the mock registry, the model descriptor and the expected dispatch result as a tuple ..
-            //return (mockRegistry, m1, expected);
+        //// Return the mock registry, the model descriptor and the expected dispatch result as a tuple ..
+        //return (mockRegistry, m1, expected);
         //}
 
         /// <summary>
@@ -217,23 +217,23 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
         /// <param name="cost"></param>
         /// <param name="capabilities"></param>
         /// <returns see cref="AiModelDescriptor">.</returns>
-        private static AiModelDescriptor CreateDescriptor(OpenAIModel aiModel, decimal cost, IEnumerable<AiModelCapability> capabilities)
-        {
-            // Create the descriptor ..
-            AiModelDescriptor descriptor = new()
-            {
-                Capabilities = new HashSet<AiModelCapability>(capabilities),
-                Pricing = new AiModelPricing(cost, cost),
-                Domain = ModelDomain.Other,
-                Generation = OpenAIModelGeneration.Other,
-            };
+        //private static AiModelPropertyRegistryModel CreateDescriptor(OpenAIModel aiModel, decimal cost, IEnumerable<AiModelCapability> capabilities)
+        //{
+        //    // Create the descriptor ..
+        //    AiModelPropertyRegistryModel descriptor = new()
+        //    {
+        //        Capabilities = new HashSet<AiModelCapability>(capabilities),
+        //        Pricing = new AiModelPricing(cost, cost),
+        //        Domain = ModelDomain.Other,
+        //        Generation = OpenAIModelGeneration.Other,
+        //    };
 
-            // and set the descriptor's internal property "Name" via reflection
-            typeof(AiModelDescriptor)
-                .GetProperty(name: nameof(AiModelDescriptor.Name))!
-                .SetValue(obj: descriptor, value: aiModel);
+        //    // and set the descriptor's internal property "Name" via reflection
+        //    typeof(AiModelPropertyRegistryModel)
+        //        .GetProperty(name: nameof(AiModelPropertyRegistryModel.Name))!
+        //        .SetValue(obj: descriptor, value: aiModel);
 
-            return descriptor;
-        }
+        //    return descriptor;
+        //}
     }
 }

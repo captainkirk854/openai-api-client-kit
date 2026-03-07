@@ -37,44 +37,6 @@
           "OpenWeight": 0
         }
       }
-    },
-    {
-      "name": "davinci-002",
-      "generation": "GPT-3",
-      "tier": "text-generation",
-      "domain": "chat",
-      "tags": [ "generalist", "drafting", "completion" ],
-      "pricing": {
-        "inputCost": null,
-        "cachedInputCost": null,
-        "outputCost": null
-      },
-      "capabilities": {
-        "core": {
-          "Reasoning": 3,
-          "Text": 4,
-          "Chat": 3,
-          "Vision": 0,
-          "AudioIn": 0,
-          "AudioOut": 0
-        },
-        "advanced": {
-          "Critic": 1,
-          "Editor": 2,
-          "JSONMode": 2,
-          "Embedding": 0,
-          "ImageGeneration": 0
-        },
-        "performance": {
-          "FastInference": 2,
-          "HighPerformance": 3
-        },
-        "operational": {
-          "LowCost": 2,
-          "Moderation": 1,
-          "OpenWeight": 0
-        }
-      }
     }
   ]
 }

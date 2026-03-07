@@ -48,11 +48,5 @@ namespace OpenAIApiClient.Orchestration.Consolidation
             get;
             init;
         }
-
-        /// <summary>
-        /// Overrides the ToString() method to return the model name as a string.
-        /// </summary>
-        /// <returns>The model name as a string.</returns>
-        public override string ToString() => this.Name;
     }
 }

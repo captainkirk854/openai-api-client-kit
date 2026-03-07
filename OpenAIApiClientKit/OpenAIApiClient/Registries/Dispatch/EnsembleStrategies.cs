@@ -7,7 +7,6 @@ namespace OpenAIApiClient.Registries.Dispatch
     using OpenAIApiClient.Delegates;
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Registries.AiModels;
-    using OpenAIApiClient.Orchestration.Dispatch;
 
     /// <summary>
     /// Registry for Ensemble dispatching strategies.
@@ -15,17 +14,6 @@ namespace OpenAIApiClient.Registries.Dispatch
     /// </summary>
     public static class EnsembleStrategies
     {
-        ///// <summary>
-        ///// Dictionary mapping ensemble-model dispatch strategies to their specific delegate handler implementations.
-        ///// </summary>
-        //public static readonly IReadOnlyDictionary<EnsembleStrategy, EnsembleStrategyHandler> DefaultHandlerStrategies =
-        //    new Dictionary<EnsembleStrategy, EnsembleStrategyHandler>
-        //    {
-        //        [EnsembleStrategy.Reasoning] = BuildReasoningEnsemble,
-        //        [EnsembleStrategy.Vision] = BuildVisionEnsemble,
-        //        [EnsembleStrategy.CostOptimized] = BuildCostOptimisedEnsemble,
-        //    };
-
         /// <summary>
         /// An internal registry storing custom ensemble strategy handlers.
         /// </summary>
@@ -44,30 +32,6 @@ namespace OpenAIApiClient.Registries.Dispatch
             // Register handler for strategy in custom registry ..
             CustomHandlerStrategies[strategy] = handler;
         }
-
-        ///// <summary>
-        ///// Retrieves the handler for a given strategy.
-        ///// </summary>
-        ///// <param name="strategy">The strategy to retrieve.</param>
-        ///// <returns cref="EnsembleStrategyHandler">The registered handler.</returns>
-        ///// <exception cref="KeyNotFoundException">Thrown if no handler is registered for the strategy.</exception>
-        //public static EnsembleStrategyHandler Get(EnsembleStrategy strategy)
-        //{
-        //    // 1. Override and use Custom strategy handler if found for strategy ..
-        //    if (CustomHandlerStrategies.TryGetValue(strategy, out EnsembleStrategyHandler? customHandler))
-        //    {
-        //        return customHandler;
-        //    }
-
-        //    // 2. Otherwise use Default strategy handler if found for strategy ..
-        //    if (DefaultHandlerStrategies.TryGetValue(strategy, out EnsembleStrategyHandler? defaultHandler))
-        //    {
-        //        return defaultHandler;
-        //    }
-
-        //    throw new KeyNotFoundException($"No ensemble strategy handler registered for: {strategy}");
-        //}
-
 
         // --------------------------------------------------------------------
         // NEW enum-free, AiModelPropertyRegistryModel-based strategies
@@ -90,12 +54,12 @@ namespace OpenAIApiClient.Registries.Dispatch
             return strategy switch
             {
                 /// NOTE THE SCORE IN THE NEW STRATEGIES SHOULD BE ACCORDINGLY ASSIGNED - > 0 is not good enough!!!!!
-                EnsembleStrategy.ReasoningNEW => ReasoningEnsembleNew,
-                EnsembleStrategy.VisionNEW => VisionEnsembleNew,      // to be ported later
-                EnsembleStrategy.CostOptimizedNEW => CostOptimisedEnsembleNew, //
-                EnsembleStrategy.NoneNEW => NoEnsemble,
-                EnsembleStrategy.TwoModelNEW => TwoModelStrategy,
-                EnsembleStrategy.ThreeModelNEW => ThreeModelStrategy,
+                EnsembleStrategy.Reasoning => ReasoningEnsembleNew,
+                EnsembleStrategy.Vision => VisionEnsembleNew,      // to be ported later
+                EnsembleStrategy.CostOptimized => CostOptimisedEnsembleNew, //
+                EnsembleStrategy.None => NoEnsemble,
+                EnsembleStrategy.TwoModel => TwoModelStrategy,
+                EnsembleStrategy.ThreeModel => ThreeModelStrategy,
                 _ => throw new ArgumentOutOfRangeException(nameof(strategy), strategy, "Unknown ensemble strategy."),
             };
         }

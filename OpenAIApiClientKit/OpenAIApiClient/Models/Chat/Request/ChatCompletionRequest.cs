@@ -4,15 +4,11 @@
 
 namespace OpenAIApiClient.Models.Chat.Request
 {
-    //using OpenAIApiClient.Enums;
+    using System.Text.Json.Serialization;
     using OpenAIApiClient.Interfaces.Registries;
     using OpenAIApiClient.Models.Chat.Common;
     using OpenAIApiClient.Models.Registries.AiModels;
     using OpenAIApiClient.Registries.AiModels;
-    using System.Text.Json.Serialization;
-
-    //using OpenAIApiClient.Models.Registries.AiModels;
-    //using OpenAIApiClient.Registries.AiModels;
 
     public class ChatCompletionRequest
     {
@@ -122,31 +118,6 @@ namespace OpenAIApiClient.Models.Chat.Request
             get;
             set;
         }
-
-        /// <summary>
-        /// Gets OpenAIModel from model string (not to be deserialized).
-        /// </summary>
-        //[JsonIgnore]
-        //public OpenAIModel OpenAIModel
-        //{
-        //    get
-        //    {
-        //        return OpenAIModelApis.FromApiString(apiModelId: this.Model);
-        //    }
-        //}
-
-        /// <summary>
-        /// Gets ModelDescriptor for OpenAI model (not to be deserialized).
-        /// </summary>
-        //[JsonIgnore]
-        //public AiModelDescriptor ModelDescriptor
-        //{
-        //    get
-        //    {
-        //        OpenAIModels models = new();
-        //        return models.Get(model: this.OpenAIModel);
-        //    }
-        //}
 
         /// <summary>
         /// Gets or sets the model registry used to resolve model metadata for this request instance.
