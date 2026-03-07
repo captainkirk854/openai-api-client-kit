@@ -4,6 +4,9 @@
 
 namespace OpenAIApiClient.Orchestration.Dispatch
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using OpenAIApiClient.Delegates;
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Interfaces.Orchestration.Dispatch;
@@ -12,67 +15,161 @@ namespace OpenAIApiClient.Orchestration.Dispatch
     using OpenAIApiClient.Registries.Dispatch;
 
     /// <summary>
-    /// <see cref="EnsembleDispatcher"/> provides intentional, criteria‑based delegation to select the correct model(s) based on the provided request.
+    /// Dispatches ensemble strategies over the available AI models.
     /// </summary>
-    /// <param name="modelRegistry"></param>
-    public sealed class EnsembleDispatcher(IAiModelRegistry registry) : IEnsembleDispatcher
+    public sealed class EnsembleDispatcher : IEnsembleDispatcher
     {
-        private readonly IReadOnlyDictionary<OpenAIModel, AiModelDescriptor> modelRegistry = registry.GetRegistry();
+        private readonly IAiModelRegistryNEW modelRegistry;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EnsembleDispatcher"/> class.
+        /// </summary>
+        /// <param name="modelRegistry">
+        /// The model registry to use when resolving models for ensemble dispatch.
+        /// </param>
+        public EnsembleDispatcher(IAiModelRegistryNEW modelRegistry)
+        {
+            ArgumentNullException.ThrowIfNull(modelRegistry);
+            this.modelRegistry = modelRegistry;
+        }
 
         /// <summary>
         /// Evaluates a request to select the appropriate set of model descriptor(s).
         /// </summary>
         /// <param name="request">The ensemble dispatch request containing strategy and constraints.</param>
-        /// <returns see cref="EnsembleDispatchResult">Selected model descriptor(s).</returns>
-        public EnsembleDispatchResult Evaluate(EnsembleDispatchRequest request)
+        /// <returns>
+        /// An <see cref="EnsembleDispatchResultNEW"/> that describes the selected model(s) for the request.
+        /// </returns>
+        public EnsembleDispatchResultNEW Evaluate(EnsembleDispatchRequest request)
         {
-            // Validate input ..
             ArgumentNullException.ThrowIfNull(request);
 
-            // Special case for the 'Custom' strategy ..
             if (request.Strategy == EnsembleStrategy.Custom)
             {
-                return this.BuildCustomEnsemble(request: request);
+                return this.BuildCustomEnsemble(request);
             }
 
-            // Get handler definition to use as delegate method ..
-            EnsembleStrategyHandler handler = EnsembleStrategies.Get(strategy: request.Strategy);
+            EnsembleStrategyHandlerNEW handler = EnsembleStrategies.GetNew(request.Strategy);
 
-            // Invoke the handler to get the result containing the selected models ..
-            return handler(modelRegistry: this.modelRegistry);
+            IReadOnlyCollection<AiModelPropertyRegistryModel> availableModels = this.modelRegistry.GetAll();
+
+            return handler(availableModels);
         }
 
         /// <summary>
         /// Creates a custom ensemble of models that match the required capabilities specified in the request.
         /// </summary>
         /// <param name="request">The ensemble dispatch request containing the required capabilities.</param>
-        /// <returns see cref="EnsembleDispatchResult">Selected model descriptor(s).</returns>
-        /// <exception cref="InvalidOperationException">Thrown if no required capabilities are specified or if no models match the requested capabilities.</exception>
-        private EnsembleDispatchResult BuildCustomEnsemble(EnsembleDispatchRequest request)
+        /// <returns>
+        /// An <see cref="EnsembleDispatchResultNEW"/> that describes the selected model(s) for the custom ensemble.
+        /// </returns>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if no required capabilities are specified and no explicit models are provided,
+        /// or if no models match the requested capabilities.
+        /// </exception>
+        private EnsembleDispatchResultNEW BuildCustomEnsemble(EnsembleDispatchRequest request)
         {
-            // If no required capabilities are specified, use the explicitly defined models (if any) or throw an exception if none are provided.
-            if (request.RequiredCapabilities is null || request.RequiredCapabilities.Count == 0)
+            IReadOnlyCollection<AiModelPropertyRegistryModel> allModels = this.modelRegistry.GetAll();
+
+            bool hasRequiredCapabilities = request.RequiredCapabilities is not null
+                                           && request.RequiredCapabilities.Count > 0;
+
+            bool hasExplicitModels = request.ExplicitModels is not null
+                                     && request.ExplicitModels.Count > 0;
+
+            if (!hasRequiredCapabilities)
             {
-                // If no explicit models are provided, throw an exception since we cannot build an ensemble without criteria or specified models.
-                if (request.ExplicitModels is null || request.ExplicitModels.Count == 0)
+                if (!hasExplicitModels)
                 {
-                    throw new InvalidOperationException("Custom ensemble requires at least one defined capability.");
+                    throw new InvalidOperationException("Custom ensemble requires at least one defined capability or explicit model.");
                 }
 
-                // Otherwise, return the explicitly defined models as the ensemble result.
-                return new EnsembleDispatchResult(models: [.. request.ExplicitModels.Select(model => this.modelRegistry[model])]);
+                List<AiModelPropertyRegistryModel> explicitModels = new List<AiModelPropertyRegistryModel>();
+
+                foreach (string modelName in request.ExplicitModels)
+                {
+                    AiModelPropertyRegistryModel? resolved = this.modelRegistry.TryGetByName(modelName);
+
+                    if (resolved is null)
+                    {
+                        throw new InvalidOperationException(
+                            $"The explicit model '{modelName}' could not be resolved using the configured model registry.");
+                    }
+
+                    explicitModels.Add(resolved);
+                }
+
+                return new EnsembleDispatchResultNEW(explicitModels);
             }
 
-            List<AiModelDescriptor> models = [.. this.modelRegistry.Values
-                .Where(model => request.RequiredCapabilities.All(cap => model.Capabilities.Contains(cap)))
-                .OrderBy(model => model.Pricing.InputTokenCost)];
+            List<AiModelPropertyRegistryModel> matchingModels =
+                allModels
+                    .Where(model => request.RequiredCapabilities.All(capability => SupportsCapability(model, capability)))
+                    .OrderBy(model => model.Pricing.InputTokenCost)
+                    .ToList();
 
-            if (models.Count == 0)
+            if (matchingModels.Count == 0)
             {
                 throw new InvalidOperationException("No model(s) match the requested capabilities.");
             }
 
-            return new EnsembleDispatchResult(models: models);
+            return new EnsembleDispatchResultNEW(matchingModels);
+        }
+
+        /// <summary>
+        /// Determines whether the specified model supports the given capability.
+        /// </summary>
+        /// <param name="model">The model to evaluate.</param>
+        /// <param name="capability">The capability to check.</param>
+        /// <returns>
+        /// <see langword="true"/> if the model supports the specified capability; otherwise, <see langword="false"/>.
+        /// </returns>
+        private static bool SupportsCapability(
+            AiModelPropertyRegistryModel model,
+            AiModelCapability capability)
+        {
+            switch (capability)
+            {
+                case AiModelCapability.Chat:
+                    {
+                        return model.Capabilities.Core.Chat > 0;
+                    }
+
+                case AiModelCapability.Reasoning:
+                    {
+                        return model.Capabilities.Core.Reasoning > 0;
+                    }
+
+                case AiModelCapability.Embedding:
+                    {
+                        return model.Capabilities.Advanced.Embedding > 0;
+                    }
+
+                case AiModelCapability.Vision:
+                    {
+                        return model.Capabilities.Core.Vision > 0;
+                    }
+
+                case AiModelCapability.Critic:
+                    {
+                        return model.Capabilities.Advanced.Critic > 0;
+                    }
+
+                case AiModelCapability.HighPerformance:
+                    {
+                        return model.Capabilities.Performance.HighPerformance > 0;
+                    }
+
+                case AiModelCapability.LowCost:
+                    {
+                        return model.Capabilities.Operational.LowCost > 0;
+                    }
+
+                default:
+                    {
+                        return false;
+                    }
+            }
         }
     }
 }

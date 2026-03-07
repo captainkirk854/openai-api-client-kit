@@ -61,9 +61,9 @@ namespace OpenAIApiClient.Helpers
         /// </summary>
         /// <param name="input">The OpenAI model to be used for the request.</param>
         /// <returns>The current instance of <see cref="ChatClientRequestBuilder"/> with the updated Model setting.</returns>
-        public ChatClientRequestBuilder WithModel(OpenAIModel input)
+        public ChatClientRequestBuilder WithModel(string input)
         {
-            this.model = input.ToApiString();
+            this.model = input;
             return this;
         }
 

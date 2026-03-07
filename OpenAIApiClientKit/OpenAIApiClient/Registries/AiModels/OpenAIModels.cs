@@ -32,7 +32,7 @@ namespace OpenAIApiClient.Registries.AiModels
     ///
     /// This registry can be easily extended to include additional models as they are released by OpenAI.
     /// </remarks>
-    public sealed class OpenAIModels : IAiModelRegistry
+    public sealed class OpenAIModels  // IAiModelRegistryNEW
     {
         // Dictionary to hold model descriptors ..
         private readonly Dictionary<OpenAIModel, AiModelDescriptor> models;
@@ -474,11 +474,11 @@ namespace OpenAIApiClient.Registries.AiModels
                 },
             };
 
-            // Finalise registry, by using dictionary key value to auto-inject the "yet-to-be-set" Model property value for each model descriptor ..
-            foreach ((OpenAIModel model, AiModelDescriptor descriptor) in this.models)
-            {
-                descriptor.Name = model;
-            }
+            //// Finalise registry, by using dictionary key value to auto-inject the "yet-to-be-set" Model property value for each model descriptor ..
+            //foreach ((OpenAIModel model, AiModelDescriptor descriptor) in this.models)
+            //{
+            //    descriptor.Name = model;
+            //}
         }
 
         /// <summary>
@@ -498,7 +498,7 @@ namespace OpenAIApiClient.Registries.AiModels
         /// </summary>
         /// <param name="name"></param>
         /// <returns see cref="AiModelDescriptor">.</returns>
-        public AiModelDescriptor? GetByName(string name) => this.models.Values.Where(m => m.Name.ToApiString() == name).FirstOrDefault();
+        //public AiModelDescriptor? GetByName(string name) => this.models.Values.Where(m => m.Name.ToApiString() == name).FirstOrDefault();
 
         /// <summary>
         /// Gets the model descriptor for a specified model ..

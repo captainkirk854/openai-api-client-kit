@@ -14,7 +14,7 @@ namespace OpenAIApiClient.Models.Consolidation.Options.LLMJudge
         /// <summary>
         /// Gets or sets the judge model used for evaluation.
         /// </summary>
-        public OpenAIModel JudgeModel
+        public string? JudgeModel
         {
             get;
             set;

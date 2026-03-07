@@ -42,7 +42,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation
         /// <param name="prompt">The user prompt to send to all models.</param>
         /// <param name="responses">The list of <see cref="AiModelResponse"/> objects from the ensemble model calls.</param>
         /// <param name="options">Options for execution, such as chunk handling and aggregation (optional).</param>
-        /// <param name="operatorModel">The judge <see cref="OpenAIModel"/> for LLM-based strategies (optional).</param>
+        /// <param name="operatorModel">The judge <see cref="string"/> for LLM-based strategies (optional).</param>
         /// <param name="cancelToken">The cancellation token for the operation.</param>
         /// <returns>
         /// An <see cref="AdvancedConsolidatedResponse"/> containing the consolidated content,
@@ -60,7 +60,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation
                                                                                    string prompt,
                                                                                    List<AiModelResponse> responses,
                                                                                    AiCallOptions options,
-                                                                                   OpenAIModel? operatorModel = null,
+                                                                                   string? operatorModel = null,
                                                                                    CancellationToken cancelToken = default)
         {
             // Filter out unsuccessful or blank model response(s) ..
@@ -87,7 +87,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation
                         }
                         LLMJudgeResult judgeResult = await this.llmJudgeStrategy.ConsolidateWithLLMJudgeAsync(prompt: prompt,
                                                                                                               responses: successfulResponses,
-                                                                                                              judge: operatorModel.Value,
+                                                                                                              judge: operatorModel,
                                                                                                               execution: options,
                                                                                                               cancellationToken: cancelToken);
                         consolidatedContent = judgeResult.SelectedResponse;
@@ -110,7 +110,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation
                         }
                         ResponseSynthesisResult synthesisResult = await this.responseSynthesisStrategy.ConsolidateWithResponseSynthesisAsync(prompt: prompt,
                                                                                                                                              responses: successfulResponses,
-                                                                                                                                             synthesiser: operatorModel.Value,
+                                                                                                                                             synthesiser: operatorModel,
                                                                                                                                              options: options,
                                                                                                                                              cancelToken: cancelToken);
                         consolidatedContent = synthesisResult.SynthesisedResponse;

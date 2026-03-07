@@ -22,14 +22,14 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         public static async Task GetBestHeuristicModelResponseAsync(ChatClient client, string prompt, CancellationTokenSource cts)
         {
             // Initialise model registry ..
-            OpenAIModels models = new();
+            OpenAIModelsNEW models = Registries.AiModels.Factories.OpenAIModelsFactory.Create();
 
             // Initialise base definition for request builder ..
             ChatClientRequestBuilder requestBuilder = new ChatClientRequestBuilder().WithDefaults();
 
             // Initialise Dispatchers to select which model(s) to use ..
             SingleAiModelDispatcher singleModelDispatcher = new(registry: models);
-            EnsembleDispatcher ensembleDispatcher = new(registry: models);
+            EnsembleDispatcher ensembleDispatcher = new(modelRegistry: models);
 
             // Create the executor stack in which the ensemble executor uses the single-model executor ..
             SingleAiModelExecutor singleModelExecutor = new(client: client);

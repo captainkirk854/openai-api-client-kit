@@ -19,6 +19,17 @@ namespace OpenAIApiClient.Models.Registries.AiModels
         } = string.Empty;
 
         /// <summary>
+        /// Gets the upper-cased model identifier.
+        /// </summary>
+        public string UpperName
+        {
+            get
+            {
+                return this.Name.ToUpperInvariant();
+            }
+        }
+
+        /// <summary>
         /// Gets the model generation (e.g., GPT-4.1, GPT-4o, O-series).
         /// </summary>
         public string Generation
@@ -28,7 +39,7 @@ namespace OpenAIApiClient.Models.Registries.AiModels
         } = string.Empty;
 
         /// <summary>
-        /// Gets the model tier (e.g., standard, pro, enterprise).
+        /// Gets the tags for the model (e.g., standard, pro, enterprise).
         /// </summary>
         public string Tier
         {

@@ -23,7 +23,7 @@ namespace OpenAIApiClient.Orchestration.Dispatch
         /// <summary>
         /// Gets the Optional explicit model override (used only for <see cref="SingleAiModelStrategy.Explicit"/> strategy).
         /// </summary>
-        public OpenAIModel? ExplicitModel
+        public string? ExplicitModel
         {
             get;
             init;

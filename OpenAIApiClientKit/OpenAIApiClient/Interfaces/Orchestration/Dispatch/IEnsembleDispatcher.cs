@@ -5,6 +5,7 @@
 namespace OpenAIApiClient.Interfaces.Orchestration.Dispatch
 {
     using OpenAIApiClient.Orchestration.Dispatch;
+    using OpenAIApiClient.Registries.Dispatch;
 
     /// <summary>
     /// <see cref="IEnsembleDispatcher"/> dispatches an ensemble request to evaluate the set of model descriptors based on the ensemble strategy and registry configuration.
@@ -15,7 +16,7 @@ namespace OpenAIApiClient.Interfaces.Orchestration.Dispatch
         /// Evaluates a request to select the appropriate set of model descriptor(s).
         /// </summary>
         /// <param name="request">The ensemble dispatch request containing strategy and constraints.</param>
-        /// <returns see cref="EnsembleDispatchResult">Selected model descriptor(s).</returns>
-        EnsembleDispatchResult Evaluate(EnsembleDispatchRequest request);
+        /// <returns see cref="EnsembleDispatchResultNEW">Selected model descriptor(s).</returns>
+        EnsembleDispatchResultNEW Evaluate(EnsembleDispatchRequest request);
     }
 }

@@ -15,7 +15,7 @@ namespace OpenAIApiClient.Orchestration.Response
         /// <summary>
         /// Gets the model descriptor.
         /// </summary>
-        public AiModelDescriptor Model
+        public AiModelPropertyRegistryModel Model
         {
             get;
             init;

@@ -30,7 +30,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// <param name="cts">A CancellationTokenSource used to observe cancellation requests for the operation. Cannot be null.</param>
         /// <param name="model">The OpenAI model to use for the chat completion request. Defaults to GPT4o_Mini.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
-        public static async Task ProcessUserPromptAsync(ChatClient client, bool isStreaming, string userPrompt, bool isDeterministic, OutputFormat outputFormat, CancellationTokenSource cts, OpenAIModel model = OpenAIModel.GPT4o_Mini)
+        public static async Task ProcessUserPromptAsync(ChatClient client, bool isStreaming, string userPrompt, bool isDeterministic, OutputFormat outputFormat, CancellationTokenSource cts, string model = "gpt-4o-mini")
         {
             // Set deterministic output parameters ..
             double temperature = 0.0;

@@ -45,7 +45,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation
             string selectedModelName = scoringResult.SelectedModel;
 
             // Try to find the corresponding AiModelResponse by model name.
-            AiModelResponse? best = responses.FirstOrDefault(r => r.Model.Name.ToApiString().Equals(selectedModelName, StringComparison.OrdinalIgnoreCase));
+            AiModelResponse? best = responses.FirstOrDefault(r => r.Model.Name.Equals(selectedModelName, StringComparison.OrdinalIgnoreCase));
 
             if (best is null)
             {

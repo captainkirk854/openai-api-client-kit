@@ -51,7 +51,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
             ScoredResponse bestScoredResponse = scoredResponses.OrderByDescending(x => x.Score).First();
 
             Dictionary<string, ScoredResponseDetail> scoredResponsesDict = scoredResponses.ToDictionary(
-                x => x.Response.Model.Name.ToApiString(),
+                x => x.Response.Model.Name,
                 x => new ScoredResponseDetail
                 {
                     Content = x.Response.RawOutput,
@@ -63,7 +63,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
             {
                 SelectedResponse = bestScoredResponse.Response.RawOutput,
                 SelectedModelIndex = bestScoredResponse.Index,
-                SelectedModel = bestScoredResponse.Response.Model.Name.ToApiString(),
+                SelectedModel = bestScoredResponse.Response.Model.Name,
                 ScoredResponses = scoredResponsesDict,
             };
         }

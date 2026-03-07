@@ -50,7 +50,7 @@ namespace OpenAIApiClient.Orchestration.Execution
                 sw.Stop();
                 return new AiModelResponse
                 {
-                    Model = request.ModelDescriptor,
+                    Model = request.ModelInfo,
                     RawOutput = string.Empty,
                     IsSuccessful = false,
                     ErrorMessage = ex.Message,
@@ -72,7 +72,7 @@ namespace OpenAIApiClient.Orchestration.Execution
         private async Task<AiModelResponse> ExecuteNonStreamingAsync(ChatCompletionRequest request, Stopwatch sw, CancellationToken cancelToken)
         {
             // Initialise ..
-            AiModelDescriptor model = request.ModelDescriptor;
+            AiModelPropertyRegistryModel model = request.ModelInfo;
 
             // Execute request and wait for full response ..
             ChatCompletionResponse? response = await client.CreateChatCompletionAsync(request: request, cancelToken: cancelToken);
@@ -111,7 +111,7 @@ namespace OpenAIApiClient.Orchestration.Execution
         private async Task<AiModelResponse> ExecuteBufferedStreamingAsync(ChatCompletionRequest request, Stopwatch sw, AiCallOptions options, CancellationToken cancelToken)
         {
             // Initialise ..
-            AiModelDescriptor model = request.ModelDescriptor;
+            AiModelPropertyRegistryModel model = request.ModelInfo;
             StringBuilder outputBuilder = new();
             int chunkCount = 0;
 
@@ -172,7 +172,7 @@ namespace OpenAIApiClient.Orchestration.Execution
         private async Task<AiModelResponse> ExecutePushStreamingAsync(ChatCompletionRequest request, Stopwatch sw, AiCallOptions options, CancellationToken cancelToken)
         {
             // Initialise ..
-            AiModelDescriptor model = request.ModelDescriptor;
+            AiModelPropertyRegistryModel model = request.ModelInfo;
             StringBuilder outputBuilder = new();
             int chunkCount = 0;
 

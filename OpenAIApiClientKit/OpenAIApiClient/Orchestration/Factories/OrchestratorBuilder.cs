@@ -52,7 +52,7 @@ namespace OpenAIApiClient.Orchestration.Factories
     {
         private ChatClient client = default!;
         private IAiModelResponseHandler responseHandler = default!;
-        private IAiModelRegistry? registry;
+        private IAiModelRegistryNEW? registry;
         private Func<ChatClientRequestBuilder>? requestBuilderFactory;
         private ISingleAiModelDispatcher? singleModelDispatcher;
         private IEnsembleDispatcher? ensembleDispatcher;
@@ -87,11 +87,11 @@ namespace OpenAIApiClient.Orchestration.Factories
         }
 
         /// <summary>
-        /// The <see cref="IAiModelRegistry"/> the orchestrator should use to look up model capabilities and metadata when dispatching requests.
+        /// The <see cref="IAiModelRegistryNEW"/> the orchestrator should use to look up model capabilities and metadata when dispatching requests.
         /// </summary>
-        /// <param name="registry">The <see cref="IAiModelRegistry"/> instance to use for model lookups. If not set, a default registry containing OpenAI models will be used.</param>
+        /// <param name="registry">The <see cref="IAiModelRegistryNEW"/> instance to use for model lookups. If not set, a default registry containing OpenAI models will be used.</param>
         /// <returns see cref="OrchestratorBuilder">The builder instance, for chaining.</returns>
-        public OrchestratorBuilder WithModelRegistry(IAiModelRegistry registry)
+        public OrchestratorBuilder WithModelRegistry(IAiModelRegistryNEW registry)
         {
             this.registry = registry;
             return this;
@@ -173,7 +173,7 @@ namespace OpenAIApiClient.Orchestration.Factories
             }
 
             // Use factory defaults if caller didn’t override ..
-            IAiModelRegistry registry = this.registry ?? AiModelRegistryFactory.Create();
+            IAiModelRegistryNEW registry = this.registry ?? AiModelRegistryFactory.Create();
             Func<ChatClientRequestBuilder> requestBuilderFactory = this.requestBuilderFactory ?? ChatClientRequestBuilderFactory.CreateDefaultFactory();
 
             // Create Dispatchers - Use overrides if provided, otherwise fall back to DispatcherFactory ..

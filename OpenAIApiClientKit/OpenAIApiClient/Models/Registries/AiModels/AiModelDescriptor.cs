@@ -19,7 +19,7 @@ namespace OpenAIApiClient.Models.Registries.AiModels
         /// <summary>
         /// Gets the model name.
         /// </summary>
-        public OpenAIModel Name
+        public string? Name
         {
             get;
             internal set;
@@ -65,6 +65,6 @@ namespace OpenAIApiClient.Models.Registries.AiModels
         /// Overrides ToString() to provide a string representation of the OpenAIModels enum.
         /// </summary>
         /// <returns>String representation of the OpenAIModels enum.</returns>
-        public override string ToString() => this.Name.ToApiString();
+        public override string ToString() => this.Name;
     }
 }

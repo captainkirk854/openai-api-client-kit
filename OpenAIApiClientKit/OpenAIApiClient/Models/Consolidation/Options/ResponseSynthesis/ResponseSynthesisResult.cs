@@ -15,7 +15,7 @@ namespace OpenAIApiClient.Models.Consolidation.Options.ResponseSynthesis
         /// <summary>
         /// Gets or sets the judge model used for synthesis.
         /// </summary>
-        public OpenAIModel SynthesisModel
+        public string? SynthesisModel
         {
             get;
             set;

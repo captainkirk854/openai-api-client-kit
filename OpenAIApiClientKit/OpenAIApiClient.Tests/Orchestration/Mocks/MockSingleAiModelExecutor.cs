@@ -24,7 +24,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         /// <summary>
         /// Gets the last call made to the executor - only in mock for test verification purposes.
         /// </summary>
-        public (AiModelDescriptor model, ChatCompletionRequest request)? LastCall
+        public (AiModelPropertyRegistryModel model, ChatCompletionRequest request)? LastCall
         {
             get;
             private set;
@@ -58,7 +58,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         public Task<AiModelResponse> ExecuteAsync(ChatCompletionRequest request, AiCallOptions execution, CancellationToken token)
         {
             this.WasCalled = true;
-            this.LastCall = (request.ModelDescriptor, request);
+            this.LastCall = (request.ModelInfo, request);
             this.LastOptions = execution;
             return Task.FromResult(this.ResponseToReturn);
         }

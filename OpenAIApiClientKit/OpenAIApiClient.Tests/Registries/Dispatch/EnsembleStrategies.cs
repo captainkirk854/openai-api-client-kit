@@ -19,7 +19,7 @@ namespace OpenAIApiClient.Tests.Registries.Dispatch
     [TestClass]
     public class EnsembleStrategies
     {
-        private IReadOnlyDictionary<OpenAIModel, AiModelDescriptor>? modelRegistry;
+        private IReadOnlyDictionary<string, AiModelPropertyRegistryModel>? modelRegistry;
 
         [TestInitialize]
         public void Setup()
@@ -28,7 +28,7 @@ namespace OpenAIApiClient.Tests.Registries.Dispatch
             testClass.ClearCustomHandlers();
 
             // Initialize the model registry for use in strategy handlers ..
-            this.modelRegistry = new OpenAIModels().GetRegistry();
+            this.modelRegistry = new OpenAIModelsNEW(models: XXXXX ).GetRegistry();
         }
 
         [TestCleanup]
@@ -186,8 +186,8 @@ namespace OpenAIApiClient.Tests.Registries.Dispatch
         [TestMethod]
         public void VisionEnsemble_FirstAiModelShouldBeHighPerformanceVision()
         {
-            EnsembleStrategyHandler strategy = testClass.Get(EnsembleStrategy.Vision);
-            EnsembleDispatchResult result = strategy(modelRegistry: this.modelRegistry!);
+            EnsembleStrategyHandlerNEW strategy = testClass.GetNew(EnsembleStrategy.Vision);
+            EnsembleDispatchResult result = strategy(availableModels: this.modelRegistry!);
 
             AiModelDescriptor first = result.Models[0];
 

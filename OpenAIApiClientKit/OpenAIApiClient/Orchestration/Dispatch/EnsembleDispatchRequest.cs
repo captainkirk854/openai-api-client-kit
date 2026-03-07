@@ -23,7 +23,7 @@ namespace OpenAIApiClient.Orchestration.Dispatch
         /// <summary>
         /// Gets the Optional explicit list of models (used only for <see cref="EnsembleStrategy.Custom"/> strategy).
         /// </summary>
-        public IReadOnlyList<OpenAIModel>? ExplicitModels
+        public IReadOnlyList<string>? ExplicitModels
         {
             get;
             init;
@@ -68,7 +68,7 @@ namespace OpenAIApiClient.Orchestration.Dispatch
         /// <summary>
         /// Gets the Optional per-model weights (used for weighted ensembles).
         /// </summary>
-        public IReadOnlyDictionary<OpenAIModel, double>? Weights
+        public IReadOnlyDictionary<string, double>? Weights
         {
             get;
             init;

@@ -4,14 +4,30 @@
 
 namespace OpenAIApiClient.Models.Chat.Request
 {
-    using System.Text.Json.Serialization;
-    using OpenAIApiClient.Enums;
+    //using OpenAIApiClient.Enums;
+    using OpenAIApiClient.Interfaces.Registries;
     using OpenAIApiClient.Models.Chat.Common;
     using OpenAIApiClient.Models.Registries.AiModels;
     using OpenAIApiClient.Registries.AiModels;
+    using System.Text.Json.Serialization;
+
+    //using OpenAIApiClient.Models.Registries.AiModels;
+    //using OpenAIApiClient.Registries.AiModels;
 
     public class ChatCompletionRequest
     {
+        /// <summary>
+        /// Gets or sets the default model registry used to resolve model metadata
+        /// for <see cref="ChatCompletionRequest"/> instances.
+        /// </summary>
+        /// <remarks>
+        /// This is a transitional hook for phase 1. The registry should be configured
+        /// at application startup or in tests. Later phases can replace this with
+        /// dependency injection.
+        /// </remarks>
+        private static readonly IAiModelRegistryNEW DefaultModelRegistry = new OpenAIModelRegistryNEW();
+        private AiModelPropertyRegistryModel? modelInfo;
+
         /// <summary>
         /// Gets or sets the model to use for generating the chat completion (e.g., "gpt-4o").
         /// </summary>
@@ -110,25 +126,71 @@ namespace OpenAIApiClient.Models.Chat.Request
         /// <summary>
         /// Gets OpenAIModel from model string (not to be deserialized).
         /// </summary>
-        [JsonIgnore]
-        public OpenAIModel OpenAIModel
-        {
-            get
-            {
-                return OpenAIModelApis.FromApiString(apiModelId: this.Model);
-            }
-        }
+        //[JsonIgnore]
+        //public OpenAIModel OpenAIModel
+        //{
+        //    get
+        //    {
+        //        return OpenAIModelApis.FromApiString(apiModelId: this.Model);
+        //    }
+        //}
 
         /// <summary>
         /// Gets ModelDescriptor for OpenAI model (not to be deserialized).
         /// </summary>
+        //[JsonIgnore]
+        //public AiModelDescriptor ModelDescriptor
+        //{
+        //    get
+        //    {
+        //        OpenAIModels models = new();
+        //        return models.Get(model: this.OpenAIModel);
+        //    }
+        //}
+
+        /// <summary>
+        /// Gets or sets the model registry used to resolve model metadata for this request instance.
+        /// </summary>
         [JsonIgnore]
-        public AiModelDescriptor ModelDescriptor
+        public IAiModelRegistryNEW ModelRegistry
+        {
+            get;
+            set;
+        } = DefaultModelRegistry;
+
+        /// <summary>
+        /// Gets the resolved model metadata for the current <see cref="Model"/> identifier.
+        /// </summary>
+        /// <remarks>
+        /// This property is lazily populated on first access by querying the <see cref="ModelRegistry"/>.
+        /// If the model cannot be resolved, an <see cref="InvalidOperationException"/> is thrown.
+        /// </remarks>
+        [JsonIgnore]
+        public AiModelPropertyRegistryModel ModelInfo
         {
             get
             {
-                OpenAIModels models = new();
-                return models.Get(model: this.OpenAIModel);
+                if (this.modelInfo != null)
+                {
+                    return this.modelInfo;
+                }
+
+                if (string.IsNullOrWhiteSpace(this.Model))
+                {
+                    throw new InvalidOperationException("ChatCompletionRequest.Model must be specified.");
+                }
+
+                AiModelPropertyRegistryModel? resolved =
+                    this.ModelRegistry.TryGetByName(this.Model);
+
+                if (resolved is null)
+                {
+                    throw new InvalidOperationException(
+                        $"The model '{this.Model}' could not be resolved using the configured model registry.");
+                }
+
+                this.modelInfo = resolved;
+                return this.modelInfo;
             }
         }
     }

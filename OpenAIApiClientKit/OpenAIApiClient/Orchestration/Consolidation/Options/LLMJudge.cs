@@ -41,7 +41,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
         /// An instance of <see cref="LLMJudgeResult"/> containing the selected response,
         /// reasoning, and any associated scoring information.
         /// </returns>
-        public async Task<LLMJudgeResult> ConsolidateWithLLMJudgeAsync(string prompt, List<AiModelResponse> responses, OpenAIModel judge, AiCallOptions execution, CancellationToken cancellationToken)
+        public async Task<LLMJudgeResult> ConsolidateWithLLMJudgeAsync(string prompt, List<AiModelResponse> responses, string judge, AiCallOptions execution, CancellationToken cancellationToken)
         {
             Console.WriteLine($" Requesting model: [{judge}] to judge the dispatched model response(s)...");
 

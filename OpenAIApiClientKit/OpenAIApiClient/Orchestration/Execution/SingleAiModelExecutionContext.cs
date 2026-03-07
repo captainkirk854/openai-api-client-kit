@@ -15,7 +15,7 @@ namespace OpenAIApiClient.Orchestration.Execution
     /// <param name="prompt"></param>
     /// <param name="outputFormat"></param>
     /// <param name="model"></param>
-    public sealed class SingleAiModelExecutionContext(string prompt, OutputFormat outputFormat, AiModelDescriptor model) : IExecutionContext
+    public sealed class SingleAiModelExecutionContext(string prompt, OutputFormat outputFormat, AiModelPropertyRegistryModel model) : IExecutionContext
     {
         /// <summary>
         /// Gets the prompt to be sent to the model.
@@ -36,7 +36,7 @@ namespace OpenAIApiClient.Orchestration.Execution
         /// <summary>
         /// Gets the model to be executed.
         /// </summary>
-        public AiModelDescriptor Model
+        public AiModelPropertyRegistryModel Model
         {
             get;
         } = model;
@@ -44,6 +44,6 @@ namespace OpenAIApiClient.Orchestration.Execution
         /// <summary>
         /// Gets the list of models to be executed.
         /// </summary>
-        public IReadOnlyList<AiModelDescriptor> Models => [this.Model];
+        public IReadOnlyList<AiModelPropertyRegistryModel> Models => [this.Model];
     }
 }

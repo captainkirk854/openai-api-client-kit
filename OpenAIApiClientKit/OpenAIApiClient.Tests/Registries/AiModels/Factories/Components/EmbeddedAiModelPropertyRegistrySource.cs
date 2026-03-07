@@ -7,7 +7,7 @@ namespace OpenAIApiClient.Tests.Registries.AiModels.Factories.Components
     using System.Reflection;
     using System.Text.Json;
     using OpenAIApiClient.Models.Registries.AiModels;
-    using testClass = OpenAIApiClient.Registries.AiModels.Factories.Components.EmbeddedAiModelPropertyRegistrySource;
+    using testClass = OpenAIApiClient.Registries.AiModels.Sources.EmbeddedAiModelPropertyRegistrySource;
 
     [TestClass]
     public class EmbeddedAiModelPropertyRegistrySource

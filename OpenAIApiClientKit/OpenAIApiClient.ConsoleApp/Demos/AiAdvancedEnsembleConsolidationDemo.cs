@@ -32,9 +32,9 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// <returns>A task representing the asynchronous operation.</returns>
         public static async Task GetAdvancedResponsesAsync(ChatClient client,
                                                            string prompt,
-                                                           OpenAIModel[] workers,
-                                                           OpenAIModel judge,
-                                                           OpenAIModel synthesiser,
+                                                           string[] workers,
+                                                           string judge,
+                                                           string synthesiser,
                                                            AiCallMode callMode,
                                                            CancellationTokenSource cts)
         {

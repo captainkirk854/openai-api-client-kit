@@ -38,7 +38,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
         /// </returns>
         public async Task<ResponseSynthesisResult> ConsolidateWithResponseSynthesisAsync(string prompt,
                                                                                          List<AiModelResponse> responses,
-                                                                                         OpenAIModel synthesiser,
+                                                                                         string synthesiser,
                                                                                          AiCallOptions options,
                                                                                          CancellationToken cancelToken)
         {

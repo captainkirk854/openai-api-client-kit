@@ -12,8 +12,8 @@ namespace OpenAIApiClient.Interfaces.Registries
         /// <summary>
         /// Gets the complete model registry dictionary ..
         /// </summary>
-        /// <returns see cref="Dictionary(OpenAIModel, AiModelDescriptor)">.</returns>
-        public Dictionary<OpenAIModel, AiModelDescriptor> GetRegistry();
+        /// <returns see cref="Dictionary(string, AiModelDescriptor)">.</returns>
+        public Dictionary<string, AiModelDescriptor> GetRegistry();
 
         /// <summary>
         /// Gets all registered model descriptors ..

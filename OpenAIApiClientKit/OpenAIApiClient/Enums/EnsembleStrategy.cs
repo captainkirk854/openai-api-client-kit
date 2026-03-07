@@ -10,5 +10,13 @@ namespace OpenAIApiClient.Enums
         Vision,
         CostOptimized,
         Custom,
+        NoneNEW,
+        TwoModelNEW,
+        ThreeModelNEW,
+        ReasoningNEW,
+        VisionNEW,
+        CostOptimizedNEW,
+
+
     }
 }

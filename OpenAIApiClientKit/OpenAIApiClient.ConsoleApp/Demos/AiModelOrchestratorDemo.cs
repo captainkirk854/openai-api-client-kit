@@ -19,11 +19,13 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             Console.WriteLine("=== AI Orchestrator Demo ===");
             Console.WriteLine();
 
+            IReadOnlyDictionary<string, Models.Registries.AiModels.AiModelPropertyRegistryModel> models = Registries.AiModels.Factories.OpenAIModelsFactory.Create().GetRegistry(); // create the model registry with all the OpenAI models from the factory ..
+
             // Create the orchestrator with all the components using fluent orchestrator builder ..
             Orchestrator orchestrator = new OrchestratorBuilder()
                                             .WithClient(client)
                                             .WithResponseHandler(new AiModelResponseHandlerDemo())
-                                            .WithModelRegistry(new OpenAIModels())
+                                            .WithModelRegistry(new OpenAIModelsNEW(models: models))
                                             .WithRequestBuilderFactory(() => new ChatClientRequestBuilder().WithDefaults()) // Passed as a ChatClientRequestBuilder() lambda ..
                                             .Build();
 
@@ -66,7 +68,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 SingleModelRequest = new SingleAiModelDispatchRequest
                 {
                     Strategy = SingleAiModelStrategy.Explicit,
-                    ExplicitModel = OpenAIModel.GPT4o_Mini,
+                    ExplicitModel = "gpt-4o-mini",
                 },
             };
 

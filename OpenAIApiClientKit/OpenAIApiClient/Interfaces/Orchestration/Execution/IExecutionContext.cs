@@ -28,7 +28,7 @@ namespace OpenAIApiClient.Interfaces.Orchestration.Execution
         /// <summary>
         /// Gets the list of models to be executed.
         /// </summary>
-        IReadOnlyList<AiModelDescriptor> Models
+        IReadOnlyList<AiModelPropertyRegistryModel> Models
         {
             get;
         }

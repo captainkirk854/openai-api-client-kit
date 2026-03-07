@@ -72,7 +72,7 @@ namespace OpenAIApiClient.Orchestration
             else
             {
                 // In single model scenario, there is implicitly one model and so we set that model on the request builder before execution ..
-                AiModelDescriptor model = executionContext.Models[0];
+                AiModelPropertyRegistryModel model = executionContext.Models[0];
                 ChatCompletionRequest chatRequest = requestBuilder.WithModel(input: model.Name).Build();
 
                 // Execute the request and handle the response ..

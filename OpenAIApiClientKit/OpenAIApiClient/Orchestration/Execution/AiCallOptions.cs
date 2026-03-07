@@ -21,12 +21,12 @@ namespace OpenAIApiClient.Orchestration.Execution
 
         /// <summary>
         /// Gets the Optional per-token callback used when <see cref="Mode"/> is PushStreaming.
-        /// Signature: (<see cref="AiModelDescriptor"/>, chunk content text token) => Task.
+        /// Signature: (<see cref="AiModelPropertyRegistryModel"/>, chunk content text token) => Task.
         /// </summary>
         /// <remarks>
         /// Example: OnChunkContentTextToken = (modelDescriptor, chunkDeltaContent) => { Console.Write(chunkDeltaContent); await Task.Yield(); }.
         /// </remarks>
-        public Func<AiModelDescriptor, string, Task>? OnChunkDeltaContentToken
+        public Func<AiModelPropertyRegistryModel, string, Task>? OnChunkDeltaContentToken
         {
             get;
             init;
@@ -34,7 +34,7 @@ namespace OpenAIApiClient.Orchestration.Execution
 
         /// <summary>
         /// Gets the Optional per-chunk callback for push streaming (if the actual full chunks are desired).
-        /// Signature: (<see cref="AiModelDescriptor"/>, chunk) => Task.
+        /// Signature: (<see cref="AiModelPropertyRegistryModel"/>, chunk) => Task.
         /// </summary>
         /// <remarks>
         /// Example: OnChunk = (modelDescriptor, chunk) => { Console.WriteLine($"Received chunk with content: {chunk}"); await Task.Yield(); }.
@@ -43,7 +43,7 @@ namespace OpenAIApiClient.Orchestration.Execution
         /// This callback will be triggered for every chunk received during push streaming, so it may be called multiple times per response.
         /// Ensure that the implementation is efficient and can handle the potential high frequency of calls without causing performance issues.
         /// </remarks>
-        public Func<AiModelDescriptor, ChatCompletionChunk, int, Task>? OnChunk
+        public Func<AiModelPropertyRegistryModel, ChatCompletionChunk, int, Task>? OnChunk
         {
             get;
             init;

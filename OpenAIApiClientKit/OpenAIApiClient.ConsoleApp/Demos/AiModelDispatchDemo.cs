@@ -8,15 +8,16 @@ namespace OpenAIApiClient.ConsoleApp.Demos
     using OpenAIApiClient.Models.Registries.AiModels;
     using OpenAIApiClient.Orchestration.Dispatch;
     using OpenAIApiClient.Registries.AiModels;
+    using OpenAIApiClient.Registries.Dispatch;
 
     /// <summary>
     /// Single and Ensemble Model Dispatch Selection Demo.
     /// </summary>
     public static class AiModelDispatchDemo
     {
-        private static readonly OpenAIModels Models = new();
+        private static readonly OpenAIModelRegistryNEW Models = new();
         private static readonly SingleAiModelDispatcher SingleModelDispatcher = new(registry: Models);
-        private static readonly EnsembleDispatcher EnsembleDispatcher = new(registry: Models);
+        private static readonly EnsembleDispatcher EnsembleDispatcher = new(modelRegistry: Models);
 
         public static void Run()
         {
@@ -85,13 +86,13 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         {
             Console.WriteLine("Enter model name (e.g., GPT4o, GPT5_2):");
             Console.WriteLine("Options: " + string.Join(", ", Enum.GetNames(typeof(OpenAIModel))));
-            string? input = Console.ReadLine();
+            string? model = Console.ReadLine();
 
-            if (!Enum.TryParse<OpenAIModel>(input, out OpenAIModel model))
-            {
-                Console.WriteLine("Invalid model.");
-                return;
-            }
+            //if (!Enum.TryParse<string>(input, out string model))
+            //{
+            //    Console.WriteLine("Invalid model.");
+            //    return;
+            //}
 
             SingleAiModelDispatchResult result = SingleModelDispatcher.Evaluate(new SingleAiModelDispatchRequest
             {
@@ -151,7 +152,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// </summary>
         private static void RunReasoningEnsembleModelDispatch()
         {
-            EnsembleDispatchResult result = EnsembleDispatcher.Evaluate(new EnsembleDispatchRequest
+            EnsembleDispatchResultNEW result = EnsembleDispatcher.Evaluate(new EnsembleDispatchRequest
             {
                 Strategy = EnsembleStrategy.Reasoning,
             });
@@ -164,7 +165,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// </summary>
         private static void RunVisionEnsembleModelDispatch()
         {
-            EnsembleDispatchResult result = EnsembleDispatcher.Evaluate(new EnsembleDispatchRequest
+            EnsembleDispatchResultNEW result = EnsembleDispatcher.Evaluate(new EnsembleDispatchRequest
             {
                 Strategy = EnsembleStrategy.Vision,
             });
@@ -177,7 +178,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// </summary>
         private static void RunCostOptimizedEnsembleModelDispatch()
         {
-            EnsembleDispatchResult result = EnsembleDispatcher.Evaluate(new EnsembleDispatchRequest
+            EnsembleDispatchResultNEW result = EnsembleDispatcher.Evaluate(new EnsembleDispatchRequest
             {
                 Strategy = EnsembleStrategy.CostOptimized,
             });
@@ -185,9 +186,6 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             PrintEnsembleResult("Dispatch Result for: Cost-Optimized Model Ensemble", result);
         }
 
-        /// <summary>
-        /// Run custom ensemble dispatch demo.
-        /// </summary>
         private static void RunCustomEnsembleModelDispatch()
         {
             Console.WriteLine("Enter required capability(s) (comma-separated):");
@@ -201,10 +199,10 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 return;
             }
 
-            List<string> rawParts = [.. input.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim())];
+            List<string> rawParts = new List<string>(input.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()));
 
-            List<AiModelCapability> parsedCapabilities = [];
-            List<string> invalid = [];
+            List<AiModelCapability> parsedCapabilities = new List<AiModelCapability>();
+            List<string> invalid = new List<string>();
 
             foreach (string part in rawParts)
             {
@@ -232,27 +230,34 @@ namespace OpenAIApiClient.ConsoleApp.Demos
 
             Console.WriteLine("What's the minimum number of required model(s) to select?");
             string? countInput = Console.ReadLine();
+
             if (!int.TryParse(countInput, out int minRequiredCount) || minRequiredCount <= 0)
             {
                 Console.WriteLine("Invalid number entered.");
                 return;
             }
 
-            // Validate that enough models exist BEFORE routing ..
-            List<AiModelDescriptor> matchingModels = [.. Models.GetRegistry().Values.Where(m => parsedCapabilities.All(c => m.Capabilities.Contains(c)))];
+            // Validate that enough models exist BEFORE routing, using the NEW registry and leaf capability checks.
+            IReadOnlyCollection<AiModelPropertyRegistryModel> allModels = Models.GetAll();
+
+            List<AiModelPropertyRegistryModel> matchingModels = allModels
+                .Where(model => parsedCapabilities.All(capability => SupportsCapability(model, capability)))
+                .ToList();
+
             if (matchingModels.Count < minRequiredCount)
             {
                 Console.WriteLine($"Only {matchingModels.Count} model(s) match those capabilities, but a minimum of {minRequiredCount} model(s) were requested.");
                 return;
             }
 
-            // Proceed with evaluation of which models are selected ..
-            EnsembleDispatchResult result = EnsembleDispatcher.Evaluate(new EnsembleDispatchRequest
-            {
-                Strategy = EnsembleStrategy.Custom,
-                ModelCount = minRequiredCount,
-                RequiredCapabilities = parsedCapabilities,
-            });
+            // Proceed with evaluation of which models are selected using the NEW dispatcher and request type.
+            EnsembleDispatchResultNEW result = EnsembleDispatcher.Evaluate(
+                new EnsembleDispatchRequest
+                {
+                    Strategy = EnsembleStrategy.Custom,
+                    ModelCount = minRequiredCount,
+                    RequiredCapabilities = parsedCapabilities,
+                });
 
             PrintEnsembleResult("Custom Ensemble", result);
         }
@@ -274,16 +279,76 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             Console.WriteLine();
         }
 
+
+        private static bool SupportsCapability(
+            AiModelPropertyRegistryModel model,
+            AiModelCapability capability)
+        {
+            switch (capability)
+            {
+                case AiModelCapability.Chat:
+                    {
+                        return model.Capabilities.Core.Chat > 0;
+                    }
+
+                case AiModelCapability.Reasoning:
+                    {
+                        return model.Capabilities.Core.Reasoning > 0;
+                    }
+
+                case AiModelCapability.Embedding:
+                    {
+                        return model.Capabilities.Advanced.Embedding > 0;
+                    }
+
+                case AiModelCapability.Vision:
+                    {
+                        return model.Capabilities.Core.Vision > 0;
+                    }
+
+                case AiModelCapability.AudioIn:
+                    {
+                        return model.Capabilities.Core.AudioIn > 0;
+                    }
+
+                case AiModelCapability.AudioOut:
+                    {
+                        return model.Capabilities.Core.AudioOut > 0;
+                    }
+
+                case AiModelCapability.Moderation:
+                    {
+                        return model.Capabilities.Operational.Moderation > 0;
+                    }
+
+                case AiModelCapability.HighPerformance:
+                    {
+                        return model.Capabilities.Performance.HighPerformance > 0;
+                    }
+
+                case AiModelCapability.LowCost:
+                    {
+                        return model.Capabilities.Operational.LowCost > 0;
+                    }
+
+                default:
+                    {
+                        return false;
+                    }
+            }
+        }
+
+
         /// <summary>
         /// Print ensemble routing result.
         /// </summary>
         /// <param name="title"></param>
         /// <param name="result"></param>
-        private static void PrintEnsembleResult(string title, EnsembleDispatchResult result)
+        private static void PrintEnsembleResult(string title, EnsembleDispatchResultNEW result)
         {
             Console.WriteLine($"\n=== {title} ===");
 
-            foreach (AiModelDescriptor model in result.Models.Distinct())
+            foreach (AiModelPropertyRegistryModel model in result.Models.Distinct())
             {
                 Console.WriteLine($"Model:     {model.Name}");
                 Console.WriteLine($"Capabilities: {string.Join(", ", model.Capabilities)}");

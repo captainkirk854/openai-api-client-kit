@@ -8,5 +8,5 @@ namespace OpenAIApiClient.Delegates
     using OpenAIApiClient.Models.Registries.AiModels;
     using OpenAIApiClient.Orchestration.Dispatch;
 
-    public delegate SingleAiModelDispatchResult SingleAiModelStrategyHandler(IReadOnlyDictionary<OpenAIModel, AiModelDescriptor> modelRegistry, SingleAiModelDispatchRequest request);
+    public delegate SingleAiModelDispatchResult SingleAiModelStrategyHandler(IReadOnlyDictionary<string, AiModelPropertyRegistryModel> modelRegistry, SingleAiModelDispatchRequest request);
 }

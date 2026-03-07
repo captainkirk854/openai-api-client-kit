@@ -22,7 +22,7 @@ namespace OpenAIApiClient.Orchestration.Execution
         /// Process the given prompt across multiple models in parallel using the orchestrator and return their response(s).
         /// </summary>
         /// <param name="prompt">The user prompt to send to all models.</param>
-        /// <param name="models">The array of <see cref="OpenAIModel"/> values to use to evaluate prompt.</param>
+        /// <param name="models">The array of <see cref="string"/> values to use to evaluate prompt.</param>
         /// <param name="options">Options for execution, such as chunk handling and aggregation.</param>
         /// <param name="outputFormat">The desired output format for the model responses (e.g. text, json, etc.).</param>
         /// <param name="cancelToken">The cancellation token for the operation.</param>
@@ -36,7 +36,7 @@ namespace OpenAIApiClient.Orchestration.Execution
         /// <exception cref="InvalidOperationException">
         /// Thrown when there is a failure during the orchestration process, such as an error from the orchestrator or a failure to consolidate responses.
         /// </exception>
-        public async Task<List<AiModelResponse>> ProcessAsync(string prompt, OpenAIModel[] models, AiCallOptions options, OutputFormat outputFormat, CancellationToken cancelToken)
+        public async Task<List<AiModelResponse>> ProcessAsync(string prompt, string[] models, AiCallOptions options, OutputFormat outputFormat, CancellationToken cancelToken)
         {
             if (string.IsNullOrWhiteSpace(prompt))
             {
@@ -65,14 +65,14 @@ namespace OpenAIApiClient.Orchestration.Execution
         /// then load results into <see cref="AiModelResponse"/> objects for advanced consolidation.
         /// </summary>
         /// <param name="prompt">The prompt to send to all models.</param>
-        /// <param name="models">The <see cref="OpenAIModel"/> values to query in parallel.</param>
+        /// <param name="models">The <see cref="string"/> values to query in parallel.</param>
         /// <param name="outputFormat">The desired output format for the responses (e.g. text, json, etc.).</param>
         /// <param name="options">The <see cref="AiCallOptions"/> for executing the requests (e.g. for streaming).</param>
         /// <param name="cancelToken">The cancellation token.</param>
         /// <returns>
         /// A <see cref="List{T}"/> of <see cref="AiModelResponse"/> objects from all models.
         /// </returns>
-        private async Task<List<AiModelResponse>> ExecuteCustomEnsembleAsync(string prompt, OpenAIModel[] models, OutputFormat outputFormat, AiCallOptions options, CancellationToken cancelToken)
+        private async Task<List<AiModelResponse>> ExecuteCustomEnsembleAsync(string prompt, string[] models, OutputFormat outputFormat, AiCallOptions options, CancellationToken cancelToken)
         {
             // Define an ensemble orchestration request with explicit models or required capabilities.
             OrchestrationRequest request = new()

@@ -16,7 +16,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation
         /// <summary>
         /// Gets the name of the model used to generate the final response.
         /// </summary>
-        public OpenAIModel Name
+        public string? Name
         {
             get;
             init;
@@ -53,6 +53,6 @@ namespace OpenAIApiClient.Orchestration.Consolidation
         /// Overrides the ToString() method to return the model name as a string.
         /// </summary>
         /// <returns>The model name as a string.</returns>
-        public override string ToString() => this.Name.ToApiString();
+        public override string ToString() => this.Name;
     }
 }
