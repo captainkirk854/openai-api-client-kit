@@ -1,4 +1,4 @@
-﻿// <copyright file="EnsembleDispatchResultNEW.cs" company="854 Things (tm)">
+﻿// <copyright file="EnsembleDispatchStrategyHandler.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -6,7 +6,7 @@ namespace OpenAIApiClient.Delegates
 {
     using System.Collections.Generic;
     using OpenAIApiClient.Models.Registries.AiModels;
-    using OpenAIApiClient.Registries.Dispatch;
+    using OpenAIApiClient.Orchestration.Dispatch;
 
     /// <summary>
     /// Represents a strategy function that selects models from the available registry.
@@ -15,7 +15,7 @@ namespace OpenAIApiClient.Delegates
     /// The collection of available models to select from.
     /// </param>
     /// <returns>
-    /// An <see cref="EnsembleDispatchResultNEW"/> describing the selected models.
+    /// An <see cref="EnsembleDispatchResult"/> describing the selected models.
     /// </returns>
-    public delegate EnsembleDispatchResultNEW EnsembleStrategyHandlerNEW(IEnumerable<AiModelPropertyRegistryModel> availableModels);
+    public delegate EnsembleDispatchResult EnsembleDispatchStrategyHandler(IEnumerable<AiModelDescriptor> availableModels);
 }

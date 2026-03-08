@@ -10,12 +10,12 @@ namespace OpenAIApiClient.Orchestration.Dispatch
     /// Initializes a new instance of the <see cref="SingleAiModelDispatchResult"/> class with the specified model descriptor.
     /// </summary>
     /// <param name="model">The model descriptor to associate with the result.</param>
-    public sealed class SingleAiModelDispatchResult(AiModelPropertyRegistryModel model)
+    public sealed class SingleAiModelDispatchResult(AiModelDescriptor model)
     {
         /// <summary>
         /// Gets the model descriptor associated with this instance.
         /// </summary>
-        public AiModelPropertyRegistryModel Model
+        public AiModelDescriptor Model
         {
             get;
             init;

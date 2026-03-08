@@ -7,19 +7,19 @@ namespace OpenAIApiClient.Enums
     public enum AiModelCapability
     {
         // Core cognitive & interaction capabilities ..
-        Reasoning,
-        Text,
-        Chat,
-        Vision,
         AudioIn,
         AudioOut,
+        Chat,
+        Reasoning,
+        Text,
+        Vision,
 
         // Advanced capabilities ..
         Critic,
         Editor,
-        JSONMode,
         Embedding,
         ImageGeneration,
+        JSONMode,
 
         // Performance capabilities ..
         FastInference,

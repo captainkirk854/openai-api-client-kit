@@ -7,7 +7,8 @@ namespace OpenAIApiClient.ConsoleApp
     using System;
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Helpers.Extensions;
-    using OpenAIApiClient.Models.Registries.AiModels;
+    using OpenAIApiClient.Registries.AiModels;
+    using OpenAIApiClient.Registries.AiModels.Factories;
 
     public class Program
     {
@@ -39,7 +40,7 @@ namespace OpenAIApiClient.ConsoleApp
                 Console.WriteLine("Welcome to the OpenAI API Client Demo Application!");
                 Console.WriteLine("Which demo would you like to run?");
                 Console.WriteLine("1. AI Model Simple Chat Prompt Demo with Streaming and Non-Streaming Modes");
-                Console.WriteLine("2. AI Model Strategy Dispatch Demo with Multiple Dispatch Strategies");
+                Console.WriteLine("2. AI Model Strategy Dispatcher Demo with Multiple Dispatcher Strategies");
                 Console.WriteLine("3. AI Model Orchestrator Demo with Single-Model and Multi-Model Strategies");
                 Console.WriteLine("4. AI Simple Get Best Model Response Demo using Heuristic Consolidation");
                 Console.WriteLine("5. AI Advanced Get Best Model Response Demo using Advanced Consolidation");
@@ -55,7 +56,7 @@ namespace OpenAIApiClient.ConsoleApp
                         break;
 
                     case "2":
-                        AiModelDispatchDemo();
+                        AiModelDispatcherDemo();
                         break;
 
                     case "3":
@@ -132,21 +133,6 @@ namespace OpenAIApiClient.ConsoleApp
                 _ => "gpt-4o-mini",
             };
 
-            // KEEP THIS ... NEEDS FIXING >..
-            //// -------------------------------------------------------
-            //// Resolve via the NEW registry.
-            //AiModelPropertyRegistryModel? selectedModelInfo = ModelRegistry.TryGetByName(selectedModelName);
-
-            //if (selectedModelInfo is null)
-            //{
-            //    throw new InvalidOperationException(
-            //        $"The selected model '{selectedModelName}' could not be resolved using the configured model registry.");
-            //}
-
-            // If you only need the string id:
-            //string selectedModelId = selectedModelInfo.Name;
-            //// -------------------------------------------------------
-
             string selectedModel = selectedModelName;
 
             // Ask if creativity settings should be enabled ..
@@ -195,9 +181,9 @@ namespace OpenAIApiClient.ConsoleApp
         /// <summary>
         /// A demo implementation to showcase AI model strategy dispatch capabilities.
         /// </summary>
-        private static void AiModelDispatchDemo()
+        private static void AiModelDispatcherDemo()
         {
-            Demos.AiModelDispatchDemo.Run();
+            Demos.AiModelDispatcherDemo.Run();
         }
 
         /// <summary>
@@ -248,6 +234,9 @@ namespace OpenAIApiClient.ConsoleApp
         /// <returns>Task.</returns>
         private static async Task AiAdvancedGetBestModelResponseDemo(ChatClient client, CancellationTokenSource cts)
         {
+            // Initialize the model registry to access available models and their capabilities; ..
+            OpenAIModels registry = OpenAIModelsFactory.Create();
+
             string prompt = @"Explain Mahalanobis distance in simple terms suitable for a high school student.
                               Focus on: what it is, why it matters, and its application in maths and statistics.
                               If possible, include any examples of uses in fraud detection.";
@@ -265,14 +254,11 @@ namespace OpenAIApiClient.ConsoleApp
             // Determine call mode based on streaming choice ..
             AiCallMode callMode = useStreaming ? AiCallMode.BufferedStreaming : AiCallMode.NonStreaming;
 
-
-            var registry = Registries.AiModels.Factories.OpenAIModelsFactory.Create();
-
             // Initialise a list of model(s) to dispatch the prompt to; can be any combination of models based on caller's needs and preferences ..
             string[] workerModels;
             if (useReasoning)
             {
-                workerModels = EnsembleStrategy.Reasoning.GetModelNames(registry);
+                workerModels = AiModelStrategy.Ensemble.Reasoning.GetModelNames(registry: registry);
             }
             else
             {
@@ -287,7 +273,7 @@ namespace OpenAIApiClient.ConsoleApp
             }
 
             // Define randomly-picked models to use for LLM-as-judge and response synthesis strategies; models should have good reasoning capabilities for best results ..
-            string[] reasoningModels = EnsembleStrategy.Reasoning.GetModelNames(registry);
+            string[] reasoningModels = AiModelStrategy.Ensemble.Reasoning.GetModelNames(registry);
             string judgeModel = reasoningModels[Random.Shared.Next(reasoningModels.Length)];
             string synthesisModel = reasoningModels[Random.Shared.Next(reasoningModels.Length)];
 

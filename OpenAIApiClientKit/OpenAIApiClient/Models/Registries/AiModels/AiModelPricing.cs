@@ -4,6 +4,14 @@
 
 namespace OpenAIApiClient.Models.Registries.AiModels
 {
+    /// <summary>
+    /// Represents pricing information in U.S.Dollar$ for AI model token usage, supporting
+    /// per-token and per-1,000,000-token cost schemes.
+    /// </summary>
+    /// <remarks>
+    /// Exactly one pricing scheme must be used: either all per-token costs or all per-1M-token
+    /// costs. Mixing the two schemes is not allowed.
+    /// </remarks>
     public sealed class AiModelPricing
     {
         private const decimal OneMillionTokens = 1_000_000m;
@@ -178,6 +186,40 @@ namespace OpenAIApiClient.Models.Registries.AiModels
         {
             get;
             init;
+        }
+
+        /// <summary>
+        /// Gets the total $cost per single token, summing all applicable per-token costs (input, output, cached input, reasoning, tool-use).
+        /// </summary>
+        public decimal TotalCostInTokens
+        {
+            get
+            {
+                decimal total = 0m;
+                total += this.InputTokenCost;
+                total += this.OutputTokenCost;
+                total += this.CachedInputTokenCost;
+                if (this.ReasoningTokenCost.HasValue)
+                {
+                    total += this.ReasoningTokenCost.Value;
+                }
+                if (this.ToolUseTokenCost.HasValue)
+                {
+                    total += this.ToolUseTokenCost.Value;
+                }
+                return total;
+            }
+        }
+
+        /// <summary>
+        /// Gets the total $cost per 1,000,000 tokens, calculated by multiplying the total per-token cost by 1,000,000.
+        /// </summary>
+        public decimal TotalCostPerMillionTokens
+        {
+            get
+            {
+                return this.TotalCostInTokens * OneMillionTokens;
+            }
         }
     }
 }

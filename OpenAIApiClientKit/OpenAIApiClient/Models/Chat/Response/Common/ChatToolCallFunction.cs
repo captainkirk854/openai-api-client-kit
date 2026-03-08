@@ -6,6 +6,9 @@ namespace OpenAIApiClient.Models.Chat.Response.Common
 {
     using System.Text.Json.Serialization;
 
+    /// <summary>
+    /// Represents a function call within a chat tool, including the function name and its arguments.
+    /// </summary>
     public class ChatToolCallFunction
     {
         /// <summary>

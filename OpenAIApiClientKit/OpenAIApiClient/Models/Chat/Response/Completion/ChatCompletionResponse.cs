@@ -6,6 +6,10 @@ namespace OpenAIApiClient.Models.Chat.Response.Completion
 {
     using System.Text.Json.Serialization;
 
+    /// <summary>
+    /// Represents the response from a chat completion request, including metadata, model information, choices, and
+    /// usage statistics.
+    /// </summary>
     public class ChatCompletionResponse
     {
         /// <summary>

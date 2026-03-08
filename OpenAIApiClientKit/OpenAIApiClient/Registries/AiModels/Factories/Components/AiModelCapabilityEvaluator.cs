@@ -8,13 +8,16 @@ namespace OpenAIApiClient.Registries.AiModels.Factories.Components
     using OpenAIApiClient.Interfaces.Registries;
     using OpenAIApiClient.Models.Registries.AiModels;
 
+    /// <summary>
+    /// Evaluates and determines the capabilities of AI models based on their descriptor and capability scores.
+    /// </summary>
     public sealed class AiModelCapabilityEvaluator : IAiModelCapabilityEvaluator
     {
-        public IReadOnlySet<AiModelCapability> GetCapabilities(AiModelPropertyRegistryModel modelEntry)
+        public IReadOnlySet<AiModelCapability> GetCapabilities(AiModelDescriptor model)
         {
             // Initalise a set to hold the capabilities of the model ..
             HashSet<AiModelCapability> result = [];
-            AiModelCapabilityScores capabilityScores = modelEntry.Capabilities;
+            AiModelCapabilityScores capabilityScores = model.Capabilities;
 
             // Iterate through all possible enum values
             foreach (AiModelCapability capability in Enum.GetValues(typeof(AiModelCapability)))
@@ -33,6 +36,7 @@ namespace OpenAIApiClient.Registries.AiModels.Factories.Components
         /// <param name="result">The collection to which the capability is added if the score is sufficient.</param>
         private static void AddCapabilityOnGoodScore(AiModelCapability capability, AiModelCapabilityScores capabilityScores, HashSet<AiModelCapability> result)
         {
+            // Map the capability to its corresponding score using a switch expression.
             int score = capability switch
             {
                 // Core

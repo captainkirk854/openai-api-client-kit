@@ -6,6 +6,9 @@ namespace OpenAIApiClient.Models.Chat.Response.Streaming
 {
     using System.Text.Json.Serialization;
 
+    /// <summary>
+    /// Represents a streamed chunk of a chat completion response, including metadata and choices.
+    /// </summary>
     public class ChatCompletionChunk
     {
         /// <summary>

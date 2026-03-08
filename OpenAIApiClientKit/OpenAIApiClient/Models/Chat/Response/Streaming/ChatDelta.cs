@@ -7,6 +7,9 @@ namespace OpenAIApiClient.Models.Chat.Response.Streaming
     using System.Text.Json.Serialization;
     using OpenAIApiClient.Models.Chat.Response.Common;
 
+    /// <summary>
+    /// Represents a chunk of streamed chat message data, including role, content, and tool calls.
+    /// </summary>
     public class ChatDelta
     {
         /// <summary>

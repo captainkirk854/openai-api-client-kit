@@ -179,14 +179,14 @@ namespace OpenAIApiClient.Tests.Orchestration.Factories
         /// </summary>
         /// <param name="name"></param>
         /// <returns see cref="AiModelDescriptor">.</returns>
-        private static AiModelPropertyRegistryModel CreateModelDescriptor(string name)
+        private static AiModelDescriptor CreateModelDescriptor(string name)
         {
             // Use reflection to create an instance since the constructor is internal.
-            AiModelPropertyRegistryModel modelDescriptor = (AiModelPropertyRegistryModel)Activator.CreateInstance(typeof(AiModelPropertyRegistryModel), nonPublic: true)!;
+            AiModelDescriptor modelDescriptor = (AiModelDescriptor)Activator.CreateInstance(typeof(AiModelDescriptor), nonPublic: true)!;
 
             // Set the Name property using reflection since it has an internal setter.
-            typeof(AiModelPropertyRegistryModel)
-                .GetProperty(nameof(AiModelPropertyRegistryModel.Name))!
+            typeof(AiModelDescriptor)
+                .GetProperty(nameof(AiModelDescriptor.Name))!
                 .SetValue(modelDescriptor, name);
 
             return modelDescriptor;

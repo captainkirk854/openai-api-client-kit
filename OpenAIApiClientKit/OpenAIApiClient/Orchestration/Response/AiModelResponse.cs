@@ -8,14 +8,14 @@ namespace OpenAIApiClient.Orchestration.Response
     using OpenAIApiClient.Models.Registries.AiModels;
 
     /// <summary>
-    /// Model response details.
+    /// Represents the response from an AI model, including output, status, and metadata.
     /// </summary>
     public sealed class AiModelResponse
     {
         /// <summary>
         /// Gets the model descriptor.
         /// </summary>
-        public AiModelPropertyRegistryModel Model
+        public AiModelDescriptor Model
         {
             get;
             init;

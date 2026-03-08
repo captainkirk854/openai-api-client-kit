@@ -12,42 +12,37 @@ namespace OpenAIApiClient.Registries.AiModels.Sources
     using OpenAIApiClient.Models.Registries.AiModels;
 
     /// <summary>
-    /// Loads <see cref="AiModelPropertyRegistryModel"/> instances from embedded JSON registry streams.
+    /// Loads <see cref="AiModelDescriptor"/> instances from embedded JSON registry streams.
     /// </summary>
-    public sealed class EmbeddedAiModelPropertyRegistryLoader
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="EmbeddedAiModelPropertyRegistryLoader"/> class.
+    /// </remarks>
+    /// <param name="resource">The source that provides embedded JSON registry streams.</param>
+    public sealed class EmbeddedAiModelPropertyRegistryLoader(IAiModelCapabilityRegistryResource resource)
     {
-        private readonly IAiModelCapabilityRegistrySource source;
+        private readonly IAiModelCapabilityRegistryResource source = resource;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EmbeddedAiModelPropertyRegistryLoader"/> class.
-        /// </summary>
-        /// <param name="source">The source that provides embedded JSON registry streams.</param>
-        public EmbeddedAiModelPropertyRegistryLoader(IAiModelCapabilityRegistrySource source)
-        {
-            this.source = source;
-        }
-
-        /// <summary>
-        /// Loads all <see cref="AiModelPropertyRegistryModel"/> instances from the embedded registry streams.
+        /// Loads all <see cref="AiModelDescriptor"/> instances from the embedded registry streams.
         /// </summary>
         /// <returns>
-        /// A read-only collection of <see cref="AiModelPropertyRegistryModel"/> instances.
+        /// A read-only collection of <see cref="AiModelDescriptor"/> instances.
         /// </returns>
-        public IReadOnlyCollection<AiModelPropertyRegistryModel> Load()
+        public IReadOnlyCollection<AiModelDescriptor> Load()
         {
-            List<AiModelPropertyRegistryModel> models = new List<AiModelPropertyRegistryModel>();
+            List<AiModelDescriptor> models = [];
 
-            JsonSerializerOptions options = new JsonSerializerOptions(JsonSerializerDefaults.Web)
+            JsonSerializerOptions options = new(defaults: JsonSerializerDefaults.Web)
             {
                 PropertyNameCaseInsensitive = true,
             };
 
-            IEnumerable<Stream> streams = this.source.GetRegistryStreams();
+            IEnumerable<Stream> streams = this.source.GetAiModelRegistryStreams();
 
             foreach (Stream stream in streams)
             {
                 using (stream)
-                using (StreamReader reader = new StreamReader(stream, leaveOpen: false))
+                using (StreamReader reader = new(stream: stream, leaveOpen: false))
                 {
                     string json = reader.ReadToEnd();
 
@@ -58,13 +53,7 @@ namespace OpenAIApiClient.Registries.AiModels.Sources
                     }
 
                     // Deserialize into the DTO wrapper.
-                    AiModelPropertyRegistryData? registry = JsonSerializer.Deserialize<AiModelPropertyRegistryData>(json: json, options: options);
-
-                    if (registry is null)
-                    {
-                        throw new InvalidDataException("Capability registry deserialization returned null.");
-                    }
-
+                    AiModelPropertyRegistryData? registry = JsonSerializer.Deserialize<AiModelPropertyRegistryData>(json: json, options: options) ?? throw new InvalidDataException("Capability registry deserialization returned null.");
                     if (registry.Models is null || !registry.Models.Any())
                     {
                         throw new InvalidDataException("Capability registry 'models' collection must not be null or empty.");

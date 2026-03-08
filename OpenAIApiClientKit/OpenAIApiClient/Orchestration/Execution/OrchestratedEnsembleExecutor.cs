@@ -10,6 +10,11 @@ namespace OpenAIApiClient.Orchestration.Execution
     using OpenAIApiClient.Orchestration.Factories;
     using OpenAIApiClient.Orchestration.Response;
 
+    /// <summary>
+    /// Executes prompts across multiple AI models in parallel, consolidating their responses using an orchestrator.
+    /// </summary>
+    /// <param name="client">The chat client used for dispatching requests.</param>
+    /// <param name="responseHandler">The handler for processing AI model responses.</param>
     public class OrchestratedEnsembleExecutor(ChatClient client, IAiModelResponseHandler responseHandler)
     {
         // Build the orchestrator with the necessary components for dispatching and executing requests, as well as handling responses ..
@@ -82,7 +87,7 @@ namespace OpenAIApiClient.Orchestration.Execution
                 OutputFormat = outputFormat,
                 EnsembleRequest = new EnsembleDispatchRequest
                 {
-                    Strategy = EnsembleStrategy.Custom,
+                    Strategy = AiModelStrategy.Ensemble.Custom,
                     ExplicitModels = models,
                 },
                 CallOptions = options,

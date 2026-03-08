@@ -14,7 +14,7 @@ namespace OpenAIApiClient.Orchestration
     using OpenAIApiClient.Orchestration.Response;
 
     /// <summary>
-    /// Responsible for orchestrating model requests, routing them to the appropriate models,
+    /// Responsible for orchestrating model requests, dispatching them to the appropriate models,
     /// executing the requests, and handling the responses.
     /// </summary>
     /// <param name="requestBuilderFactory">Factory that produces a fresh client request builder for each request.</param>
@@ -72,7 +72,7 @@ namespace OpenAIApiClient.Orchestration
             else
             {
                 // In single model scenario, there is implicitly one model and so we set that model on the request builder before execution ..
-                AiModelPropertyRegistryModel model = executionContext.Models[0];
+                AiModelDescriptor model = executionContext.Models[0];
                 ChatCompletionRequest chatRequest = requestBuilder.WithModel(input: model.Name).Build();
 
                 // Execute the request and handle the response ..

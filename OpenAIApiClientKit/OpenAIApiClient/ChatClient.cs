@@ -13,8 +13,8 @@ namespace OpenAIApiClient
     using OpenAIApiClient.Models.Chat.Response.Streaming;
 
     /// <summary>
-    /// A unified OpenAI Chat Client supporting both streaming and non-streaming
-    /// chat completions, with retry and cancellation support.
+    /// Client for interacting with the OpenAI Chat Completions API, supporting both streaming and non-streaming
+    /// requests with retry and cancellation capabilities.
     /// </summary>
     public class ChatClient
     {

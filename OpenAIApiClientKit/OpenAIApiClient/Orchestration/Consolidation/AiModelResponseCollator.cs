@@ -4,9 +4,7 @@
 
 namespace OpenAIApiClient.Orchestration.Consolidation
 {
-    using OpenAIApiClient.Enums;
     using OpenAIApiClient.Orchestration.Response;
-    using OpenAIApiClient.Registries.AiModels;
 
     /// <summary>
     /// Represents a collated response generated from one or more ai model responses.

@@ -10,6 +10,9 @@ namespace OpenAIApiClient.Models.Chat.Request
     using OpenAIApiClient.Models.Registries.AiModels;
     using OpenAIApiClient.Registries.AiModels;
 
+    /// <summary>
+    /// Represents a request for generating a chat completion using a specified model and conversation messages.
+    /// </summary>
     public class ChatCompletionRequest
     {
         /// <summary>
@@ -21,8 +24,8 @@ namespace OpenAIApiClient.Models.Chat.Request
         /// at application startup or in tests. Later phases can replace this with
         /// dependency injection.
         /// </remarks>
-        private static readonly IAiModelRegistryNEW DefaultModelRegistry = new OpenAIModelRegistryNEW();
-        private AiModelPropertyRegistryModel? modelInfo;
+        private static readonly IAiModelRegistry DefaultModelRegistry = new OpenAIModelRegistry();
+        private AiModelDescriptor? modelInfo;
 
         /// <summary>
         /// Gets or sets the model to use for generating the chat completion (e.g., "gpt-4o").
@@ -123,7 +126,7 @@ namespace OpenAIApiClient.Models.Chat.Request
         /// Gets or sets the model registry used to resolve model metadata for this request instance.
         /// </summary>
         [JsonIgnore]
-        public IAiModelRegistryNEW ModelRegistry
+        public IAiModelRegistry ModelRegistry
         {
             get;
             set;
@@ -137,7 +140,7 @@ namespace OpenAIApiClient.Models.Chat.Request
         /// If the model cannot be resolved, an <see cref="InvalidOperationException"/> is thrown.
         /// </remarks>
         [JsonIgnore]
-        public AiModelPropertyRegistryModel ModelInfo
+        public AiModelDescriptor ModelInfo
         {
             get
             {
@@ -151,15 +154,8 @@ namespace OpenAIApiClient.Models.Chat.Request
                     throw new InvalidOperationException("ChatCompletionRequest.Model must be specified.");
                 }
 
-                AiModelPropertyRegistryModel? resolved =
-                    this.ModelRegistry.TryGetByName(this.Model);
-
-                if (resolved is null)
-                {
-                    throw new InvalidOperationException(
-                        $"The model '{this.Model}' could not be resolved using the configured model registry.");
-                }
-
+                AiModelDescriptor? resolved =
+                    this.ModelRegistry.TryGetByName(this.Model) ?? throw new InvalidOperationException($"The model '{this.Model}' could not be resolved using the configured model registry.");
                 this.modelInfo = resolved;
                 return this.modelInfo;
             }

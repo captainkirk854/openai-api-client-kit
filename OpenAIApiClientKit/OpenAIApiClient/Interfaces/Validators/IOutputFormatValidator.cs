@@ -4,6 +4,9 @@
 
 namespace OpenAIApiClient.Interfaces.Validators
 {
+    /// <summary>
+    /// Defines a contract for validating the format of output content.
+    /// </summary>
     public interface IOutputFormatValidator
     {
         bool IsValidFormat(string content, out string? error);

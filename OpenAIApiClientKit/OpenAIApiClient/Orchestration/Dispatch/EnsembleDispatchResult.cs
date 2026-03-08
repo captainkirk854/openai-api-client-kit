@@ -4,17 +4,30 @@
 
 namespace OpenAIApiClient.Orchestration.Dispatch
 {
+    using System;
     using OpenAIApiClient.Models.Registries.AiModels;
 
     /// <summary>
-    /// <see cref="EnsembleDispatchRequest"/> represents the result of an ensemble dispatch operation, containing the selected model(s).
+    /// Represents the result of applying an dispatch strategy over an ensemble of models.
     /// </summary>
-    /// <param name="models"></param>
-    public sealed class EnsembleDispatchResult(IEnumerable<AiModelPropertyRegistryModel> models)
+    public sealed class EnsembleDispatchResult
     {
         /// <summary>
-        /// Gets a list of model descriptors selected for the ensemble.
+        /// Initializes a new instance of the <see cref="EnsembleDispatchResult"/> class.
         /// </summary>
-        public IReadOnlyList<AiModelPropertyRegistryModel> Models { get; } = [.. models];
+        /// <param name="models">The models selected by the ensemble strategy.</param>
+        public EnsembleDispatchResult(IEnumerable<AiModelDescriptor> models)
+        {
+            ArgumentNullException.ThrowIfNull(models);
+            this.Models = [.. models];
+        }
+
+        /// <summary>
+        /// Gets a list of models selected for the ensemble.
+        /// </summary>
+        public IReadOnlyList<AiModelDescriptor> Models
+        {
+            get;
+        }
     }
 }

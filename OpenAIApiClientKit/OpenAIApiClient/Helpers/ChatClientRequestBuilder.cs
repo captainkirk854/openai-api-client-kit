@@ -8,7 +8,6 @@ namespace OpenAIApiClient.Helpers
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Chat.Common;
     using OpenAIApiClient.Models.Chat.Request;
-    using OpenAIApiClient.Registries.AiModels;
     using OpenAIApiClient.Registries.Output;
 
     /// <summary>
@@ -24,7 +23,7 @@ namespace OpenAIApiClient.Helpers
     /// submission. The builder is designed for method chaining and does not modify the returned request after
     /// <c>Build()</c> is called.
     /// Sample usage:
-    ///     <see cref="ChatCompletionRequest"/> request = new <see cref="ChatClientRequestBuilder"/>().WithModel(input: OpenAIModels.GPT4o_Mini)
+    ///     <see cref="ChatCompletionRequest"/> request = new <see cref="ChatClientRequestBuilder"/>().WithModel(input: "gpt-4o-Mini")
     ///                                                                                               .AddDeveloperMessage(input: "Always answer concisely.")
     ///                                                                                               .AddSystemMessage(input: "You are a helpful assistant that answers concisely.")
     ///                                                                                               .AddUserMessage(input: userPrompt)
@@ -82,7 +81,7 @@ namespace OpenAIApiClient.Helpers
         /// Configures the output format for the client request by adding the required system message.
         /// </summary>
         /// <param name="input">The desired output format to use for the request.</param>
-        /// <returns>The updated ClientRequestBuilder instance.</returns>
+        /// <returns>The current instance of <see cref="ChatClientRequestBuilder"/> with the output format system message added to the message sequence.</returns>
         public ChatClientRequestBuilder SetOutputFormat(OutputFormat input)
         {
             this.messages.Add(new ChatMessage { RoleAsEnum = OpenAIRole.System, Content = OutputFormats.FormattingPrompts[input].SystemPrompt });
@@ -230,8 +229,7 @@ namespace OpenAIApiClient.Helpers
         /// Values range from 0.0 (no penalty) to 2.0.
         /// </remarks>
         /// <param name="input">The frequency penalty to apply. Higher values decrease the likelihood of repeated tokens in the generated output.</param>
-        /// <returns>The current <see cref="ChatClientRequestBuilder"/> instance with the specified frequency penalty
-        /// applied.</returns>
+        /// <returns>The current <see cref="ChatClientRequestBuilder"/> instance with the specified frequency penalty applied.</returns>
         public ChatClientRequestBuilder WithFrequencyPenalty(double input)
         {
             // Check within valid range: 0.0 - 2.0 ..

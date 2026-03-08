@@ -8,6 +8,9 @@ namespace OpenAIApiClient.Interfaces.Orchestration.Execution
     using OpenAIApiClient.Orchestration.Execution;
     using OpenAIApiClient.Orchestration.Response;
 
+    /// <summary>
+    /// Defines a contract for executing ensemble AI model requests asynchronously and returning responses.
+    /// </summary>
     public interface IEnsembleExecutor
     {
         Task<IReadOnlyList<AiModelResponse>> ExecuteAsync(ChatClientRequestBuilder requestBuilder, IExecutionContext context, AiCallOptions execution, CancellationToken cancelToken);

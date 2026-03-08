@@ -8,6 +8,10 @@ namespace OpenAIApiClient.Models.Chat.Response.Completion
     using OpenAIApiClient.Models.Chat.Common;
     using OpenAIApiClient.Models.Chat.Response.Common;
 
+    /// <summary>
+    /// Represents a single choice returned by a chat model, including its index, message, finish reason, and optional
+    /// tool calls.
+    /// </summary>
     public class ChatChoice
     {
         /// <summary>

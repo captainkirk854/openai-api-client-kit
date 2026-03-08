@@ -7,6 +7,9 @@ namespace OpenAIApiClient.Interfaces.Orchestration.Execution
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Registries.AiModels;
 
+    /// <summary>
+    /// Defines the context for executing AI models, including the prompt, output format, and model selection.
+    /// </summary>
     public interface IExecutionContext
     {
         /// <summary>
@@ -28,7 +31,7 @@ namespace OpenAIApiClient.Interfaces.Orchestration.Execution
         /// <summary>
         /// Gets the list of models to be executed.
         /// </summary>
-        IReadOnlyList<AiModelPropertyRegistryModel> Models
+        IReadOnlyList<AiModelDescriptor> Models
         {
             get;
         }

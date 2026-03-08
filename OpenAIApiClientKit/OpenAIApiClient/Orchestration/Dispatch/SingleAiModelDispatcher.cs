@@ -15,9 +15,9 @@ namespace OpenAIApiClient.Orchestration.Dispatch
     /// <see cref="SingleAiModelDispatcher"/> provides intentional, criteria‑based delegation to select the correct model based on the provided request.
     /// </summary>
     /// <param name="registry"></param>
-    public sealed class SingleAiModelDispatcher(IAiModelRegistryNEW registry) : ISingleAiModelDispatcher
+    public sealed class SingleAiModelDispatcher(IAiModelRegistry registry) : ISingleAiModelDispatcher
     {
-        private readonly IReadOnlyDictionary<string, AiModelPropertyRegistryModel> modelRegistry = registry.GetRegistry();
+        private readonly IReadOnlyDictionary<string, AiModelDescriptor> modelRegistry = registry.GetRegistry();
 
         /// <summary>
         /// Evaluates request to select an appropriate model descriptor.
@@ -31,9 +31,7 @@ namespace OpenAIApiClient.Orchestration.Dispatch
             ArgumentNullException.ThrowIfNull(request);
 
             // Get the actual strategy handler definition to use as delegate ..
-            SingleAiModelStrategyHandler handler = SingleAiModelStrategies.Get(strategy: request.Strategy);
-
-            // Invoke the handler to get the result containing the selected model ..
+            SingleAiModelStrategyHandler? handler = SingleAiModelStrategies.Get(strategy: request.Strategy) ?? throw new InvalidOperationException(message: $"No handler found for strategy {request.Strategy}");
             return handler(modelRegistry: this.modelRegistry, request: request);
         }
     }

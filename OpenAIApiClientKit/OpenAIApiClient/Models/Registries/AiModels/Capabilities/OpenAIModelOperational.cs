@@ -11,7 +11,8 @@ namespace OpenAIApiClient.Models.Registries.AiModels.Capabilities
     public sealed class OpenAIModelOperational
     {
         /// <summary>
-        /// Gets the low cost score for the model. This score is a measure of how cost-effective the model is to use. A higher score indicates that the model is more cost-effective.
+        /// Gets the low cost score for the model. This score is a measure of how cost-effective the model is to use.
+        /// A higher score indicates that the model is more cost-effective.
         /// </summary>
         public int LowCost
         {
@@ -20,7 +21,8 @@ namespace OpenAIApiClient.Models.Registries.AiModels.Capabilities
         }
 
         /// <summary>
-        /// Gets the latency score for the model. This score is a measure of how quickly the model can respond to requests. A higher score indicates that the model has lower latency.
+        /// Gets the latency score for the model. This score is a measure of how quickly the model can respond to requests.
+        /// A higher score indicates that the model has lower latency.
         /// </summary>
         public int Moderation
         {
@@ -29,12 +31,26 @@ namespace OpenAIApiClient.Models.Registries.AiModels.Capabilities
         }
 
         /// <summary>
-        /// Gets the open weight score for the model. This score is a measure of how well the model can handle open-ended tasks. A higher score indicates that the model is better at handling open-ended tasks.
+        /// Gets the open weight score for the model. This score is a measure of how well the model can handle open-ended tasks.
+        /// A higher score indicates that the model is better at handling open-ended tasks.
         /// </summary>
         public int OpenWeight
         {
             get;
             init;
+        }
+
+        /// <summary>
+        /// Gets the total operational score of the model providing an overall measure of the model's operational capabilities.
+        /// </summary>
+        public int Total
+        {
+            get
+            {
+                return this.LowCost +
+                       this.Moderation +
+                       this.OpenWeight;
+            }
         }
     }
 }

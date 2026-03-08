@@ -9,7 +9,7 @@ namespace OpenAIApiClient.Helpers.Extensions
     using OpenAIApiClient.Registries.Output;
 
     /// <summary>
-    /// Provides extension methods for validating and working with output formats.
+    /// Provides extension methods to support the <see cref="OutputFormat"/> class.
     /// </summary>
     public static class OutputFormatExtensions
     {
@@ -18,7 +18,7 @@ namespace OpenAIApiClient.Helpers.Extensions
         /// </summary>
         /// <param name="content">The content to validate.</param>
         /// <param name="outputFormat">The output format to validate against.</param>
-        /// <returns>true if the content is valid for the specified format; otherwise, false.</returns>
+        /// <returns see cref="bool">True if the content is valid for the specified output format; otherwise, false.</returns>
         public static bool IsValidFormat(this string? content, OutputFormat outputFormat)
         {
             IOutputFormatValidator validator = OutputFormats.FormattingPrompts[outputFormat].Validator;

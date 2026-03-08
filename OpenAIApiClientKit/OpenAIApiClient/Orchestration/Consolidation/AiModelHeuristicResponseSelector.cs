@@ -7,7 +7,6 @@ namespace OpenAIApiClient.Orchestration.Consolidation
     using OpenAIApiClient.Models.Consolidation.Options.HeuristicScoring;
     using OpenAIApiClient.Orchestration.Consolidation.Options;
     using OpenAIApiClient.Orchestration.Response;
-    using OpenAIApiClient.Registries.AiModels;
 
     /// <summary>
     /// Provides helper methods for selecting the optimal AI model response

@@ -12,7 +12,7 @@ namespace OpenAIApiClient.Models.Registries.AiModels
         /// <summary>
         /// Gets the list of models and their capabilities.
         /// </summary>
-        public IList<AiModelPropertyRegistryModel> Models
+        public IList<AiModelDescriptor> Models
         {
             get;
             init;

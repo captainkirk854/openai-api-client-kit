@@ -4,7 +4,6 @@
 
 namespace OpenAIApiClient.Models.Consolidation.Options.ResponseSynthesis
 {
-    using OpenAIApiClient.Enums;
     using OpenAIApiClient.Orchestration.Response;
 
     /// <summary>

@@ -45,10 +45,28 @@ namespace OpenAIApiClient.Models.Registries.AiModels.Capabilities
             init;
         }
 
+        /// <summary>
+        /// Gets the image generation capability level of the model, indicating its ability to create and manipulate images based on input prompts.
+        /// </summary>
         public int ImageGeneration
         {
             get;
             init;
+        }
+
+        /// <summary>
+        /// Gets the sum of all advanced capability scores, providing an overall measure of the model's proficiency in advanced features.
+        /// </summary>
+        public int Total
+        {
+            get
+            {
+                return this.Critic +
+                       this.Editor +
+                       this.JSONMode +
+                       this.Embedding +
+                       this.ImageGeneration;
+            }
         }
     }
 }

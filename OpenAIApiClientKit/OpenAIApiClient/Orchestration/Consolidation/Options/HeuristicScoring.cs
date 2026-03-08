@@ -8,7 +8,6 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
     using OpenAIApiClient.Models.Consolidation;
     using OpenAIApiClient.Models.Consolidation.Options.HeuristicScoring;
     using OpenAIApiClient.Orchestration.Response;
-    using OpenAIApiClient.Registries.AiModels;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HeuristicScoring"/> class.
@@ -33,8 +32,6 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
         /// </returns>
         public static HeuristicScoringResult ConsolidateWithHeuristicScoring(string prompt, List<AiModelResponse> responses)
         {
-            Console.WriteLine(" Scoring responses using heuristics...");
-
             // Score each response
             List<ScoredResponse> scoredResponses = [.. responses
                 .Select((response, idx) =>
@@ -48,8 +45,10 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
                     };
                 })];
 
+            // Select the response with the highest score - in case of ties, the first one encountered will be selected ..
             ScoredResponse bestScoredResponse = scoredResponses.OrderByDescending(x => x.Score).First();
 
+            // Create a dictionary of scored responses for detailed breakdown
             Dictionary<string, ScoredResponseDetail> scoredResponsesDict = scoredResponses.ToDictionary(
                 x => x.Response.Model.Name,
                 x => new ScoredResponseDetail
@@ -59,6 +58,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
                     ScoreBreakdown = GetHeuristicScoresBreakdown(x.Response.RawOutput, prompt),
                 });
 
+            // Return the best response along with scoring details
             return new HeuristicScoringResult
             {
                 SelectedResponse = bestScoredResponse.Response.RawOutput,

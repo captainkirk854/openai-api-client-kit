@@ -9,6 +9,10 @@ namespace OpenAIApiClient.Orchestration.Execution
     using OpenAIApiClient.Models.Chat.Request;
     using OpenAIApiClient.Orchestration.Response;
 
+    /// <summary>
+    /// Executes requests across multiple AI models in an ensemble, aggregating responses from each model.
+    /// </summary>
+    /// <param name="singleModelExecutor">Executor used to run requests on individual AI models.</param>
     public sealed class EnsembleExecutor(ISingleAiModelExecutor singleModelExecutor) : IEnsembleExecutor
     {
         // Inject the single model executor which will be used to execute requests on individual models as part of the ensemble execution process.

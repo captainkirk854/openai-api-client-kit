@@ -17,8 +17,10 @@ namespace OpenAIApiClient.Helpers
         /// <param name="client">The chat client used to send the completion request.</param>
         /// <param name="request">The chat completion request containing the prompt and parameters for the completion.</param>
         /// <param name="cancelTokenSource">A cancellation token source that can be used to cancel the asynchronous operation.</param>
-        /// <returns>A task that represents the asynchronous operation. The task result contains the content of the first message
-        /// in the chat completion response, or null if the response or message content is unavailable.</returns>
+        /// <returns see cref="Task{TResult}">
+        /// A task that represents the asynchronous operation. The task result contains the content of the first message from
+        /// the chat completion response, or null if no content is available.
+        /// </returns>
         public static async Task<string?> GetChatCompletionNonStreamingMessageContentAsync(ChatClient client, ChatCompletionRequest request, CancellationTokenSource cancelTokenSource)
         {
             ChatCompletionResponse? response = await client.CreateChatCompletionAsync(request: request, cancelToken: cancelTokenSource.Token);
@@ -35,8 +37,11 @@ namespace OpenAIApiClient.Helpers
         /// <param name="client">The chat client used to initiate and manage the streaming chat completion request. Cannot be null.</param>
         /// <param name="request">The parameters that define the chat completion request, including messages and model options.</param>
         /// <param name="cancelTokenSource">A cancellation token source that can be used to cancel the streaming operation.</param>
-        /// <returns>A task that represents the asynchronous operation. The task result contains the aggregated message content
-        /// as a string, or null if no content was received.</returns>
+        /// <returns see cref="Task{TResult}">
+        /// A task that represents the asynchronous streaming operation. The task result is a tuple containing: string? - the aggregated
+        /// content of the streamed chat completion message, which may be null if no content is received; int - the total number of chunks
+        /// received during streaming.
+        /// </returns>
         public static async Task<(string?, int)> GetChatCompletionStreamingMessageContentAsync(ChatClient client, ChatCompletionRequest request, CancellationTokenSource cancelTokenSource)
         {
             // Initialise variables ..

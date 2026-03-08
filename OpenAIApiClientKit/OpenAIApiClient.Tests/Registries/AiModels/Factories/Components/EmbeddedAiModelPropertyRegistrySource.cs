@@ -7,7 +7,7 @@ namespace OpenAIApiClient.Tests.Registries.AiModels.Factories.Components
     using System.Reflection;
     using System.Text.Json;
     using OpenAIApiClient.Models.Registries.AiModels;
-    using testClass = OpenAIApiClient.Registries.AiModels.Sources.EmbeddedAiModelPropertyRegistrySource;
+    using testClass = OpenAIApiClient.Registries.AiModels.Sources.EmbeddedAiModelPropertyRegistryResource;
 
     [TestClass]
     public class EmbeddedAiModelPropertyRegistrySource
@@ -25,7 +25,7 @@ namespace OpenAIApiClient.Tests.Registries.AiModels.Factories.Components
 
             // Act
             List<string> resourceNames = [.. testAssembly.GetManifestResourceNames()];
-            List<Stream> streams = [.. source.GetRegistryStreams()];
+            List<Stream> streams = [.. source.GetAiModelRegistryStreams()];
 
             // Calculate the expected count of resources that match the prefix and suffix criteria ..
             int expectedCount = resourceNames.Count(n =>
@@ -49,7 +49,7 @@ namespace OpenAIApiClient.Tests.Registries.AiModels.Factories.Components
 
             // Act
             List<string> resourceNames = [.. testAssembly.GetManifestResourceNames()];
-            List<Stream> streams = [.. source.GetRegistryStreams()];
+            List<Stream> streams = [.. source.GetAiModelRegistryStreams()];
 
             // Calculate the expected count of resources that match the prefix and suffix criteria ..
             int expectedCount = resourceNames.Count(n =>
@@ -67,7 +67,7 @@ namespace OpenAIApiClient.Tests.Registries.AiModels.Factories.Components
             testClass source = new();
 
             // Act
-            List<Stream> streams = [.. source.GetRegistryStreams()];
+            List<Stream> streams = [.. source.GetAiModelRegistryStreams()];
 
             // Assert
             Assert.IsNotNull(streams);
@@ -93,7 +93,7 @@ namespace OpenAIApiClient.Tests.Registries.AiModels.Factories.Components
             testClass source = new();
 
             // Act
-            List<Stream> streams = [.. source.GetRegistryStreams()];
+            List<Stream> streams = [.. source.GetAiModelRegistryStreams()];
 
             // Assert pre‑conditions
             Assert.IsNotEmpty(streams, "No capability streams were returned.");

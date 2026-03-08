@@ -22,7 +22,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         public static async Task GetBestHeuristicModelResponseAsync(ChatClient client, string prompt, CancellationTokenSource cts)
         {
             // Initialise model registry ..
-            OpenAIModelsNEW models = Registries.AiModels.Factories.OpenAIModelsFactory.Create();
+            OpenAIModels models = Registries.AiModels.Factories.OpenAIModelsFactory.Create();
 
             // Initialise base definition for request builder ..
             ChatClientRequestBuilder requestBuilder = new ChatClientRequestBuilder().WithDefaults();
@@ -54,7 +54,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 OutputFormat = OutputFormat.PlainText,
                 EnsembleRequest = new EnsembleDispatchRequest
                 {
-                    Strategy = EnsembleStrategy.Custom,
+                    Strategy = AiModelStrategy.Ensemble.Custom,
                     RequiredCapabilities =
                     [
                         AiModelCapability.LowCost,

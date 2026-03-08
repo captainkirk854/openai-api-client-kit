@@ -14,7 +14,7 @@ namespace OpenAIApiClient.Orchestration.Dispatch
         /// <summary>
         /// Gets the ensemble strategy (e.g., Reasoning, Vision, CostOptimized).
         /// </summary>
-        public EnsembleStrategy Strategy
+        public AiModelStrategy.Ensemble Strategy
         {
             get;
             init;

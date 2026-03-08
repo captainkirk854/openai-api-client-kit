@@ -22,9 +22,6 @@ namespace OpenAIApiClient.Orchestration.Consolidation
     /// Coordinates specialized consolidation strategy classes.
     /// </summary>
     /// <remarks>
-    /// Initializes a new instance of the <see cref="AdvancedEnsembleExecutor"/> class.
-    /// </remarks>
-    /// <remarks>
     /// Initializes a new instance of the <see cref="AdvancedEnsembleExecutor"/> class
     /// using the default orchestration pipeline created by <see cref="OrchestratorBuilder"/>.
     /// </remarks>
@@ -38,7 +35,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation
         /// <summary>
         /// Performs advanced consolidation of multiple model responses based on the specified consolidation mode.
         /// </summary>
-        /// <param name="consolidationMode">The <see cref="ConsolidationMode"/> strategy to use.</param>
+        /// <param name="consolidationMode">The <see cref="AiModelConsolidationMode"/> strategy to use.</param>
         /// <param name="prompt">The user prompt to send to all models.</param>
         /// <param name="responses">The list of <see cref="AiModelResponse"/> objects from the ensemble model calls.</param>
         /// <param name="options">Options for execution, such as chunk handling and aggregation (optional).</param>
@@ -56,7 +53,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation
         /// <exception cref="InvalidOperationException">
         /// Thrown when advanced fan-out and consolidation fails.
         /// </exception>
-        public async Task<AdvancedConsolidatedResponse> AdvancedConsolidationAsync(ConsolidationMode consolidationMode,
+        public async Task<AdvancedConsolidatedResponse> AdvancedConsolidationAsync(AiModelConsolidationMode consolidationMode,
                                                                                    string prompt,
                                                                                    List<AiModelResponse> responses,
                                                                                    AiCallOptions options,
@@ -80,7 +77,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation
                 switch (consolidationMode)
                 {
                     // LLM Judge consolidation mode uses a separate LLM to evaluate the successful model response(s) and select the best one based on the prompt ..
-                    case ConsolidationMode.LLMAsJudge:
+                    case AiModelConsolidationMode.LLMAsJudge:
                         if (operatorModel is null)
                         {
                             throw new ArgumentException("An operational LLM is required for LLM Judge consolidation!", nameof(operatorModel));
@@ -95,7 +92,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation
                         break;
 
                     // Heuristic Scoring consolidation mode applies a set of predefined heuristics to score and select the best response without using an additional LLM.
-                    case ConsolidationMode.HeuristicScoring:
+                    case AiModelConsolidationMode.HeuristicScoring:
                         HeuristicScoringResult heuristicResult = HeuristicScoring.ConsolidateWithHeuristicScoring(prompt: prompt,
                                                                                                                   responses: successfulResponses);
                         consolidatedContent = heuristicResult.SelectedResponse;
@@ -103,7 +100,7 @@ namespace OpenAIApiClient.Orchestration.Consolidation
                         break;
 
                     // Response Synthesis consolidation mode uses a separate LLM to synthesise a new response that optimally blends the information from all input model response(s) ..
-                    case ConsolidationMode.ResponseSynthesis:
+                    case AiModelConsolidationMode.ResponseSynthesis:
                         if (operatorModel is null)
                         {
                             throw new ArgumentException("An operational LLM is required for Response Synthesis", nameof(operatorModel));

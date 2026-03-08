@@ -4,8 +4,6 @@
 
 namespace OpenAIApiClient.Models.Consolidation.Options.LLMJudge
 {
-    using OpenAIApiClient.Enums;
-
     /// <summary>
     /// Represents the result of LLM Judge consolidation strategy.
     /// </summary>

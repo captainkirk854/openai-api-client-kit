@@ -35,8 +35,8 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
         public void Evaluate_Throws_WhenRequestIsNull()
         {
             // Arrange
-            Dictionary<string, AiModelPropertyRegistryModel> internalRegistry = [];
-            IAiModelRegistryNEW registry = new MockOpenAIModels(models: internalRegistry);
+            Dictionary<string, AiModelDescriptor> internalRegistry = [];
+            IAiModelRegistry registry = new MockOpenAIModels(models: internalRegistry);
             testClass dispatcher = new(modelRegistry: registry);
 
             // Act & Assert
@@ -191,7 +191,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
         /// </summary>
         /// <param name="aiModel"></param>
         /// <param name="capabilities"></param>
-        /// <returns see cref="(IAiModelRegistryNEW, AiModelPropertyRegistryModel, EnsembleDispatchResult)">.</returns>
+        /// <returns see cref="(IAiModelRegistry, AiModelDescriptor, OpenAIApiClient.Orchestration.Dispatch.EnsembleDispatchResult)">.</returns>
         //private static (IAiModelRegistryNEW, AiModelDescriptor, EnsembleDispatchResult) Cook(OpenAIModel aiModel, IReadOnlyList<AiModelCapability> capabilities)
         //{
         //    //// Create the test model descriptor ..

@@ -43,8 +43,6 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
         /// </returns>
         public async Task<LLMJudgeResult> ConsolidateWithLLMJudgeAsync(string prompt, List<AiModelResponse> responses, string judge, AiCallOptions execution, CancellationToken cancellationToken)
         {
-            Console.WriteLine($" Requesting model: [{judge}] to judge the dispatched model response(s)...");
-
             // Create judgment request ..
             string judgmentPrompt = BuildJudgmentPrompt(prompt: prompt, responses: responses);
             ChatCompletionRequest judgeRequest = new ChatClientRequestBuilder()
@@ -106,17 +104,15 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
         /// <param name="judgeContent">The raw judge model output.</param>
         /// <param name="responses">The candidate <see cref="AiModelResponse"/> instances being judged.</param>
         /// <returns>
-        /// A <see cref="ParsedJudgeResponse"/> containing the selected index,
-        /// selected response, reasoning, and score dictionary.
-        /// </returns>
+        /// A <see cref="ParsedJudgeResponse"/> containing the selected index, selected response, reasoning, and score dictionary.</returns>
         private static ParsedJudgeResponse ParseJudgeResponse(string judgeContent, List<AiModelResponse> responses)
         {
             string modelIndexKey = "selected_model_index";
             string reasoningKey = "reasoning";
 
+            // Try to parse JSON using System.Text.Json ..
             try
             {
-                // Try to parse JSON using System.Text.Json
                 Match jsonMatch = Regex.Match(judgeContent, @"\{.*\}", RegexOptions.Singleline);
                 if (jsonMatch.Success)
                 {
@@ -178,16 +174,15 @@ namespace OpenAIApiClient.Orchestration.Consolidation.Options
         /// Extracts numerical scores from a <see cref="JsonElement"/>.
         /// </summary>
         /// <param name="rootElement">The root <see cref="JsonElement"/> to extract scores from.</param>
-        /// <returns>
-        /// A <see cref="Dictionary{TKey,TValue}"/> of score names and their <see cref="int"/> values.
-        /// </returns>
+        /// <returns>A <see cref="Dictionary{TKey,TValue}"/> of score names and their <see cref="int"/> values.</returns>
         private static Dictionary<string, int> ExtractScoresFromJsonElement(JsonElement rootElement)
         {
             Dictionary<string, int> scores = [];
 
-            if (rootElement.TryGetProperty("scores", out JsonElement scoresElement) &&
-                scoresElement.ValueKind == JsonValueKind.Object)
+            // Assuming scores are provided in a JSON object under a "scores" property (e.g., "scores": {"response_1": 8, "response_2": 6, ...}) ..
+            if (rootElement.TryGetProperty("scores", out JsonElement scoresElement) && scoresElement.ValueKind == JsonValueKind.Object)
             {
+                // .. we can iterate through the properties of that object to extract individual scores.
                 foreach (JsonProperty property in scoresElement.EnumerateObject())
                 {
                     string key = property.Name;

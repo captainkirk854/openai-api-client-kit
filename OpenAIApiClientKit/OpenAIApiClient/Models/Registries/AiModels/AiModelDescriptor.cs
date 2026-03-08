@@ -1,4 +1,4 @@
-﻿// <copyright file="AiModelPropertyRegistryModel.cs" company="854 Things (tm)">
+﻿// <copyright file="AiModelDescriptor.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
@@ -7,7 +7,7 @@ namespace OpenAIApiClient.Models.Registries.AiModels
     /// <summary>
     /// Represents a registry entry for an OpenAI model and its capability scores.
     /// </summary>
-    public sealed class AiModelPropertyRegistryModel
+    public sealed class AiModelDescriptor
     {
         /// <summary>
         /// Gets the model identifier (e.g., gpt-4.1, gpt-4o-mini).
@@ -39,7 +39,7 @@ namespace OpenAIApiClient.Models.Registries.AiModels
         } = string.Empty;
 
         /// <summary>
-        /// Gets the tags for the model (e.g., standard, pro, enterprise).
+        /// Gets the model tier (e.g., standard, pro, enterprise).
         /// </summary>
         public string Tier
         {
@@ -48,7 +48,7 @@ namespace OpenAIApiClient.Models.Registries.AiModels
         } = string.Empty;
 
         /// <summary>
-        /// Gets the model tier (e.g., standard, pro, enterprise).
+        /// Gets the tags for the model (e.g., "creative", "fast", "generalist").
         /// </summary>
         public IReadOnlyList<string> Tags
         {

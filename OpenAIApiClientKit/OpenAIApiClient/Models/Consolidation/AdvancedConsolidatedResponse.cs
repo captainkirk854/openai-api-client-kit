@@ -42,7 +42,7 @@ namespace OpenAIApiClient.Models.Consolidation
         /// <summary>
         /// Gets or sets the consolidation mode used for this response.
         /// </summary>
-        public ConsolidationMode ConsolidationMode
+        public AiModelConsolidationMode ConsolidationMode
         {
             get;
             set;

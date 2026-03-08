@@ -4,52 +4,34 @@
 
 namespace OpenAIApiClient.Registries.AiModels.Factories
 {
+    using OpenAIApiClient.Helpers.Extensions;
     using OpenAIApiClient.Interfaces.Registries;
     using OpenAIApiClient.Models.Registries.AiModels;
     using OpenAIApiClient.Registries.AiModels;
     using OpenAIApiClient.Registries.AiModels.Factories.Components;
     using OpenAIApiClient.Registries.AiModels.Sources;
 
+    /// <summary>
+    /// Provides factory methods for creating and managing OpenAI model registries and descriptors.
+    /// </summary>
     public static class OpenAIModelsFactory
     {
-        public static OpenAIModelsNEW Create()
+        /// <summary>
+        /// Creates a new instance of <see cref="OpenAIModels"/> by loading and merging model descriptors from embedded JSON resources.
+        /// </summary>
+        /// <returns>An instance of <see cref="OpenAIModels"/> containing the merged model descriptors.</returns>
+        public static OpenAIModels Create()
         {
-            // Load and merge embedded capability registry JSON
-            IAiModelCapabilityRegistrySource embeddedSource = new EmbeddedAiModelPropertyRegistrySource();
-            AiModelPropertyRegistryLoader loader = new(embeddedSource);
+            // Load and merge embedded capability registry JSON ..
+            IAiModelCapabilityRegistryResource embeddedResource = new EmbeddedAiModelPropertyRegistryResource();
+            AiModelPropertyRegistryLoader loader = new(embeddedResource);
             AiModelPropertyRegistryData mergedData = loader.LoadMerged();
 
-            // Create lookup and evaluator
-            AiModelPropertyRegistryLookup lookup = new(mergedData);
-            AiModelCapabilityEvaluator evaluator = new();
+            // Build model descriptor dictionary ..
+            Dictionary<string, AiModelDescriptor> descriptors = mergedData.ToUpperNameDictionary();
 
-            // Build descriptor dictionary
-            Dictionary<string, AiModelPropertyRegistryModel> descriptors = mergedData.ToUpperNameDictionary();
-
-            // Construct and return registry
-            return new OpenAIModelsNEW(descriptors);
-        }
-
-        /// <summary>
-        /// Builds a dictionary keyed by upper-case model name from the supplied registry data.
-        /// </summary>
-        /// <param name="registryData">The registry data containing models.</param>
-        /// <returns>
-        /// A dictionary whose keys are upper-case model names and whose values are the corresponding
-        /// <see cref="AiModelPropertyRegistryModel"/> instances.
-        /// </returns>
-        public static Dictionary<string, AiModelPropertyRegistryModel> ToUpperNameDictionary(this AiModelPropertyRegistryData registryData)
-        {
-            ArgumentNullException.ThrowIfNull(registryData);
-
-            if (registryData.Models is null)
-            {
-                throw new InvalidOperationException("Registry data must contain a non-null Models collection.");
-            }
-
-            Dictionary<string, AiModelPropertyRegistryModel> dictionary = registryData.Models.ToDictionary(keySelector: model => model.UpperName, elementSelector: model => model, comparer: StringComparer.OrdinalIgnoreCase);
-
-            return dictionary;
+            // Construct and return registry ..
+            return new OpenAIModels(descriptors);
         }
     }
 }

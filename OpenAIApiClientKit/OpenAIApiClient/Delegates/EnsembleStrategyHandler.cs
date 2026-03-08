@@ -4,7 +4,6 @@
 
 namespace OpenAIApiClient.Delegates
 {
-    using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Registries.AiModels;
     using OpenAIApiClient.Orchestration.Dispatch;
 
@@ -13,5 +12,5 @@ namespace OpenAIApiClient.Delegates
     /// </summary>
     /// <param name="modelRegistry"></param>
     /// <returns cref="EnsembleDispatchResult">RouterResult.</returns>
-    public delegate EnsembleDispatchResult EnsembleStrategyHandler(IReadOnlyDictionary<string, AiModelPropertyRegistryModel> modelRegistry);
+    public delegate EnsembleDispatchResult EnsembleStrategyHandler(IReadOnlyDictionary<string, AiModelDescriptor> modelRegistry);
 }

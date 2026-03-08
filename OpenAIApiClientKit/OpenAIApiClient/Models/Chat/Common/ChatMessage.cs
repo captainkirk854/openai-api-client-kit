@@ -7,6 +7,10 @@ namespace OpenAIApiClient.Models.Chat.Common
     using System.Text.Json.Serialization;
     using OpenAIApiClient.Enums;
 
+    /// <summary>
+    /// Represents a chat message exchanged between participants, including sender role, content, and optional tool call
+    /// information.
+    /// </summary>
     public class ChatMessage
     {
         private string? role;

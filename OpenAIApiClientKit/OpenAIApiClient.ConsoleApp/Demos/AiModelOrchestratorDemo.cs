@@ -19,13 +19,13 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             Console.WriteLine("=== AI Orchestrator Demo ===");
             Console.WriteLine();
 
-            IReadOnlyDictionary<string, Models.Registries.AiModels.AiModelPropertyRegistryModel> models = Registries.AiModels.Factories.OpenAIModelsFactory.Create().GetRegistry(); // create the model registry with all the OpenAI models from the factory ..
+            IReadOnlyDictionary<string, Models.Registries.AiModels.AiModelDescriptor> models = Registries.AiModels.Factories.OpenAIModelsFactory.Create().GetRegistry(); // create the model registry with all the OpenAI models from the factory ..
 
             // Create the orchestrator with all the components using fluent orchestrator builder ..
             Orchestrator orchestrator = new OrchestratorBuilder()
                                             .WithClient(client)
                                             .WithResponseHandler(new AiModelResponseHandlerDemo())
-                                            .WithModelRegistry(new OpenAIModelsNEW(models: models))
+                                            .WithModelRegistry(new OpenAIModels(models: models))
                                             .WithRequestBuilderFactory(() => new ChatClientRequestBuilder().WithDefaults()) // Passed as a ChatClientRequestBuilder() lambda ..
                                             .Build();
 
@@ -40,7 +40,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 OutputFormat = OutputFormat.PlainText,
                 SingleModelRequest = new SingleAiModelDispatchRequest
                 {
-                    Strategy = SingleAiModelStrategy.BestReasoning,
+                    Strategy = AiModelStrategy.SingleAiModel.BestReasoning,
                 },
                 CallOptions = new AiCallOptions
                 {
@@ -67,7 +67,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 OutputFormat = OutputFormat.PlainText,
                 SingleModelRequest = new SingleAiModelDispatchRequest
                 {
-                    Strategy = SingleAiModelStrategy.Explicit,
+                    Strategy = AiModelStrategy.SingleAiModel.Explicit,
                     ExplicitModel = "gpt-4o-mini",
                 },
             };
@@ -85,7 +85,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 OutputFormat = OutputFormat.PlainText,
                 EnsembleRequest = new EnsembleDispatchRequest
                 {
-                    Strategy = EnsembleStrategy.Reasoning,
+                    Strategy = AiModelStrategy.Ensemble.Reasoning,
                 },
             };
 
@@ -102,7 +102,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 OutputFormat = OutputFormat.Table,
                 EnsembleRequest = new EnsembleDispatchRequest
                 {
-                    Strategy = EnsembleStrategy.Custom,
+                    Strategy = AiModelStrategy.Ensemble.Custom,
                     RequiredCapabilities =
                     [
                         AiModelCapability.Text,

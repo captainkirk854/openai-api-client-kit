@@ -60,7 +60,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             Console.WriteLine("Option: LLM AS JUDGE\n");
             try
             {
-                AdvancedConsolidatedResponse llmJudgeResponse = await advancedExecutor.AdvancedConsolidationAsync(consolidationMode: ConsolidationMode.LLMAsJudge,
+                AdvancedConsolidatedResponse llmJudgeResponse = await advancedExecutor.AdvancedConsolidationAsync(consolidationMode: AiModelConsolidationMode.LLMAsJudge,
                                                                                                                   prompt: prompt,
                                                                                                                   responses: responses,
                                                                                                                   options: options,
@@ -100,7 +100,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             Console.WriteLine("Option: HEURISTIC SCORING\n");
             try
             {
-                AdvancedConsolidatedResponse heuristicResponse = await advancedExecutor.AdvancedConsolidationAsync(consolidationMode: ConsolidationMode.HeuristicScoring,
+                AdvancedConsolidatedResponse heuristicResponse = await advancedExecutor.AdvancedConsolidationAsync(consolidationMode: AiModelConsolidationMode.HeuristicScoring,
                                                                                                                    prompt: prompt,
                                                                                                                    responses: responses,
                                                                                                                    options: options,
@@ -135,7 +135,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             try
             {
                 Console.WriteLine($"Using input response(s) to synthesise ..");
-                AdvancedConsolidatedResponse synthesisResponse = await advancedExecutor.AdvancedConsolidationAsync(consolidationMode: ConsolidationMode.ResponseSynthesis,
+                AdvancedConsolidatedResponse synthesisResponse = await advancedExecutor.AdvancedConsolidationAsync(consolidationMode: AiModelConsolidationMode.ResponseSynthesis,
                                                                                                                    prompt: prompt,
                                                                                                                    responses: responses,
                                                                                                                    options: options,

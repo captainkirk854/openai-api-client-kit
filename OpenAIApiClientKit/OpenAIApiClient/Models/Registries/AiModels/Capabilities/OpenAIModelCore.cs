@@ -11,7 +11,8 @@ namespace OpenAIApiClient.Models.Registries.AiModels.Capabilities
     public sealed class OpenAIModelCore
     {
         /// <summary>
-        /// Gets the reasoning capability of the model, which indicates its ability to perform logical reasoning and problem-solving tasks. A higher value suggests that the model is more proficient in understanding complex concepts and making inferences based on provided information.
+        /// Gets the reasoning capability of the model, which indicates its ability to perform logical reasoning and problem-solving tasks.
+        /// A higher value suggests that the model is more proficient in understanding complex concepts and making inferences based on provided information.
         /// </summary>
         public int Reasoning
         {
@@ -20,7 +21,9 @@ namespace OpenAIApiClient.Models.Registries.AiModels.Capabilities
         }
 
         /// <summary>
-        /// Gets the text generation capability of the model, which reflects its ability to produce coherent and contextually relevant text based on input prompts. A higher value indicates that the model can generate more fluent and meaningful responses, making it suitable for tasks such as content creation, conversation, and storytelling.
+        /// Gets the text generation capability of the model, which reflects its ability to produce coherent and contextually relevant text based on input prompts.
+        /// A higher value indicates that the model can generate more fluent and meaningful responses, making it suitable for tasks such as content creation,
+        /// conversation, and storytelling.
         /// </summary>
         public int Text
         {
@@ -29,7 +32,8 @@ namespace OpenAIApiClient.Models.Registries.AiModels.Capabilities
         }
 
         /// <summary>
-        /// Gets the chat capability of the model, which measures its proficiency in engaging in interactive conversations. A higher value suggests that the model can maintain context, understand user intent, and provide more relevant and coherent responses in a conversational setting.
+        /// Gets the chat capability of the model, which measures its proficiency in engaging in interactive conversations.A higher value suggests that the model
+        /// can maintain context, understand user intent, and provide more relevant and coherent responses in a conversational setting.
         /// </summary>
         public int Chat
         {
@@ -38,7 +42,9 @@ namespace OpenAIApiClient.Models.Registries.AiModels.Capabilities
         }
 
         /// <summary>
-        /// Gets the vision capability of the model, which indicates its ability to process and understand visual information. A higher value suggests that the model can analyze images, recognize objects, and interpret visual data more effectively, making it suitable for tasks such as image captioning, object detection, and visual question answering.
+        /// Gets the vision capability of the model, which indicates its ability to process and understand visual information. A higher value suggests that the model
+        /// can analyze images, recognize objects, and interpret visual data more effectively, making it suitable for tasks such as image captioning, object detection,
+        /// and visual question answering.
         /// </summary>
         public int Vision
         {
@@ -47,7 +53,8 @@ namespace OpenAIApiClient.Models.Registries.AiModels.Capabilities
         }
 
         /// <summary>
-        /// Gets the audio input capability of the model, which reflects its ability to process and understand audio data. A higher value indicates that the model can analyze and interpret audio signals more effectively, making it suitable for tasks such as speech recognition, audio classification, and sound analysis.
+        /// Gets the audio input capability of the model, which reflects its ability to process and understand audio data. A higher value indicates that the model can
+        /// analyze and interpret audio signals more effectively, making it suitable for tasks such as speech recognition, audio classification, and sound analysis.
         /// </summary>
         public int AudioIn
         {
@@ -56,12 +63,30 @@ namespace OpenAIApiClient.Models.Registries.AiModels.Capabilities
         }
 
         /// <summary>
-        /// Gets the audio output capability of the model, which measures its proficiency in generating and producing audio content. A higher value suggests that the model can create more natural and coherent audio outputs, making it suitable for tasks such as text-to-speech synthesis, music generation, and audio-based storytelling.
+        /// Gets the audio output capability of the model, which measures its proficiency in generating and producing audio content. A higher value suggests that the
+        /// model can create more natural and coherent audio outputs, making it suitable for tasks such as text-to-speech synthesis, music generation, and audio-based
+        /// storytelling.
         /// </summary>
         public int AudioOut
         {
             get;
             init;
+        }
+
+        /// <summary>
+        /// Gets the total core capability score of the model providing an overall measure of its proficiency across all core features.
+        /// </summary>
+        public int Total
+        {
+            get
+            {
+                return this.Reasoning +
+                       this.Text +
+                       this.Chat +
+                       this.Vision +
+                       this.AudioIn +
+                       this.AudioOut;
+            }
         }
     }
 }

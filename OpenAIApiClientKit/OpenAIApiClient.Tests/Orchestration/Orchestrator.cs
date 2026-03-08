@@ -27,8 +27,8 @@ namespace OpenAIApiClient.Tests.Orchestration
         private MockAiModelResponseHandler mockModelResponseHandler = null!;
         private testClass orchestrator = null!;
 
-        private AiModelPropertyRegistryModel modelA = null!;
-        private AiModelPropertyRegistryModel modelB = null!;
+        private AiModelDescriptor modelA = null!;
+        private AiModelDescriptor modelB = null!;
 
         [TestInitialize]
         public void Setup()
@@ -451,15 +451,15 @@ namespace OpenAIApiClient.Tests.Orchestration
         /// Creates a ModelDescriptor instance for the specified model name.
         /// </summary>
         /// <param name="name"></param>
-        /// <returns see cref="AiModelPropertyRegistryModel">.</returns>
-        private static AiModelPropertyRegistryModel CreateModelDescriptor(string name)
+        /// <returns see cref="AiModelDescriptor">.</returns>
+        private static AiModelDescriptor CreateModelDescriptor(string name)
         {
             // Use reflection to create an instance since the constructor is internal.
-            AiModelPropertyRegistryModel modelDescriptor = (AiModelPropertyRegistryModel)Activator.CreateInstance(typeof(AiModelPropertyRegistryModel), nonPublic: true)!;
+            AiModelDescriptor modelDescriptor = (AiModelDescriptor)Activator.CreateInstance(typeof(AiModelDescriptor), nonPublic: true)!;
 
             // Set the Name property using reflection since it has an internal setter.
-            typeof(AiModelPropertyRegistryModel)
-                .GetProperty(nameof(AiModelPropertyRegistryModel.Name))!
+            typeof(AiModelDescriptor)
+                .GetProperty(nameof(AiModelDescriptor.Name))!
                 .SetValue(modelDescriptor, name);
 
             return modelDescriptor;

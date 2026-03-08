@@ -8,6 +8,9 @@ namespace OpenAIApiClient.Interfaces.Orchestration.Execution
     using OpenAIApiClient.Orchestration.Execution;
     using OpenAIApiClient.Orchestration.Response;
 
+    /// <summary>
+    /// Defines a contract for executing a single AI model to process chat completion requests asynchronously.
+    /// </summary>
     public interface ISingleAiModelExecutor
     {
         Task<AiModelResponse> ExecuteAsync(ChatCompletionRequest request, AiCallOptions options, CancellationToken cancelToken);

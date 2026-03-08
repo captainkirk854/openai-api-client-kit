@@ -7,8 +7,11 @@ namespace OpenAIApiClient.Interfaces.Registries
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Registries.AiModels;
 
+    /// <summary>
+    /// Evaluates and retrieves the capabilities supported by an AI model.
+    /// </summary>
     public interface IAiModelCapabilityEvaluator
     {
-        IReadOnlySet<AiModelCapability> GetCapabilities(AiModelPropertyRegistryModel modelEntry);
+        IReadOnlySet<AiModelCapability> GetCapabilities(AiModelDescriptor modelEntry);
     }
 }

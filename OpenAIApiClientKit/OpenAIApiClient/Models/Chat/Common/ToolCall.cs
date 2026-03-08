@@ -4,6 +4,9 @@
 
 namespace OpenAIApiClient.Models.Chat.Common
 {
+    /// <summary>
+    /// Represents a tool call with a unique identifier, tool name, and arguments.
+    /// </summary>
     public class ToolCall
     {
         /// <summary>

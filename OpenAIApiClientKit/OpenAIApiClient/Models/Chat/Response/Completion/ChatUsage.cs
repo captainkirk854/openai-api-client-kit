@@ -7,6 +7,9 @@ namespace OpenAIApiClient.Models.Chat.Response.Completion
     using System.Text.Json.Serialization;
     using OpenAIApiClient.Models.Registries.AiModels;
 
+    /// <summary>
+    /// Represents token usage and cost calculation details for a chat request.
+    /// </summary>
     public class ChatUsage
     {
         /// <summary>

@@ -6,6 +6,10 @@ namespace OpenAIApiClient.Models.Chat.Response.Streaming
 {
     using System.Text.Json.Serialization;
 
+    /// <summary>
+    /// Represents a single choice in a streamed chat response, including its index, incremental delta update, and
+    /// optional finish reason.
+    /// </summary>
     public class ChatChunkChoice
     {
         /// <summary>

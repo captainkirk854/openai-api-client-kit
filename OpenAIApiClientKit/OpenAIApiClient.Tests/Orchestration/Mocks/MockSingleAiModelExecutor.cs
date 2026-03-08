@@ -24,7 +24,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         /// <summary>
         /// Gets the last call made to the executor - only in mock for test verification purposes.
         /// </summary>
-        public (AiModelPropertyRegistryModel model, ChatCompletionRequest request)? LastCall
+        public (AiModelDescriptor model, ChatCompletionRequest request)? LastCall
         {
             get;
             private set;

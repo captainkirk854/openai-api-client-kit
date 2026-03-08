@@ -17,9 +17,10 @@ namespace OpenAIApiClient.Orchestration.Execution
     using OpenAIApiClient.Orchestration.Response;
 
     /// <summary>
-    /// Executes OpenAI models using the provided ChatClient.
+    /// Executes chat completion requests using a single AI model, supporting non-streaming, buffered streaming, and
+    /// push streaming modes with optional callbacks and latency measurement.
     /// </summary>
-    /// <param name="client"></param>
+    /// <param name="client">Chat client used to communicate with the AI model.</param>
     public sealed class SingleAiModelExecutor(ChatClient client) : ISingleAiModelExecutor
     {
         /// <summary>
@@ -72,7 +73,7 @@ namespace OpenAIApiClient.Orchestration.Execution
         private async Task<AiModelResponse> ExecuteNonStreamingAsync(ChatCompletionRequest request, Stopwatch sw, CancellationToken cancelToken)
         {
             // Initialise ..
-            AiModelPropertyRegistryModel model = request.ModelInfo;
+            AiModelDescriptor model = request.ModelInfo;
 
             // Execute request and wait for full response ..
             ChatCompletionResponse? response = await client.CreateChatCompletionAsync(request: request, cancelToken: cancelToken);
@@ -111,7 +112,7 @@ namespace OpenAIApiClient.Orchestration.Execution
         private async Task<AiModelResponse> ExecuteBufferedStreamingAsync(ChatCompletionRequest request, Stopwatch sw, AiCallOptions options, CancellationToken cancelToken)
         {
             // Initialise ..
-            AiModelPropertyRegistryModel model = request.ModelInfo;
+            AiModelDescriptor model = request.ModelInfo;
             StringBuilder outputBuilder = new();
             int chunkCount = 0;
 
@@ -172,7 +173,7 @@ namespace OpenAIApiClient.Orchestration.Execution
         private async Task<AiModelResponse> ExecutePushStreamingAsync(ChatCompletionRequest request, Stopwatch sw, AiCallOptions options, CancellationToken cancelToken)
         {
             // Initialise ..
-            AiModelPropertyRegistryModel model = request.ModelInfo;
+            AiModelDescriptor model = request.ModelInfo;
             StringBuilder outputBuilder = new();
             int chunkCount = 0;
 

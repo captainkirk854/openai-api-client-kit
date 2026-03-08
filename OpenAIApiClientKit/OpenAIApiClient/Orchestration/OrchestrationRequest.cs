@@ -8,6 +8,9 @@ namespace OpenAIApiClient.Orchestration
     using OpenAIApiClient.Orchestration.Dispatch;
     using OpenAIApiClient.Orchestration.Execution;
 
+    /// <summary>
+    /// Represents a request for orchestrating AI model dispatch, supporting both single and ensemble routing options.
+    /// </summary>
     public sealed class OrchestrationRequest
     {
         /// <summary>

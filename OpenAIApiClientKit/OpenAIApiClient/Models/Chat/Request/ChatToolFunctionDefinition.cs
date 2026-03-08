@@ -6,6 +6,9 @@ namespace OpenAIApiClient.Models.Chat.Request
 {
     using System.Text.Json.Serialization;
 
+    /// <summary>
+    /// Represents a function definition for a chat tool, including its name and parameter schema.
+    /// </summary>
     public class ChatToolFunctionDefinition
     {
         /// <summary>

@@ -1,21 +1,21 @@
-﻿// <copyright file="AiModelDispatchDemo.cs" company="854 Things (tm)">
+﻿// <copyright file="AiModelDispatcherDemo.cs" company="854 Things (tm)">
 // Copyright (c) 854 Things (tm). All rights reserved.
 // </copyright>
 
 namespace OpenAIApiClient.ConsoleApp.Demos
 {
     using OpenAIApiClient.Enums;
+    using OpenAIApiClient.Helpers.Extensions;
     using OpenAIApiClient.Models.Registries.AiModels;
     using OpenAIApiClient.Orchestration.Dispatch;
     using OpenAIApiClient.Registries.AiModels;
-    using OpenAIApiClient.Registries.Dispatch;
 
     /// <summary>
     /// Single and Ensemble Model Dispatch Selection Demo.
     /// </summary>
-    public static class AiModelDispatchDemo
+    public static class AiModelDispatcherDemo
     {
-        private static readonly OpenAIModelRegistryNEW Models = new();
+        private static readonly OpenAIModelRegistry Models = new();
         private static readonly SingleAiModelDispatcher SingleModelDispatcher = new(registry: Models);
         private static readonly EnsembleDispatcher EnsembleDispatcher = new(modelRegistry: Models);
 
@@ -84,20 +84,23 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// </summary>
         private static void RunExplicitModelDispatch()
         {
-            Console.WriteLine("Enter model name (e.g., GPT4o, GPT5_2):");
+            Console.WriteLine("Enter model name (e.g., gpt-4o, gpt-3.5-turbo, whisper-1):");
             Console.WriteLine("Available models:" + Environment.NewLine + string.Join(Environment.NewLine, Models.GetAll().Select(m => $"- {m.Name}")));
-            //Console.WriteLine("Options: " + string.Join(", ", Enum.GetNames(typeof(OpenAIModel))));
             string? model = Console.ReadLine();
-
-            //if (!Enum.TryParse<string>(input, out string model))
-            //{
-            //    Console.WriteLine("Invalid model.");
-            //    return;
-            //}
+            if (string.IsNullOrWhiteSpace(model))
+            {
+                Console.WriteLine("No model name entered.");
+                return;
+            }
+            if (Models.IsExists(name: model))
+            {
+                Console.WriteLine($"Model '{model}' not found in registry.");
+                return;
+            }
 
             SingleAiModelDispatchResult result = SingleModelDispatcher.Evaluate(new SingleAiModelDispatchRequest
             {
-                Strategy = SingleAiModelStrategy.Explicit,
+                Strategy = AiModelStrategy.SingleAiModel.Explicit,
                 ExplicitModel = model,
             });
 
@@ -111,7 +114,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         {
             SingleAiModelDispatchResult result = SingleModelDispatcher.Evaluate(new SingleAiModelDispatchRequest
             {
-                Strategy = SingleAiModelStrategy.BestReasoning,
+                Strategy = AiModelStrategy.SingleAiModel.BestReasoning,
             });
 
             PrintSingleResult("Dispatch Result for: Best Reasoning Model", result);
@@ -124,7 +127,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         {
             SingleAiModelDispatchResult result = SingleModelDispatcher.Evaluate(new SingleAiModelDispatchRequest
             {
-                Strategy = SingleAiModelStrategy.LowestCost,
+                Strategy = AiModelStrategy.SingleAiModel.LowestCost,
                 RequiredCapabilities = [AiModelCapability.Chat],
             });
 
@@ -138,7 +141,7 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         {
             SingleAiModelDispatchResult result = SingleModelDispatcher.Evaluate(new SingleAiModelDispatchRequest
             {
-                Strategy = SingleAiModelStrategy.BestVision,
+                Strategy = AiModelStrategy.SingleAiModel.BestVision,
             });
 
             PrintSingleResult("Dispatch Result for: Best Vision Model", result);
@@ -153,9 +156,9 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// </summary>
         private static void RunReasoningEnsembleModelDispatch()
         {
-            EnsembleDispatchResultNEW result = EnsembleDispatcher.Evaluate(new EnsembleDispatchRequest
+            EnsembleDispatchResult result = EnsembleDispatcher.Evaluate(new EnsembleDispatchRequest
             {
-                Strategy = EnsembleStrategy.Reasoning,
+                Strategy = AiModelStrategy.Ensemble.Reasoning,
             });
 
             PrintEnsembleResult("Dispatch Result for: Reasoning Model Ensemble", result);
@@ -166,9 +169,9 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// </summary>
         private static void RunVisionEnsembleModelDispatch()
         {
-            EnsembleDispatchResultNEW result = EnsembleDispatcher.Evaluate(new EnsembleDispatchRequest
+            EnsembleDispatchResult result = EnsembleDispatcher.Evaluate(new EnsembleDispatchRequest
             {
-                Strategy = EnsembleStrategy.Vision,
+                Strategy = AiModelStrategy.Ensemble.Vision,
             });
 
             PrintEnsembleResult("Dispatch Result for: Vision Model Ensemble", result);
@@ -179,9 +182,9 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         /// </summary>
         private static void RunCostOptimizedEnsembleModelDispatch()
         {
-            EnsembleDispatchResultNEW result = EnsembleDispatcher.Evaluate(new EnsembleDispatchRequest
+            EnsembleDispatchResult result = EnsembleDispatcher.Evaluate(new EnsembleDispatchRequest
             {
-                Strategy = EnsembleStrategy.CostOptimized,
+                Strategy = AiModelStrategy.Ensemble.CostOptimized,
             });
 
             PrintEnsembleResult("Dispatch Result for: Cost-Optimized Model Ensemble", result);
@@ -200,10 +203,10 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 return;
             }
 
-            List<string> rawParts = new List<string>(input.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()));
+            List<string> rawParts = [.. input.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim())];
 
-            List<AiModelCapability> parsedCapabilities = new List<AiModelCapability>();
-            List<string> invalid = new List<string>();
+            List<AiModelCapability> parsedCapabilities = [];
+            List<string> invalid = [];
 
             foreach (string part in rawParts)
             {
@@ -238,12 +241,10 @@ namespace OpenAIApiClient.ConsoleApp.Demos
                 return;
             }
 
-            // Validate that enough models exist BEFORE routing, using the NEW registry and leaf capability checks.
-            IReadOnlyCollection<AiModelPropertyRegistryModel> allModels = Models.GetAll();
+            // Validate that enough models exist BEFORE routing, using registry and leaf capability checks.
+            IReadOnlyCollection<AiModelDescriptor> allModels = Models.GetAll();
 
-            List<AiModelPropertyRegistryModel> matchingModels = allModels
-                .Where(model => parsedCapabilities.All(capability => SupportsCapability(model, capability)))
-                .ToList();
+            List<AiModelDescriptor> matchingModels = [.. allModels.Where(model => parsedCapabilities.All(capability => model.HasCapability(capability: capability)))];
 
             if (matchingModels.Count < minRequiredCount)
             {
@@ -252,10 +253,10 @@ namespace OpenAIApiClient.ConsoleApp.Demos
             }
 
             // Proceed with evaluation of which models are selected using the NEW dispatcher and request type.
-            EnsembleDispatchResultNEW result = EnsembleDispatcher.Evaluate(
+            EnsembleDispatchResult result = EnsembleDispatcher.Evaluate(
                 new EnsembleDispatchRequest
                 {
-                    Strategy = EnsembleStrategy.Custom,
+                    Strategy = AiModelStrategy.Ensemble.Custom,
                     ModelCount = minRequiredCount,
                     RequiredCapabilities = parsedCapabilities,
                 });
@@ -276,90 +277,44 @@ namespace OpenAIApiClient.ConsoleApp.Demos
         {
             Console.WriteLine($"\n=== {title} ===");
             Console.WriteLine($"Model:     {result.Model.Name}");
-            Console.WriteLine($"Capabilities: {string.Join(", ", result.Model.Capabilities)}");
+            PrintHighLevelScoresAndCosts(model: result.Model);
             Console.WriteLine();
         }
 
         /// <summary>
-        /// Determines whether the specified AI model supports a given capability.
-        /// </summary>
-        /// <param name="model">The AI model to evaluate.</param>
-        /// <param name="capability">The capability to check for support.</param>
-        /// <returns>true if the model supports the specified capability; otherwise, false.</returns>
-        private static bool SupportsCapability(
-            AiModelPropertyRegistryModel model,
-            AiModelCapability capability)
-        {
-            switch (capability)
-            {
-                case AiModelCapability.Chat:
-                    {
-                        return model.Capabilities.Core.Chat > 0;
-                    }
-
-                case AiModelCapability.Reasoning:
-                    {
-                        return model.Capabilities.Core.Reasoning > 0;
-                    }
-
-                case AiModelCapability.Embedding:
-                    {
-                        return model.Capabilities.Advanced.Embedding > 0;
-                    }
-
-                case AiModelCapability.Vision:
-                    {
-                        return model.Capabilities.Core.Vision > 0;
-                    }
-
-                case AiModelCapability.AudioIn:
-                    {
-                        return model.Capabilities.Core.AudioIn > 0;
-                    }
-
-                case AiModelCapability.AudioOut:
-                    {
-                        return model.Capabilities.Core.AudioOut > 0;
-                    }
-
-                case AiModelCapability.Moderation:
-                    {
-                        return model.Capabilities.Operational.Moderation > 0;
-                    }
-
-                case AiModelCapability.HighPerformance:
-                    {
-                        return model.Capabilities.Performance.HighPerformance > 0;
-                    }
-
-                case AiModelCapability.LowCost:
-                    {
-                        return model.Capabilities.Operational.LowCost > 0;
-                    }
-
-                default:
-                    {
-                        return false;
-                    }
-            }
-        }
-
-
-        /// <summary>
-        /// Print ensemble routing result.
+        /// Print ensemble dispatch result.
         /// </summary>
         /// <param name="title"></param>
         /// <param name="result"></param>
-        private static void PrintEnsembleResult(string title, EnsembleDispatchResultNEW result)
+        private static void PrintEnsembleResult(string title, EnsembleDispatchResult result)
         {
             Console.WriteLine($"\n=== {title} ===");
 
-            foreach (AiModelPropertyRegistryModel model in result.Models.Distinct())
+            foreach (AiModelDescriptor model in result.Models.Distinct())
             {
                 Console.WriteLine($"Model:     {model.Name}");
-                Console.WriteLine($"Capabilities: {string.Join(", ", model.Capabilities)}");
+                PrintHighLevelScoresAndCosts(model: model);
                 Console.WriteLine();
             }
+        }
+
+        /// <summary>
+        /// Writes the total scores for core, advanced, performance, and operational capabilities to the console.
+        /// </summary>
+        /// <param name="model"></param>
+        private static void PrintHighLevelScoresAndCosts(AiModelDescriptor model)
+        {
+            AiModelCapabilityScores caps = model.Capabilities;
+
+            Console.WriteLine($"Capabilities:");
+            Console.WriteLine($"- Core:        {caps.Core.Total}");
+            Console.WriteLine($"- Advanced:    {caps.Advanced.Total}");
+            Console.WriteLine($"- Performance: {caps.Performance.Total}");
+            Console.WriteLine($"- Operational: {caps.Operational.Total}");
+
+            Console.WriteLine("Costs:");
+            Console.WriteLine($"- Cost(per token):        {model.Pricing.TotalCostInTokens}");
+            Console.WriteLine($"- Cost(per 1mill tokens): {model.Pricing.TotalCostPerMillionTokens}");
         }
     }
 }

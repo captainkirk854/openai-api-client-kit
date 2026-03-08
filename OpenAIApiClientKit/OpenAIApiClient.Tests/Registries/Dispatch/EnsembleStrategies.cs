@@ -19,7 +19,7 @@ namespace OpenAIApiClient.Tests.Registries.Dispatch
     [TestClass]
     public class EnsembleStrategies
     {
-        private IReadOnlyDictionary<string, AiModelPropertyRegistryModel>? modelRegistry;
+        private IReadOnlyDictionary<string, AiModelDescriptor>? modelRegistry;
 
         [TestInitialize]
         public void Setup()

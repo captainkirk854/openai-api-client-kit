@@ -4,13 +4,10 @@
 
 namespace OpenAIApiClient.Tests.Registries.Dispatch
 {
-    using System.Linq;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using OpenAIApiClient.Delegates;
     using OpenAIApiClient.Enums;
     using OpenAIApiClient.Models.Registries.AiModels;
-    using OpenAIApiClient.Orchestration.Dispatch;
-    using OpenAIApiClient.Registries.AiModels;
     using testClass = OpenAIApiClient.Registries.Dispatch.SingleAiModelStrategies;
 
     /// <summary>
@@ -19,7 +16,7 @@ namespace OpenAIApiClient.Tests.Registries.Dispatch
     [TestClass]
     public class SingleAiModelStrategies
     {
-        private IReadOnlyDictionary<string, AiModelPropertyRegistryModel>? modelRegistry;
+        private IReadOnlyDictionary<string, AiModelDescriptor>? modelRegistry;
 
         [TestInitialize]
         public void Setup()
@@ -43,20 +40,20 @@ namespace OpenAIApiClient.Tests.Registries.Dispatch
         [TestMethod]
         public void Registry_ShouldContainAllExpectedStrategies()
         {
-            SingleAiModelStrategy[] expected =
+            AiModelStrategy.SingleAiModel[] expected =
             [
-                SingleAiModelStrategy.Explicit,
-                SingleAiModelStrategy.LowestCost,
-                SingleAiModelStrategy.HighestPerformance,
-                SingleAiModelStrategy.BestReasoning,
-                SingleAiModelStrategy.BestVision,
-                SingleAiModelStrategy.BestAudioIn,
-                SingleAiModelStrategy.BestAudioOut,
-                SingleAiModelStrategy.Embedding,
-                SingleAiModelStrategy.Moderation,
+                AiModelStrategy.SingleAiModel.Explicit,
+                AiModelStrategy.SingleAiModel.LowestCost,
+                AiModelStrategy.SingleAiModel.HighestPerformance,
+                AiModelStrategy.SingleAiModel.BestReasoning,
+                AiModelStrategy.SingleAiModel.BestVision,
+                AiModelStrategy.SingleAiModel.BestAudioIn,
+                AiModelStrategy.SingleAiModel.BestAudioOut,
+                AiModelStrategy.SingleAiModel.Embedding,
+                AiModelStrategy.SingleAiModel.Moderation,
             ];
 
-            foreach (SingleAiModelStrategy strategy in expected)
+            foreach (AiModelStrategy.SingleAiModel strategy in expected)
             {
                 Assert.IsTrue(testClass.DefaultHandlerStrategies.ContainsKey(strategy), $"Strategy {strategy} should be registered.");
             }
@@ -65,7 +62,7 @@ namespace OpenAIApiClient.Tests.Registries.Dispatch
         [TestMethod]
         public void Get_ShouldReturnStrategyDelegate()
         {
-            SingleAiModelStrategyHandler handler = testClass.Get(SingleAiModelStrategy.LowestCost);
+            SingleAiModelStrategyHandler handler = testClass.Get(AiModelStrategy.SingleAiModel.LowestCost);
             Assert.IsNotNull(handler);
         }
 
@@ -74,7 +71,7 @@ namespace OpenAIApiClient.Tests.Registries.Dispatch
         {
             try
             {
-                testClass.Get((SingleAiModelStrategy)999);
+                testClass.Get((AiModelStrategy.SingleAiModel)999);
                 Assert.Fail("Expected KeyNotFoundException was not thrown.");
             }
             catch (KeyNotFoundException ex)

@@ -188,7 +188,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Dispatch
         /// </summary>
         /// <param name="aiModel"></param>
         /// <param name="capabilities"></param>
-        /// <returns see cref="(IAiModelRegistryNEW, AiModelDescriptor, SingleAiModelDispatchResult)">.</returns>
+        /// <returns see cref="(IAiModelRegistry, AiModelDescriptor, SingleAiModelDispatchResult)">.</returns>
         //private static (IAiModelRegistryNEW, AiModelDescriptor, SingleAiModelDispatchResult) Cook(OpenAIModel aiModel, IReadOnlyList<AiModelCapability> capabilities)
         //{
         //// Create the test model descriptor ..

@@ -14,7 +14,7 @@ namespace OpenAIApiClient.Orchestration.Dispatch
         /// <summary>
         /// Gets the strategy to use (e.g., BestReasoning, LowestCost, Explicit).
         /// </summary>
-        public SingleAiModelStrategy Strategy
+        public AiModelStrategy.SingleAiModel Strategy
         {
             get;
             init;

@@ -4,9 +4,9 @@
 
 namespace OpenAIApiClient.Tests.Orchestration.Mocks
 {
-    using OpenAIApiClient.Interfaces.Orchestration.Dispatch;
     using OpenAIApiClient.Models.Registries.AiModels;
     using OpenAIApiClient.Orchestration.Dispatch;
+    using OpenAIApiClient.Registries.Dispatch;
 
     public sealed class MockEnsembleDispatcher // : IEnsembleDispatcher
     {
@@ -22,7 +22,7 @@ namespace OpenAIApiClient.Tests.Orchestration.Mocks
         /// <summary>
         /// Gets or sets the model descriptors to be returned by the router - only in mock for test verification purposes.
         /// </summary>
-        public IReadOnlyList<AiModelPropertyRegistryModel> ReturnedModels
+        public IReadOnlyList<AiModelDescriptor> ReturnedModels
         {
             get;
             set;
